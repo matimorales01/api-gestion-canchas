@@ -1,7 +1,6 @@
 package ar.uba.fi.ingsoft1.todo_template.user.refresh_token;
 
 import ar.uba.fi.ingsoft1.todo_template.user.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,6 @@ public class RefreshTokenService {
     private final Integer byteSize;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    @Autowired
     RefreshTokenService(
             @Value("${jwt.refresh.expiration}") Long expiration,
             @Value("${jwt.refresh.bytes}") Integer byteSize,

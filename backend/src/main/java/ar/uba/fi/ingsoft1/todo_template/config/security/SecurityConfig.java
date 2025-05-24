@@ -1,6 +1,5 @@
 package ar.uba.fi.ingsoft1.todo_template.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +24,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter authFilter;
 
-    @Autowired
+
     SecurityConfig(JwtAuthFilter authFilter) {
         this.authFilter = authFilter;
     }

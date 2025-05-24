@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,6 @@ public class JwtService {
     private final String secret;
     private final Long expiration;
 
-    @Autowired
     JwtService(
             @Value("${jwt.access.secret}") String secret,
             @Value("${jwt.access.expiration}") Long expiration
