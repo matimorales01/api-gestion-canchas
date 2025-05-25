@@ -1,10 +1,15 @@
 package ar.uba.fi.ingsoft1.todo_template.user;
 
+import ar.uba.fi.ingsoft1.todo_template.common.exception.UserAlreadyExistsException;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.EmailAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtService;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.user.dtos.RefreshDTO;
+import ar.uba.fi.ingsoft1.todo_template.user.dtos.TokenDTO;
+import ar.uba.fi.ingsoft1.todo_template.user.dtos.UserCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.refresh_token.RefreshToken;
 import ar.uba.fi.ingsoft1.todo_template.user.refresh_token.RefreshTokenService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +28,6 @@ class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RefreshTokenService refreshTokenService;
 
-    @Autowired
     UserService(
             JwtService jwtService,
             PasswordEncoder passwordEncoder,
@@ -46,9 +50,11 @@ class UserService implements UserDetailsService {
                 });
     }
 
-    Optional<TokenDTO> createUser(UserCreateDTO data) {
+    Optional<TokenDTO> createUser(UserCreateDTO data) throws Exception {
         if (userRepository.findByUsername(data.username()).isPresent()) {
-            return loginUser(data);
+            throw new UserAlreadyExistsException(data.username());
+        } else if (userRepository.findByEmail(data.email()).isPresent()) {
+            throw new EmailAlreadyExistsException(data.email());
         } else {
             var user = data.asUser(passwordEncoder::encode);
             userRepository.save(user);
