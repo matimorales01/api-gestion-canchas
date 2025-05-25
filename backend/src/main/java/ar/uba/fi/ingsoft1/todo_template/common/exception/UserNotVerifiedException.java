@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class UserNotVerifiedException extends Exception{
+public class UserNotVerifiedException extends RuntimeException{
     public UserNotVerifiedException() {
         super("User not verified");
     }

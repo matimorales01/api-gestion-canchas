@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotVerifiedException;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.RefreshDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.TokenDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.UserLoginDTO;
@@ -36,15 +37,10 @@ class SessionRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public TokenDTO login(
             @Valid @NonNull @RequestBody UserLoginDTO data
-    ) throws MethodArgumentNotValidException {
+    ) throws MethodArgumentNotValidException, UserNotVerifiedException {
 
-        try {
-            return userService.loginUser(data)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
-        }
+        return userService.loginUser(data)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 
     @PutMapping(produces = "application/json")

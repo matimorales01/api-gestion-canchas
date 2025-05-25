@@ -60,7 +60,7 @@ class UserService implements UserDetailsService {
                 });
     }
 
-    void createUser(UserCreateDTO data) throws Exception {
+    void createUser(UserCreateDTO data) throws UserAlreadyExistsException, EmailAlreadyExistsException {
         if (userRepository.findByUsername(data.username()).isPresent()) {
             throw new UserAlreadyExistsException(data.username());
         } else if (userRepository.findByEmail(data.email()).isPresent()) {
