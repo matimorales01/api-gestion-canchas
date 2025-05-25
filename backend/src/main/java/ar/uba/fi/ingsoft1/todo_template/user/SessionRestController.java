@@ -34,13 +34,17 @@ class SessionRestController {
     @PostMapping(produces = "application/json")
     @Operation(summary = "Log in, creating a new session")
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiResponse(responseCode = "401", description = "Invalid username or password supplied", content = @Content)
     public TokenDTO login(
             @Valid @NonNull @RequestBody UserLoginDTO data
     ) throws MethodArgumentNotValidException {
-        return userService
-                .loginUser(data)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+
+        try {
+            return userService.loginUser(data)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
+        }
     }
 
     @PutMapping(produces = "application/json")
