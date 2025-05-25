@@ -1,24 +1,34 @@
 .mainLayout {
   display: flex;
   flex-direction: column;
+  background-color: #232a33;
 }
 
 .topBar {
   display: flex;
   flex-direction: row;
   list-style: none;
-
+  background-color: #040a0f;
   align-items: center;
   justify-content: end;
 }
 
+
+
 .topBar > * {
   margin: 1rem;
+
 }
 
 .body {
+  background-image: url('/fondo.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin: 0;
+  padding: 0;
   flex: 1 0 0;
-
+  background-color: #12243b;
   display: flex;
   flex-direction: column;
   align-items: start;
