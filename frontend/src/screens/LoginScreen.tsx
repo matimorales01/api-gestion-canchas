@@ -8,7 +8,7 @@ export const LoginScreen = () => {
 
   const formData = useAppForm({
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
     validators: {
@@ -22,7 +22,7 @@ export const LoginScreen = () => {
       <h1>Log In</h1>
       <formData.AppForm>
         <formData.FormContainer extraError={error}>
-          <formData.AppField name="username" children={(field) => <field.TextField label="Username" />} />
+          <formData.AppField name="email" children={(field) => <field.TextField label="email" />} />
           <formData.AppField name="password" children={(field) => <field.PasswordField label="Password" />} />
         </formData.FormContainer>
       </formData.AppForm>

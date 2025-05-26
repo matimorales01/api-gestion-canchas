@@ -14,17 +14,26 @@ export function useLogin() {
     },
   });
 }
-
 export function useSignup() {
   const [, setToken] = useToken();
 
   return useMutation({
-    mutationFn: async (req: LoginRequest) => {
-      const tokenData = await auth("/users", req);
+    mutationFn: async (req: FormData) => {
+      const response = await fetch(BASE_API_URL + "/users", {
+        method: "POST",
+        body: req, // formData aquí
+        // NO debes poner headers Content-Type aquí, fetch lo maneja solo para FormData
+      });
+
+      if (!response.ok) throw new Error("Error al registrar usuario");
+
+      const tokenData = await response.json();
       setToken({ state: "LOGGED_IN", ...tokenData });
+      return tokenData;
     },
   });
 }
+
 
 async function auth(endpoint: string, data: LoginRequest) {
   const response = await fetch(BASE_API_URL + endpoint, {
