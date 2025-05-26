@@ -10,10 +10,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+
 import org.springframework.web.bind.annotation.RestController;
 
-import ar.uba.fi.ingsoft1.todo_template.user.dtos.TokenDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.UserCreateDTO;
 
 @RestController
@@ -28,18 +27,13 @@ class UserRestController {
 
     @PostMapping(produces = "application/json")
     @Operation(summary = "Create a new user")
-    @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<TokenDTO> signUp(
+    ResponseEntity<Void> signUp(
             @Valid @NonNull @RequestBody UserCreateDTO data
     ) throws MethodArgumentNotValidException {
-        try {
-            return userService.createUser(data)
-                    .map(tk -> ResponseEntity.status(HttpStatus.CREATED).body(tk))
-                    .orElse(ResponseEntity.status(HttpStatus.CONFLICT).build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+        userService.createUser(data);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header("Message", "Usuario creado exitosamente")
+                .build();
     }
 
-    
 }

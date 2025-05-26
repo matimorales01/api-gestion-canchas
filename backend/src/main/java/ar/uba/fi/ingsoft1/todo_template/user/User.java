@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Entity(name = "users")
 public class User implements UserDetails, UserCredentials {
@@ -35,13 +34,13 @@ public class User implements UserDetails, UserCredentials {
     private String lastName;
 
     @Column(nullable = true)
-    private Optional<String> genre;
+    private String genre;
 
     @Column(nullable = true)
-    private Optional<Integer> age;
+    private Integer age;
 
     @Column(nullable = true)
-    private Optional<String> zone;
+    private String zone;
 
     @Column(nullable = false)
     private boolean state;
@@ -51,7 +50,7 @@ public class User implements UserDetails, UserCredentials {
 
     public User() {}
 
-    public User(String username, String password, String email, String firstName, String lastName, Optional<String> genre, Optional<Integer> age, Optional<String> zone) {
+    public User(String username, String password, String email, String firstName, String lastName, String genre, Integer age, String zone) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -90,6 +89,14 @@ public class User implements UserDetails, UserCredentials {
 
     public String getRole() {
         return role;
+    }
+
+    public void setState(boolean state) {
+        this.state = state;
+    }
+
+    public boolean getState() {
+        return state;
     }
 
     @Override

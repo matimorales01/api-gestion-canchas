@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotVerifiedException;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.RefreshDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.TokenDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.UserLoginDTO;
@@ -34,12 +35,11 @@ class SessionRestController {
     @PostMapping(produces = "application/json")
     @Operation(summary = "Log in, creating a new session")
     @ResponseStatus(HttpStatus.CREATED)
-    @ApiResponse(responseCode = "401", description = "Invalid username or password supplied", content = @Content)
     public TokenDTO login(
             @Valid @NonNull @RequestBody UserLoginDTO data
-    ) throws MethodArgumentNotValidException {
-        return userService
-                .loginUser(data)
+    ) throws MethodArgumentNotValidException, UserNotVerifiedException {
+
+        return userService.loginUser(data)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 

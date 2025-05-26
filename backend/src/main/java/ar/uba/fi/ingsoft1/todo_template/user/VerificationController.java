@@ -1,0 +1,37 @@
+package ar.uba.fi.ingsoft1.todo_template.user;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class VerificationController {
+
+    @Autowired
+    private VerificationTokenRepository tokenRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
+        VerificationToken vt = tokenRepo.findById(token).orElse(null);
+
+        if (vt == null) {
+            return ResponseEntity.badRequest().body("Token inválido");
+        }
+
+        if (vt.isExpired()) {
+            return ResponseEntity.badRequest().body("Token expirado");
+        }
+
+        User user = vt.getUser();
+        user.setState(true);
+        userRepo.save(user);
+        tokenRepo.delete(vt);
+
+        return ResponseEntity.ok("Tu cuenta ha sido activada");
+    }
+}
