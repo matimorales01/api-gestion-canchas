@@ -1,6 +1,7 @@
 package ar.uba.fi.ingsoft1.todo_template.user;
 
 import ar.uba.fi.ingsoft1.todo_template.common.exception.UserAlreadyExistsException;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotVerifiedException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.EmailAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtService;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
@@ -17,7 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -26,18 +30,24 @@ class UserService implements UserDetailsService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
     private final RefreshTokenService refreshTokenService;
+    private final EmailService emailService;
 
     UserService(
             JwtService jwtService,
             PasswordEncoder passwordEncoder,
             UserRepository userRepository,
-            RefreshTokenService refreshTokenService
+            VerificationTokenRepository verificationTokenRepository,
+            RefreshTokenService refreshTokenService,
+            EmailService emailService
     ) {
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
         this.refreshTokenService = refreshTokenService;
+        this.emailService = emailService;
     }
 
     @Override
@@ -50,7 +60,7 @@ class UserService implements UserDetailsService {
                 });
     }
 
-    Optional<TokenDTO> createUser(UserCreateDTO data) throws Exception {
+    void createUser(UserCreateDTO data) throws UserAlreadyExistsException, EmailAlreadyExistsException {
         if (userRepository.findByUsername(data.username()).isPresent()) {
             throw new UserAlreadyExistsException(data.username());
         } else if (userRepository.findByEmail(data.email()).isPresent()) {
@@ -58,12 +68,32 @@ class UserService implements UserDetailsService {
         } else {
             var user = data.asUser(passwordEncoder::encode);
             userRepository.save(user);
-            return Optional.of(generateTokens(user));
+
+            String token = UUID.randomUUID().toString();
+            var verificationToken = new VerificationToken();
+            verificationToken.setValue(token);
+            verificationToken.setUser(user);
+            verificationToken.setExpiresAt(Instant.now().plus(1, ChronoUnit.HOURS));
+
+            verificationTokenRepository.save(verificationToken);
+
+            String verificationLink = "http://localhost:8080/verify?token=" + token;
+
+            emailService.sendVerificationEmail(
+                    user.getEmail(),
+                    "Verifica tu cuenta",
+                    verificationLink
+            );
         }
     }
 
-    Optional<TokenDTO> loginUser(UserCredentials data) {
+    Optional<TokenDTO> loginUser(UserCredentials data) throws UserNotVerifiedException {
         Optional<User> maybeUser = userRepository.findByUsername(data.username());
+
+        if (!maybeUser.isEmpty() && !maybeUser.get().getState()) {
+            throw new UserNotVerifiedException();
+        }
+
         return maybeUser
                 .filter(user -> passwordEncoder.matches(data.password(), user.getPassword()))
                 .map(this::generateTokens);

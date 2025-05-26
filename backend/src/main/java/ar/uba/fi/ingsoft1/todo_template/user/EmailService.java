@@ -1,0 +1,44 @@
+package ar.uba.fi.ingsoft1.todo_template.user;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
+
+@Service
+public class EmailService {
+    @Autowired
+    private JavaMailSender mailSender;
+
+    private final String fromEmail;
+
+    public EmailService(@Value("${spring.mail.username}") String fromEmail) {
+        this.fromEmail = fromEmail;
+    }
+
+    public void sendVerificationEmail(String toEmail, String subject, String verificationLink) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+
+            String htmlContent = "<p>Hola,</p>"
+                + "<p>Gracias por registrarte. Haz clic en el siguiente enlace para verificar tu correo:</p>"
+                + "<p><a href=\"" + verificationLink + "\">Verificar mi cuenta</a></p>"
+                + "<br><p>Este enlace expirará en 24 horas.</p>";
+
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new RuntimeException("No se pudo enviar el correo de verificación", e);
+        }
+    }
+}
