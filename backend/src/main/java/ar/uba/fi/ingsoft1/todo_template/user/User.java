@@ -98,6 +98,11 @@ public class User implements UserDetails, UserCredentials {
     public boolean getState() {
         return state;
     }
+    
+    public Long getId() {
+        return this.id;
+    }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
