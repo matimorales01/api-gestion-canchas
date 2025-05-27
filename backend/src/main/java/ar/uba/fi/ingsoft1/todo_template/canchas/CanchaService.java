@@ -11,6 +11,7 @@ import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
+import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaEditDTO;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,4 +107,28 @@ public class CanchaService {
         dto.setPropietarioId(cancha.getPropietario().getId());
         return dto;
     }
+
+    public CanchaDTO editarCancha(Long id, CanchaEditDTO dto) {
+        Cancha cancha = canchaRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cancha no encontrada"));
+
+        if (dto.getNombre() != null) cancha.setNombre(dto.getNombre());
+        if (dto.getDireccion() != null) cancha.setDireccion(dto.getDireccion());
+        if (dto.getTipoCesped() != null) cancha.setTipoCesped(dto.getTipoCesped());
+        if (dto.getIluminacion() != null) cancha.setIluminacion(dto.getIluminacion());
+        if (dto.getZona() != null) cancha.setZona(dto.getZona());
+
+        canchaRepo.save(cancha);
+
+        CanchaDTO dto_editado = new CanchaDTO();
+        dto_editado.setId(cancha.getId());
+        dto_editado.setNombre(cancha.getNombre());
+        dto_editado.setTipoCesped(cancha.getTipoCesped());
+        dto_editado.setIluminacion(cancha.isIluminacion());
+        dto_editado.setZona(cancha.getZona());
+        dto_editado.setDireccion(cancha.getDireccion());
+        dto_editado.setPropietarioId(cancha.getPropietario().getId());
+        return dto_editado;
+    }
+
 }
