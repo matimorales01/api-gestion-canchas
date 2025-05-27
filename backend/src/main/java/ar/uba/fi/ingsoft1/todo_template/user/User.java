@@ -64,8 +64,8 @@ public class User implements UserDetails, UserCredentials {
     }
 
     @Override
-    public String username() {
-        return this.username;
+    public String email() {
+        return this.email;
     }
 
     @Override

@@ -88,7 +88,7 @@ class UserService implements UserDetailsService {
     }
 
     Optional<TokenDTO> loginUser(UserCredentials data) throws UserNotVerifiedException {
-        Optional<User> maybeUser = userRepository.findByUsername(data.username());
+        Optional<User> maybeUser = userRepository.findByEmail(data.email());
 
         if (!maybeUser.isEmpty() && !maybeUser.get().getState()) {
             throw new UserNotVerifiedException();
@@ -107,7 +107,7 @@ class UserService implements UserDetailsService {
 
     private TokenDTO generateTokens(User user) {
         String accessToken = jwtService.createToken(new JwtUserDetails(
-                user.getUsername(),
+                user.getEmail(),
                 user.getRole()
         ));
         RefreshToken refreshToken = refreshTokenService.createFor(user);
