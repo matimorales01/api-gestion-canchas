@@ -13,19 +13,26 @@ export function useLogin() {
       setToken({ state: "LOGGED_IN", ...tokenData });
     },
   });
-}
-export function useSignup() {
+}export function useSignup() {
   const [, setToken] = useToken();
 
   return useMutation({
-    mutationFn: async (req: FormData) => {
+    mutationFn: async (data: Record<string, any>) => {
       const response = await fetch(BASE_API_URL + "/users", {
         method: "POST",
-        body: req, // formData aquí
-        // NO debes poner headers Content-Type aquí, fetch lo maneja solo para FormData
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json", // Importante para JSON
+        },
+        body: JSON.stringify(data),
       });
+      console.log("Request URL:", BASE_API_URL + "/users");
+      console.log("Request body:", data);
 
-      if (!response.ok) throw new Error("Error al registrar usuario");
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al registrar usuario: ${errorText}`);
+      }
 
       const tokenData = await response.json();
       setToken({ state: "LOGGED_IN", ...tokenData });
