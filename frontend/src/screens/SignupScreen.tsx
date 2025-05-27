@@ -1,6 +1,6 @@
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
-import { LoginRequestSchema } from "@/models/Login";
+import { SignupSchema } from "@/models/Login";
 import { useSignup } from "@/services/UserServices";
 import { useState } from "react";
 
@@ -14,14 +14,15 @@ export const SignupScreen = () => {
     defaultValues: {
       username: "",
       password: "",
-
       email: "",
-      edad: "",
-      genero: "",
-      zona: "",
+      firstname: "",
+      lastname: "",
+      age: "",
+      genre: "",
+      zone: "",
       foto: null as File | null,
     },
-    validators: { onChange: LoginRequestSchema },
+    validators: { onChange: SignupSchema },
     onSubmit: async ({ value }) => {
     const formDataToSend = new FormData();
     Object.entries(value).forEach(([key, val]) => {
@@ -60,9 +61,11 @@ export const SignupScreen = () => {
           <formData.AppField name="username" children={(field) => <field.TextField label="Username" />} />
           <formData.AppField name="password" children={(field) => <field.PasswordField label="Password" />} />
           <formData.AppField name="email" children={(field) => <field.TextField label="Email" />} />
-          <formData.AppField name="edad" children={(field) => <field.TextField label="Edad" />} />
-          <formData.AppField name="genero" children={(field) => <field.TextField label="Género" />} />
-          <formData.AppField name="zona" children={(field) => <field.TextField label="Zona" />} />
+          <formData.AppField name="firstname" children={(field) => <field.TextField label="Firstname" />} />
+          <formData.AppField name="lastname" children={(field) => <field.TextField label="Lastname" />} />
+          <formData.AppField name="genre" children={(field) => <field.TextField label="Genre" />} />
+          <formData.AppField name="age" children={(field) => <field.TextField label="Age" />} />
+          <formData.AppField name="zone" children={(field) => <field.TextField label="Zone" />} />
         </formData.FormContainer>
       </formData.AppForm>
     </CommonLayout>
