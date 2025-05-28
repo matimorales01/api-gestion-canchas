@@ -50,5 +50,5 @@ public class CanchaEditDTO {
 
     public Boolean getActiva() {return activa; }
 
-    public void setActiva(Boolean activa) {}
+    public void setActiva(Boolean activa) { this.activa = activa; }
 }

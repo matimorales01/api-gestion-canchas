@@ -132,7 +132,7 @@ public class CanchaService {
         dto_editado.setZona(cancha.getZona());
         dto_editado.setDireccion(cancha.getDireccion());
         dto_editado.setPropietarioId(cancha.getPropietario().getId());
-        dto_editado.setActiva(dto.getActiva());
+        dto_editado.setActiva(cancha.getActiva());
         return dto_editado;
     }
 
