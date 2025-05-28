@@ -9,6 +9,7 @@ import java.util.List;
 
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
+import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaEditDTO;
 
 @RestController
 @RequestMapping("/canchas")
@@ -37,4 +38,11 @@ public class CanchaRestController {
         CanchaDTO cancha = canchaService.obtenerCancha(id);
         return ResponseEntity.ok(cancha);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CanchaDTO> editarCancha(@PathVariable Long id, @RequestBody CanchaEditDTO dto) {
+        CanchaDTO editada = canchaService.editarCancha(id, dto);
+        return ResponseEntity.ok(editada);
+    }
+
 }

@@ -2,9 +2,15 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { LoginRequestSchema } from "@/models/Login";
 import { useLogin } from "@/services/UserServices";
+import { useLocation } from "wouter";
 
 export const LoginScreen = () => {
-  const { mutate, error } = useLogin();
+  const [, navigate] = useLocation();
+  const { mutate, error } = useLogin({
+    onSuccess: () => {
+      navigate("/"); 
+    },
+  });
 
   const formData = useAppForm({
     defaultValues: {
