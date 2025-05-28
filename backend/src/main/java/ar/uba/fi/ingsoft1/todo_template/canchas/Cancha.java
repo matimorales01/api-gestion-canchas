@@ -35,6 +35,10 @@ public class Cancha {
     @JoinColumn(name = "propietario_id")
     private User propietario;
 
+    @Column(nullable = false)
+    private boolean activa = true;
+
+
 
     public Long getId() { return id; }
     public String getNombre() { return nombre; }
@@ -49,4 +53,6 @@ public class Cancha {
     public void setDireccion(String direccion) { this.direccion = direccion; }
     public User getPropietario() { return propietario; }
     public void setPropietario(User propietario) { this.propietario = propietario; }
+    public boolean getActiva() { return activa; }
+    public void setActiva(boolean activa) { this.activa = activa; }
 }
