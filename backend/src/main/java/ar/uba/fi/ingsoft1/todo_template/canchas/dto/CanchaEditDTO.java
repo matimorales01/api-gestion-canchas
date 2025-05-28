@@ -6,6 +6,7 @@ public class CanchaEditDTO {
     private String tipoCesped;
     private Boolean iluminacion;
     private String zona;
+    private Boolean activa;
 
     public String getNombre() {
         return nombre;
@@ -46,4 +47,8 @@ public class CanchaEditDTO {
     public void setZona(String zona) {
         this.zona = zona;
     }
+
+    public Boolean getActiva() {return activa; }
+
+    public void setActiva(Boolean activa) { this.activa = activa; }
 }

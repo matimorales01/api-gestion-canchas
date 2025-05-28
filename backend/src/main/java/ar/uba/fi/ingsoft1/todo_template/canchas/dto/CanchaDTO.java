@@ -8,6 +8,7 @@ public class CanchaDTO {
     private String zona;
     private String direccion;
     private Long propietarioId;
+    private boolean activa;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -23,4 +24,6 @@ public class CanchaDTO {
     public void setDireccion(String direccion) { this.direccion = direccion; }
     public Long getPropietarioId() { return propietarioId; }
     public void setPropietarioId(Long propietarioId) { this.propietarioId = propietarioId; }
+    public boolean getActiva() { return activa; }
+    public void setActiva(boolean activa) { this.activa = activa; }
 }
