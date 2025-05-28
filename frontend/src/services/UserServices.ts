@@ -26,8 +26,8 @@ export function useLogin() {
         },
         body: JSON.stringify(data),
       });
-      console.log("Request URL:", BASE_API_URL + "/users");
-      console.log("Request body:", data);
+      //console.log("Request URL:", BASE_API_URL + "/users");
+      //console.log("Request body:", data);
 
       if (!response.ok) {
         const errorText = await response.text();
