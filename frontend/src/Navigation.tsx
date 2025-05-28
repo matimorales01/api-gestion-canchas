@@ -4,6 +4,7 @@ import { LoginScreen } from "@/screens/LoginScreen";
 import { MainScreen } from "@/screens/MainScreen";
 import { SignupScreen } from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
+import { CanchaScreen } from "@/screens/CrearCancha";
 
 export const Navigation = () => {
   const [tokenState] = useToken();
@@ -13,6 +14,9 @@ export const Navigation = () => {
         <Switch>
           <Route path="/">
             <MainScreen />
+          </Route>
+          <Route path="/crear-cancha">
+            <CanchaScreen />
           </Route>
           <Route>
             <Redirect href="/" />
