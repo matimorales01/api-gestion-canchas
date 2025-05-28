@@ -2,15 +2,12 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { LoginRequestSchema } from "@/models/Login";
 import { useLogin } from "@/services/UserServices";
-import { useLocation } from "wouter";
+import { useToken } from "@/services/TokenContext";
+
 
 export const LoginScreen = () => {
-  const [, navigate] = useLocation();
-  const { mutate, error } = useLogin({
-    onSuccess: () => {
-      navigate("/"); 
-    },
-  });
+  const { mutate, error } = useLogin();
+  const { setToken } = useToken();
 
   const formData = useAppForm({
     defaultValues: {
@@ -20,7 +17,15 @@ export const LoginScreen = () => {
     validators: {
       onChange: LoginRequestSchema,
     },
-    onSubmit: async ({ value }) => mutate(value),
+    onSubmit: async ({ value }) => {
+    mutate(value, {
+      onSuccess: (data) => {
+        if (data?.token) {
+          setToken(data.token); // ← guardar el token en el contexto
+        }
+      },
+    });
+  },
   });
 
   return (
