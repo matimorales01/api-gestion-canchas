@@ -9,6 +9,7 @@ export const CanchaScreen = () => {
 
   const { mutate, error, isPending } = useCrearCancha({
     onSuccess: () => {
+      alert("Cancha creada con exito!");
       navigate("/");
     },
   });
