@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+//import { useEffect, useState } from "react";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
-import {useObtenerPartidosAbiertos, useObtenerPartidosCerrados} from "@/services/HistorialService";
+//import {useObtenerPartidosAbiertos, useObtenerPartidosCerrados} from "@/services/HistorialService";
 
 export const HistorialScreen = () => {
-  const { getPartidosCerrados: getCerrados } = useObtenerPartidosCerrados();
+  /*const { getPartidosCerrados: getCerrados } = useObtenerPartidosCerrados();
   const { getPartidosAbiertos: getAbiertos } = useObtenerPartidosAbiertos();
 
   const [cerrados, setCerrados] = useState<any[]>([]);
@@ -29,7 +29,25 @@ export const HistorialScreen = () => {
 
   if (loading) return <p>Cargando historial...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
+  */
+  const cerrados = [
+    {
+      id: 1,
+      cancha: "Cancha 1",
+      fecha: "2025-05-28T18:00:00Z",
+      equipo1: "Los Pibes",
+      equipo2: "La Vecchia",
+    },
+    {
+      id: 2,
+      cancha: "Cancha 2",
+      fecha: "2025-05-27T20:30:00Z",
+      equipo1: "FC Asado",
+      equipo2: "Boca Unidos",
+    },
+  ];
 
+  const abiertos: any[] = [];
   return (
     <CommonLayout>
       <div className="p-4">
@@ -37,9 +55,9 @@ export const HistorialScreen = () => {
 
         <section className="mb-6">
           <h2 className="text-xl font-semibold mb-2">Partidos Cerrados</h2>
-          {cerrados.length === 0 ? (
+            {cerrados.length === 0 ? (
             <p>No hay partidos cerrados.</p>
-          ) : (
+            ) : (
             <ul className="space-y-2">
               {cerrados.map((p) => (
                 <li key={p.id} className="border rounded p-3 shadow-sm">
@@ -47,7 +65,7 @@ export const HistorialScreen = () => {
                 </li>
               ))}
             </ul>
-          )}
+            )}
         </section>
 
         <section>
