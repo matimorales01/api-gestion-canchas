@@ -2,9 +2,16 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { CanchaRequestSchema } from "@/models/Cancha";
 import { useCrearCancha } from "@/services/CanchaService";
+import { useLocation } from "wouter";
 
 export const CanchaScreen = () => {
-  const { mutate, error, isPending, isSuccess } = useCrearCancha();
+  const [, navigate] = useLocation();
+
+  const { mutate, error, isPending } = useCrearCancha({
+    onSuccess: () => {
+      navigate("/");
+    },
+  });
 
   const formData = useAppForm({
     defaultValues: {

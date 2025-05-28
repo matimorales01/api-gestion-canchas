@@ -2,7 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
 
-export function useCrearCancha() {
+export function useCrearCancha(options?: {
+  onSuccess?: (data: any) => void;
+  onError?: (error: unknown) => void;
+}) {
   const [tokenState] = useToken();
 
   return useMutation({
@@ -28,5 +31,7 @@ export function useCrearCancha() {
 
       return await response.json();
     },
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
   });
 }
