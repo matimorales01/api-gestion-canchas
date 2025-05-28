@@ -44,6 +44,9 @@ const LoggedInLinks = () => {
       <li>
         <Link href="/crear-cancha">Crear Cancha</Link>
       </li>
+      <li>
+        <Link href="/ver-historial">Mi historial</Link>
+      </li>
       <li>Projects</li>
       <li>Tasks</li>
       <li>
