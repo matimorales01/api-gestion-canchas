@@ -50,8 +50,8 @@ return (
                   onChange={(e) => field.handleChange(e.target.value)}
                 >
                   <option value="">Seleccionar</option>
-                  <option value="pasto">Césped</option>
-                  <option value="sintetico">Sintético</option>
+                  <option value="Natural">Natural</option>
+                  <option value="Sintetico">Sintético</option>
                 </select>
               </div>
             )}

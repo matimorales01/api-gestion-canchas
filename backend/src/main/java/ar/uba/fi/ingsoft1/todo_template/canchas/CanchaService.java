@@ -39,6 +39,7 @@ public class CanchaService {
         String email;
         if (principal instanceof UserDetails) {
             email = ((UserDetails) principal).getUsername();
+            
         } else {
             String p = principal.toString();
             int start = p.indexOf("username=") + "username=".length();
@@ -94,6 +95,24 @@ public class CanchaService {
                     return dto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<CanchaDTO> listarTodasLasCanchas() {
+        return canchaRepo.findAll().stream()
+                .map(cancha -> {
+                    CanchaDTO dto = new CanchaDTO();
+                    dto.setId(cancha.getId());
+                    dto.setNombre(cancha.getNombre());
+                    dto.setTipoCesped(cancha.getTipoCesped());
+                    dto.setIluminacion(cancha.isIluminacion());
+                    dto.setZona(cancha.getZona());
+                    dto.setDireccion(cancha.getDireccion());
+                    dto.setPropietarioId(cancha.getPropietario().getId());
+                    dto.setActiva(cancha.getActiva());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
     }
 
     public CanchaDTO obtenerCancha(Long id) {
