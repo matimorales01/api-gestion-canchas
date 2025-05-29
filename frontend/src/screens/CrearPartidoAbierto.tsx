@@ -4,14 +4,14 @@
     import { CrearPartidoSchema } from "@/models/Partido";
     import { useCrearPartido, useGetCanchas } from "@/services/PartidoService";
 
-    const canchas = [
+const canchas = [
     { id: 1, nombre: "Cancha Norte", zona: "Barrio Norte" },
     { id: 2, nombre: "Cancha Sur", zona: "Barracas" },
     { id: 3, nombre: "Cancha Oeste", zona: "Liniers" },
     { id: 4, nombre: "Cancha Central", zona: "Microcentro" },
     { id: 5, nombre: "Cancha Este", zona: "Puerto Madero" },
 ]; 
-
+ 
 
     export const CrearPartidoAbiertoScreen = () => {
     //const { data: canchas, isLoading, isError } = useGetCanchas();
@@ -53,8 +53,6 @@ const { AppForm, FormContainer, AppField } = form;
     form.setFieldValue("cancha", id.toString());
     };
 
-
-
 /**
     if (isLoading) {
         return (
@@ -70,8 +68,8 @@ const { AppForm, FormContainer, AppField } = form;
             <p>Error al cargar las canchas.</p>
         </CommonLayout>
         );
-    }
- */
+    } */
+
     return (
         <CommonLayout>
         <AppForm>

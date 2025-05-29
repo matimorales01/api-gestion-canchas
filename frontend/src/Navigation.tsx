@@ -5,48 +5,62 @@ import { MainScreen } from "@/screens/MainScreen";
 import { SignupScreen } from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
 import { CanchaScreen } from "@/screens/CrearCancha";
+import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
+import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
 import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
 import {CrearPartidoCerradoScreen} from "@/screens/CrearPartidoCerrado.tsx";
+import { LoginRequestSchema } from "./models/Login";
+import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
 
 export const Navigation = () => {
-  const [tokenState] = useToken();
-  switch (tokenState.state) {
-    case "LOGGED_IN":
-      return (
-        <Switch>
-          <Route path="/">
-            <MainScreen />
-          </Route>
-          <Route path="/crear-cancha">
-            <CanchaScreen />
-            </Route>
-          <Route path="/crear-partido-abierto">
-            <CrearPartidoAbiertoScreen />
-          </Route>
-          <Route path="/crear-partido-cerrado">
-            <CrearPartidoCerradoScreen />
-          </Route>
-          <Route>
-            <Redirect href="/" />
-          </Route>
-        </Switch>
-      );
-    case "LOGGED_OUT":
-      return (
-        <Switch>
-          <Route path="/login">
-            <LoginScreen />
-          </Route>
-          <Route path="/signup">
-            <SignupScreen />
-          </Route>
-          <Route>
-            <Redirect href="/signup" />
-          </Route>
-        </Switch>
-      );
-    default:
-      // Make the compiler check this is unreachable
-      return tokenState satisfies never;
-  }
+
+    const [tokenState] = useToken();
+    switch (tokenState.state) {
+        case "LOGGED_IN":
+            return (
+                <Switch>
+                    <Route path="/">
+                        <MainScreen />
+                    </Route>
+                    <Route path="/listar-partidos-abiertos">
+                      <ListaPartidosAbiertos />
+                    </Route>
+                    <Route path="/crear-cancha">
+                        <CanchaScreen />
+                    </Route>
+                    <Route path="/admin/canchas">
+                        <AdminCanchasScreen />
+                    </Route>
+                    <Route path="/admin/canchas/:id">
+                        <EditarCanchaScreen />
+                    </Route>
+                    <Route path="/crear-partido-abierto">
+                        <CrearPartidoAbiertoScreen />
+                    </Route>
+                    <Route path="/crear-partido-cerrado">
+                      <CrearPartidoCerradoScreen />
+                    </Route>
+                    <Route>
+                        <Redirect href="/" />
+                    </Route>
+                </Switch>
+            );
+        case "LOGGED_OUT":
+            return (
+                <Switch>
+                    <Route path="/login">
+                        <LoginScreen />
+                    </Route>
+                    <Route path="/signup">
+                        <SignupScreen />
+                    </Route>
+                    <Route>
+                        <Redirect href="/signup" />
+                    </Route>
+                </Switch>
+            );
+        default:
+            // Make the compiler check this is unreachable
+            return tokenState satisfies never;
+    }
 };
