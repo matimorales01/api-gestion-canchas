@@ -15,40 +15,46 @@
 
     export const CrearPartidoAbiertoScreen = () => {
     //const { data: canchas, isLoading, isError } = useGetCanchas();
-    const { mutate } = useCrearPartido();
+    //const { mutate } = useCrearPartido();
 
-    const formData = useAppForm({
-        defaultValues: {
+    const form = useAppForm({
+    defaultValues: {
         cancha: "",
         franjaHoraria: "",
         jugadoresMinimos: "",
         jugadoresMaximos: "",
         fecha: "",
-        horario: "",
         cupos: "",
-        },
-        validators: {
+    },
+    validators: {
         onChange: CrearPartidoSchema,
-        },
-        onSubmit: async (values) => {
-        mutate(values, {
-            onSuccess: () => {
+    },
+    onSubmit: async (values) => {
+      /**  mutate(values, {
+        onSuccess: () => {
             alert("¡Partido creado con éxito!");
-            },
-            onError: (error) => {
-            alert("Error al crear el partido: " + error.message);
-            },
-        });
         },
-    });
+        onError: (error) => {
+            alert("Error al crear el partido: " + error.message);
+        },
+        }); */
+        alert("¡Partido creado con éxito!");
+    },
+});
 
-    const { AppForm, FormContainer, AppField, form } = formData;
+const { AppForm, FormContainer, AppField } = form;
+    
+    console.log("form:", form);
+
     const [selectedId, setSelectedId] = useState<number | null>(null);
 
     const handleRowClick = (id: number) => {
-        setSelectedId(id);
-        form.setValue("cancha", id.toString());
+    setSelectedId(id);
+    form.setFieldValue("cancha", id.toString());
     };
+
+
+
 /**
     if (isLoading) {
         return (
@@ -114,7 +120,6 @@
                 <AppField name="jugadoresMinimos" children={(field) => <field.TextField label="Jugadores Mínimos" />} />
                 <AppField name="jugadoresMaximos" children={(field) => <field.TextField label="Jugadores Máximos" />} />
                 <AppField name="fecha" children={(field) => <field.TextField label="Fecha" />} />
-                <AppField name="horario" children={(field) => <field.TextField label="Horario" />} />
                 <AppField name="cupos" children={(field) => <field.TextField label="Cupos" />} />
                 <AppField name="franjaHoraria" children={(field) => <field.TextField label="Franja Horaria" />} />
             </div>
