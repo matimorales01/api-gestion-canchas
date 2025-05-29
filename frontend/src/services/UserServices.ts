@@ -13,7 +13,9 @@ export function useLogin() {
       setToken({ state: "LOGGED_IN", ...tokenData });
     },
   });
-}export function useSignup() {
+}
+
+export function useSignup() {
   const [, setToken] = useToken();
 
   return useMutation({
@@ -40,7 +42,6 @@ export function useLogin() {
     },
   });
 }
-
 
 async function auth(endpoint: string, data: LoginRequest) {
   const response = await fetch(BASE_API_URL + endpoint, {
