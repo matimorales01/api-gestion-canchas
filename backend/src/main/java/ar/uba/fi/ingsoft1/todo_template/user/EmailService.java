@@ -41,4 +41,28 @@ public class EmailService {
             throw new RuntimeException("No se pudo enviar el correo de verificación", e);
         }
     }
+
+    public void sendCreationPartido(String toEmail, String cancha, String fecha, String hora,String tipoPartido) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject("Confirmación de la reserva para el partido "+tipoPartido.toLowerCase());
+
+            String htmlContent = "<p>¡Hola!</p>"
+                    + "<p>Tu reserva fue confirmada con éxito. Estos son los detalles:</p>"
+                    + "<p><strong>Cancha:</strong> " + cancha + "</p>"
+                    + "<p><strong>Fecha:</strong> " + fecha + "</p>"
+                    + "<p><strong>Hora:</strong> " + hora + "</p>"
+                    + "<br><p>¡Gracias por Reserva!</p>";
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new RuntimeException("No se pudo enviar el correo de confirmación", e);
+        }
+    }
 }

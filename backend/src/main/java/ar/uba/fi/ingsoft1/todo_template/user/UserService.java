@@ -25,7 +25,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
-class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService {
 
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
@@ -88,7 +88,7 @@ class UserService implements UserDetailsService {
     }
 
     Optional<TokenDTO> loginUser(UserCredentials data) throws UserNotVerifiedException {
-        Optional<User> maybeUser = userRepository.findByEmail(data.email());
+        Optional<User> maybeUser = userRepository.findByUsername(data.username());
 
         if (!maybeUser.isEmpty() && !maybeUser.get().getState()) {
             throw new UserNotVerifiedException();
@@ -107,10 +107,22 @@ class UserService implements UserDetailsService {
 
     private TokenDTO generateTokens(User user) {
         String accessToken = jwtService.createToken(new JwtUserDetails(
-                user.getEmail(),
+                user.getUsername(),
                 user.getRole()
         ));
         RefreshToken refreshToken = refreshTokenService.createFor(user);
         return new TokenDTO(accessToken, refreshToken.value());
+    }
+
+    public String obtenerEmailPorId(Long idUser){
+        return userRepository.findById(idUser)
+                .orElseThrow(()->new RuntimeException("Usuario no encontrado"))
+                .getEmail();
+    }
+
+    public User obtenerUsuarioPorId(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Usuario no encontrado con id: "+ id));
+                
     }
 }
