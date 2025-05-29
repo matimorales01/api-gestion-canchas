@@ -8,8 +8,11 @@ import { CanchaScreen } from "@/screens/CrearCancha";
 import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
 import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
+import { LoginRequestSchema } from "./models/Login";
+import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
 
 export const Navigation = () => {
+
     const [tokenState] = useToken();
     switch (tokenState.state) {
         case "LOGGED_IN":
@@ -18,6 +21,9 @@ export const Navigation = () => {
                     <Route path="/">
                         <MainScreen />
                     </Route>
+                    <Route path="/listar-partidos-abiertos">
+            <ListaPartidosAbiertos />
+            </Route>
                     <Route path="/crear-cancha">
                         <CanchaScreen />
                     </Route>
@@ -53,4 +59,5 @@ export const Navigation = () => {
             // Make the compiler check this is unreachable
             return tokenState satisfies never;
     }
+
 };
