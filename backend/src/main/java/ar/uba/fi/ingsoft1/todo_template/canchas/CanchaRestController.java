@@ -33,6 +33,12 @@ public class CanchaRestController {
         return ResponseEntity.ok(listado);
     }
 
+    @GetMapping("/todas")
+    public ResponseEntity<List<CanchaDTO>> listarTodasCanchas(){
+        List<CanchaDTO> listado = canchaService.listarTodasLasCanchas();
+        return ResponseEntity.ok(listado);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CanchaDTO> obtenerCancha(@PathVariable Long id) {
         CanchaDTO cancha = canchaService.obtenerCancha(id);
@@ -44,5 +50,4 @@ public class CanchaRestController {
         CanchaDTO editada = canchaService.editarCancha(id, dto);
         return ResponseEntity.ok(editada);
     }
-
 }
