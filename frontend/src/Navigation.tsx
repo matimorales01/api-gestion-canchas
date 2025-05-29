@@ -6,7 +6,8 @@ import { SignupScreen } from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
 import { CanchaScreen } from "@/screens/CrearCancha";
 import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
-import EditarCanchaScreen from "@/screens/EditarCanchaScreen"; // <--- IMPORT NUEVO
+import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
+import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
 
 export const Navigation = () => {
     const [tokenState] = useToken();
@@ -23,8 +24,11 @@ export const Navigation = () => {
                     <Route path="/admin/canchas">
                         <AdminCanchasScreen />
                     </Route>
-                    <Route path="/admin/canchas/:id"> {/* <--- NUEVA RUTA */}
+                    <Route path="/admin/canchas/:id">
                         <EditarCanchaScreen />
+                    </Route>
+                    <Route path="/crear-partido-abierto">
+                        <CrearPartidoAbiertoScreen />
                     </Route>
                     <Route>
                         <Redirect href="/" />
