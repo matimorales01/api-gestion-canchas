@@ -8,6 +8,7 @@ import { CanchaScreen } from "@/screens/CrearCancha";
 import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
 import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
+import {CrearPartidoCerradoScreen} from "@/screens/CrearPartidoCerrado.tsx";
 import { LoginRequestSchema } from "./models/Login";
 import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
 
@@ -22,8 +23,8 @@ export const Navigation = () => {
                         <MainScreen />
                     </Route>
                     <Route path="/listar-partidos-abiertos">
-            <ListaPartidosAbiertos />
-            </Route>
+                      <ListaPartidosAbiertos />
+                    </Route>
                     <Route path="/crear-cancha">
                         <CanchaScreen />
                     </Route>
@@ -35,6 +36,9 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/crear-partido-abierto">
                         <CrearPartidoAbiertoScreen />
+                    </Route>
+                    <Route path="/crear-partido-cerrado">
+                      <CrearPartidoCerradoScreen />
                     </Route>
                     <Route>
                         <Redirect href="/" />
@@ -59,5 +63,4 @@ export const Navigation = () => {
             // Make the compiler check this is unreachable
             return tokenState satisfies never;
     }
-
 };

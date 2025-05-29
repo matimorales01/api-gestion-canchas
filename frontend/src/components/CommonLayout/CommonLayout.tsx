@@ -46,14 +46,17 @@ const LoggedInLinks = () => {
             <li>
                 <Link href="/crear-cancha">Crear Cancha</Link>
             </li>
-             <li>
-        <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
-      </li>
+            <li>
+                <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
+            </li>
             <li>
                 <Link href="/admin/canchas">Panel de Administración</Link>
             </li>
             <li>
                 <Link href="/crear-partido-abierto">Crear partido abierto</Link>
+            </li>
+            <li>
+                <Link href="/crear-partido-cerrado">Crear partido cerrado</Link>
             </li>
             <li>Projects</li>
             <li>Tasks</li>
