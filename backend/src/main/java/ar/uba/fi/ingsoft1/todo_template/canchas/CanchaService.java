@@ -39,6 +39,7 @@ public class CanchaService {
         String email;
         if (principal instanceof UserDetails) {
             email = ((UserDetails) principal).getUsername();
+            
         } else {
             String p = principal.toString();
             int start = p.indexOf("username=") + "username=".length();
