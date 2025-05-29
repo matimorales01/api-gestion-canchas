@@ -6,6 +6,7 @@ import { SignupScreen } from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
 import { CanchaScreen } from "@/screens/CrearCancha";
 import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
+import {CrearPartidoCerradoScreen} from "@/screens/CrearPartidoCerrado.tsx";
 
 export const Navigation = () => {
   const [tokenState] = useToken();
@@ -21,6 +22,9 @@ export const Navigation = () => {
             </Route>
           <Route path="/crear-partido-abierto">
             <CrearPartidoAbiertoScreen />
+          </Route>
+          <Route path="/crear-partido-cerrado">
+            <CrearPartidoCerradoScreen />
           </Route>
           <Route>
             <Redirect href="/" />
