@@ -40,6 +40,7 @@ public class PartidoService {
         User organizador =userService.obtenerUsuarioPorId(abiertoDto.idOrganizador());
 
         CanchaDTO cancha =canchaService.obtenerCancha(abiertoDto.nroCancha());
+        
         if (!cancha.getPropietarioId().equals(abiertoDto.idOrganizador())) {
             throw new UnauthorizedCanchaAccessException("No eres propietario de la cancha");
             

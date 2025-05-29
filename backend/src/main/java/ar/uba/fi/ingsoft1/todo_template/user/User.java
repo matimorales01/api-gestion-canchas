@@ -69,10 +69,12 @@ public class User implements UserDetails, UserCredentials {
         this.state = false;
         this.role = "USER";
     }
+    
+
 
     @Override
-    public String username() {
-        return this.username;
+    public String email() {
+        return this.email;
     }
 
     @Override
@@ -80,7 +82,7 @@ public class User implements UserDetails, UserCredentials {
         return this.password;
     }
 
-    @Override
+    
     public String getUsername() {
         return this.username;
     }
