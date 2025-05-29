@@ -96,6 +96,24 @@ public class CanchaService {
                 .collect(Collectors.toList());
     }
 
+    public List<CanchaDTO> listarTodasLasCanchas() {
+        return canchaRepo.findAll().stream()
+                .map(cancha -> {
+                    CanchaDTO dto = new CanchaDTO();
+                    dto.setId(cancha.getId());
+                    dto.setNombre(cancha.getNombre());
+                    dto.setTipoCesped(cancha.getTipoCesped());
+                    dto.setIluminacion(cancha.isIluminacion());
+                    dto.setZona(cancha.getZona());
+                    dto.setDireccion(cancha.getDireccion());
+                    dto.setPropietarioId(cancha.getPropietario().getId());
+                    dto.setActiva(cancha.getActiva());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+    }
+
     public CanchaDTO obtenerCancha(Long id) {
         Cancha cancha = canchaRepo.findById(id)
             .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));
