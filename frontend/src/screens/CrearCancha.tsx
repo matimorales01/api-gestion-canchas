@@ -57,19 +57,8 @@ return (
             )}
           </formData.AppField>
 
-            {/*no se porque no aparece el tick de iluminacion, pero funciona */}
           <formData.AppField name="iluminacion">
-            {(field) => (
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={field.value === true}
-                  onChange={(e) => field.handleChange(e.target.checked)}
-                  className="w-4 h-4 accent-black"
-                />
-                <label>Iluminación</label>
-              </div>
-            )}
+            {(field) => <field.CheckboxField />}
           </formData.AppField>
 
           <formData.AppField name="zona">
