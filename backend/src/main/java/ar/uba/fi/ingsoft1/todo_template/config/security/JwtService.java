@@ -27,7 +27,7 @@ public class JwtService {
 
     public String createToken(JwtUserDetails claims) {
         return Jwts.builder()
-                .subject(claims.username())
+                .subject(claims.email())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .claim("role", claims.role())

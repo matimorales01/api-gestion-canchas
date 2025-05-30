@@ -82,7 +82,7 @@ public class User implements UserDetails, UserCredentials {
         return this.password;
     }
 
-    
+    @Override
     public String getUsername() {
         return this.username;
     }
