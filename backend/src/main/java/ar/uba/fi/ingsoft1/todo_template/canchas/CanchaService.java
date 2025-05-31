@@ -1,13 +1,12 @@
 package ar.uba.fi.ingsoft1.todo_template.canchas;
 
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotFoundException;
+import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
@@ -28,28 +27,16 @@ public class CanchaService {
 
     public CanchaDTO crearCancha(CanchaCreateDTO dto) {
         if (canchaRepo.existsByNombreAndZonaAndDireccion(
-                dto.getNombre(), dto.getZona(), dto.getDireccion())) {
+                dto.nombre(), dto.zona(), dto.direccion())) {
             throw new CanchaAlreadyExistsException(
-                dto.getNombre(), dto.getZona(), dto.getDireccion()
+                dto.nombre(), dto.zona(), dto.direccion()
             );
         }
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = auth.getPrincipal();
-        String email;
-        if (principal instanceof UserDetails) {
-            email = ((UserDetails) principal).getUsername();
-            
-        } else {
-            String p = principal.toString();
-            int start = p.indexOf("username=") + "username=".length();
-            int end   = p.indexOf(",", start);
-            if (start > 0 && end > start) {
-                email = p.substring(start, end);
-            } else {
-                email = auth.getName();
-            }
-        }
+        
+        // Obtengo la información del usuario autenticado desde el access token
+        JwtUserDetails userInfo = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal();
+        String email = userInfo.email();
 
         User propietario = userRepo.findByEmail(email)
             .orElseThrow(() ->
@@ -57,76 +44,29 @@ public class CanchaService {
             );
 
 
-        Cancha cancha = new Cancha();
-        cancha.setNombre(dto.getNombre());
-        cancha.setTipoCesped(dto.getTipoCesped());
-        cancha.setIluminacion(dto.isIluminacion());
-        cancha.setZona(dto.getZona());
-        cancha.setDireccion(dto.getDireccion());
-        cancha.setPropietario(propietario);
+        Cancha cancha = dto.asCancha(propietario);
+        canchaRepo.save(cancha);
 
-        Cancha guardada = canchaRepo.save(cancha);
-
-        CanchaDTO out = new CanchaDTO();
-        out.setId(guardada.getId());
-        out.setNombre(guardada.getNombre());
-        out.setTipoCesped(guardada.getTipoCesped());
-        out.setIluminacion(guardada.isIluminacion());
-        out.setZona(guardada.getZona());
-        out.setDireccion(guardada.getDireccion());
-        out.setPropietarioId(propietario.getId());
-
-        return out;
+        return cancha.toDTO();
     }
 
     public List<CanchaDTO> listarCanchas() {
         return canchaRepo.findAll().stream()
                 .filter(Cancha::getActiva)
-                .map(cancha -> {
-                    CanchaDTO dto = new CanchaDTO();
-                    dto.setId(cancha.getId());
-                    dto.setNombre(cancha.getNombre());
-                    dto.setTipoCesped(cancha.getTipoCesped());
-                    dto.setIluminacion(cancha.isIluminacion());
-                    dto.setZona(cancha.getZona());
-                    dto.setDireccion(cancha.getDireccion());
-                    dto.setPropietarioId(cancha.getPropietario().getId());
-                    dto.setActiva(cancha.getActiva());
-                    return dto;
-                })
+                .map(Cancha::toDTO)
                 .collect(Collectors.toList());
     }
 
     public List<CanchaDTO> listarTodasLasCanchas() {
         return canchaRepo.findAll().stream()
-                .map(cancha -> {
-                    CanchaDTO dto = new CanchaDTO();
-                    dto.setId(cancha.getId());
-                    dto.setNombre(cancha.getNombre());
-                    dto.setTipoCesped(cancha.getTipoCesped());
-                    dto.setIluminacion(cancha.isIluminacion());
-                    dto.setZona(cancha.getZona());
-                    dto.setDireccion(cancha.getDireccion());
-                    dto.setPropietarioId(cancha.getPropietario().getId());
-                    dto.setActiva(cancha.getActiva());
-                    return dto;
-                })
+                .map(Cancha::toDTO)
                 .collect(Collectors.toList());
-
     }
 
     public CanchaDTO obtenerCancha(Long id) {
         Cancha cancha = canchaRepo.findById(id)
             .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));
-        CanchaDTO dto = new CanchaDTO();
-        dto.setId(cancha.getId());
-        dto.setNombre(cancha.getNombre());
-        dto.setTipoCesped(cancha.getTipoCesped());
-        dto.setIluminacion(cancha.isIluminacion());
-        dto.setZona(cancha.getZona());
-        dto.setDireccion(cancha.getDireccion());
-        dto.setPropietarioId(cancha.getPropietario().getId());
-        dto.setActiva(cancha.getActiva());
+        CanchaDTO dto = cancha.toDTO();
         return dto;
     }
 
@@ -143,16 +83,7 @@ public class CanchaService {
 
         canchaRepo.save(cancha);
 
-        CanchaDTO dto_editado = new CanchaDTO();
-        dto_editado.setId(cancha.getId());
-        dto_editado.setNombre(cancha.getNombre());
-        dto_editado.setTipoCesped(cancha.getTipoCesped());
-        dto_editado.setIluminacion(cancha.isIluminacion());
-        dto_editado.setZona(cancha.getZona());
-        dto_editado.setDireccion(cancha.getDireccion());
-        dto_editado.setPropietarioId(cancha.getPropietario().getId());
-        dto_editado.setActiva(cancha.getActiva());
-        return dto_editado;
+        return cancha.toDTO();
     }
 
 }

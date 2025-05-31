@@ -107,6 +107,7 @@ public class UserService implements UserDetailsService {
 
     private TokenDTO generateTokens(User user) {
         String accessToken = jwtService.createToken(new JwtUserDetails(
+                user.getUsername(),
                 user.getEmail(),
                 user.getRole()
         ));

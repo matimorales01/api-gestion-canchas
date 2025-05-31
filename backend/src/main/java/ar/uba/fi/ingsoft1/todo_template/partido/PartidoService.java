@@ -41,7 +41,7 @@ public class PartidoService {
 
         CanchaDTO cancha =canchaService.obtenerCancha(abiertoDto.nroCancha());
         
-        if (!cancha.getPropietarioId().equals(abiertoDto.idOrganizador())) {
+        if (!cancha.propietarioId().equals(abiertoDto.idOrganizador())) {
             throw new UnauthorizedCanchaAccessException("No eres propietario de la cancha");
             
         }
@@ -75,7 +75,7 @@ public class PartidoService {
         User organizador =userService.obtenerUsuarioPorId(cerradoDTo.idOrganizador());
 
         CanchaDTO cancha =canchaService.obtenerCancha(cerradoDTo.nroCancha());
-        if (!cancha.getPropietarioId().equals(cerradoDTo.idOrganizador())) {
+        if (!cancha.propietarioId().equals(cerradoDTo.idOrganizador())) {
             throw new UnauthorizedCanchaAccessException("No eres propietario de la cancha");
             
         }
