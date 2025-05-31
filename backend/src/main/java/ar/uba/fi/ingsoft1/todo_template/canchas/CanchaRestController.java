@@ -50,4 +50,10 @@ public class CanchaRestController {
         CanchaDTO editada = canchaService.editarCancha(id, dto);
         return ResponseEntity.ok(editada);
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarCancha(@PathVariable Long id) {
+        canchaService.eliminarCancha(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

@@ -2,16 +2,23 @@ package ar.uba.fi.ingsoft1.todo_template.canchas;
 
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotFoundException;
-import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
+import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaConReservasFuturasException;
+
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaEditDTO;
 
+import ar.uba.fi.ingsoft1.todo_template.partido.PartidoRepository;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +26,16 @@ import java.util.stream.Collectors;
 public class CanchaService {
     private final CanchaRepository canchaRepo;
     private final UserRepository userRepo;
+    private final PartidoRepository partidoRepo;
 
-    public CanchaService(CanchaRepository canchaRepo, UserRepository userRepo) {
+    public CanchaService(
+        CanchaRepository canchaRepo,
+        UserRepository userRepo,
+        PartidoRepository partidoRepo
+    ) {
         this.canchaRepo = canchaRepo;
         this.userRepo   = userRepo;
+        this.partidoRepo = partidoRepo;
     }
 
     public CanchaDTO crearCancha(CanchaCreateDTO dto) {
@@ -33,16 +46,14 @@ public class CanchaService {
             );
         }
         
-        // Obtengo la información del usuario autenticado desde el access token
-        JwtUserDetails userInfo = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication()
-        .getPrincipal();
+        JwtUserDetails userInfo = (JwtUserDetails) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
         String email = userInfo.email();
 
         User propietario = userRepo.findByEmail(email)
             .orElseThrow(() ->
                 new UserNotFoundException("Usuario con email: '" + email + "' no encontrado.")
             );
-
 
         Cancha cancha = dto.asCancha(propietario);
         canchaRepo.save(cancha);
@@ -66,8 +77,7 @@ public class CanchaService {
     public CanchaDTO obtenerCancha(Long id) {
         Cancha cancha = canchaRepo.findById(id)
             .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));
-        CanchaDTO dto = cancha.toDTO();
-        return dto;
+        return cancha.toDTO();
     }
 
     public CanchaDTO editarCancha(Long id, CanchaEditDTO dto) {
@@ -86,4 +96,21 @@ public class CanchaService {
         return cancha.toDTO();
     }
 
+    public void eliminarCancha(Long id) {
+        Cancha cancha = canchaRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));
+
+        String hoyStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        boolean abiertoFuturo = partidoRepo.existsPartidoAbiertoFuturoPorCancha(id, hoyStr);
+        boolean cerradoFuturo = partidoRepo.existsPartidoCerradoFuturoPorCancha(id, hoyStr);
+        if (abiertoFuturo || cerradoFuturo) {
+            throw new CanchaConReservasFuturasException(id);
+        }
+
+        cancha.setActiva(false);
+        canchaRepo.save(cancha);
+
+        // No se a que se refiere si liberar franjas es algo relacionado con la cancha
+        // Si se refiere a eliminar las reservas de la cancha o que
+    }
 }
