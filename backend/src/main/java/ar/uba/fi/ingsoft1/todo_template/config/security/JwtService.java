@@ -27,9 +27,10 @@ public class JwtService {
 
     public String createToken(JwtUserDetails claims) {
         return Jwts.builder()
-                .subject(claims.email())
+                .subject(claims.username())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
+                .claim("email", claims.email())
                 .claim("role", claims.role())
                 .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
@@ -45,8 +46,10 @@ public class JwtService {
             if (claims.containsKey("sub")
                     && claims.containsKey("role")
                     && claims.get("role") instanceof String role
+                    && claims.containsKey("email")
+                    && claims.get("email") instanceof String email
             ) {
-                return Optional.of(new JwtUserDetails(claims.getSubject(), role));
+                return Optional.of(new JwtUserDetails(claims.getSubject(), email, role));
             }
         } catch (Exception e) {
             // Some exception happened during jwt parse
