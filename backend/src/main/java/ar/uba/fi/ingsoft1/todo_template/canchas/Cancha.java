@@ -39,6 +39,9 @@ public class Cancha {
     @Column(nullable = false)
     private boolean activa = true;
 
+    public Cancha() {
+        
+    }
 
     public Cancha(String nombre, String tipoCesped, boolean iluminacion, String zona, String direccion, User propietario) {
         this.nombre = nombre;
@@ -82,7 +85,7 @@ public class Cancha {
             this.iluminacion,
             this.zona,
             this.direccion,
-            this.propietario != null ? this.propietario.getId() : null,
+            this.propietario.getId(),
             this.activa
         );
     }
