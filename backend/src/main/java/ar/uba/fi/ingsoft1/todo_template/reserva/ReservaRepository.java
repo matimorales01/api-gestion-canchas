@@ -14,4 +14,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
     // muestra la lista de reservas futuras para una cancha
     List<Reserva> findByCanchaIdAndFechaGreaterThanEqual(Long canchaId, LocalDate fecha);
+
+    
 }
