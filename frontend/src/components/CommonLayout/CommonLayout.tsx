@@ -13,7 +13,9 @@ export const CommonLayout = ({ children }: React.PropsWithChildren) => {
             <ul className={styles.topBar}>
                 {tokenState.state === "LOGGED_OUT" ? <LoggedOutLinks /> : <LoggedInLinks />}
             </ul>
-            <div className={styles.body}>{children}</div>
+            <div className={styles.mainContent} >
+                {children}
+            </div>
         </div>
     );
 };

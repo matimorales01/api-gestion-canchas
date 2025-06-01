@@ -1,8 +1,16 @@
+import './mainScreen.css';
+
 export const UnderConstruction = () => {
   return (
-    <>
-      <h1>🚧 Under construction 🚧</h1>
-      <p>We're still working on this. Come back soon!</p>
-    </>
+    <div className="under-construction">
+      <section className="user-section">
+        <h1>Seccion usuario</h1>
+      </section>
+      <section className="main-section">
+        <h1>Página Principal</h1>
+        <p>Bienvenido a la página principal.</p>
+      </section>
+    </div>
   );
 };
+

@@ -9,8 +9,8 @@ import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
 import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
 import {CrearPartidoCerradoScreen} from "@/screens/CrearPartidoCerrado.tsx";
-import { LoginRequestSchema } from "./models/Login";
 import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
+import { CrearEquipo } from "./screens/CrearEquipo";
 
 export const Navigation = () => {
 
@@ -39,6 +39,9 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/crear-partido-cerrado">
                       <CrearPartidoCerradoScreen />
+                    </Route>
+                    <Route path="/equipo">
+                        <CrearEquipo />
                     </Route>
                     <Route>
                         <Redirect href="/" />
