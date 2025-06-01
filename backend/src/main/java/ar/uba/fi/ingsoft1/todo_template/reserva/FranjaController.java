@@ -56,13 +56,13 @@ public class FranjaController {
         for (LocalDate dia = fechaDesde; !dia.isAfter(fechaHasta); dia = dia.plusDays(1)) {
             LocalTime actual = hi;
             while (!actual.plusMinutes(duracionMinutos).isAfter(hf)) {
-                FranjaDisponible fr = new FranjaDisponible();
-                fr.setCancha(cancha);
-                fr.setFecha(dia);
-                fr.setHoraInicio(actual);
-                fr.setHoraFin(actual.plusMinutes(duracionMinutos));
-                fr.setEstado(EstadoFranja.DISPONIBLE);
-                franjaRepo.save(fr);
+                FranjaDisponible franja = new FranjaDisponible();
+                franja.setCancha(cancha);
+                franja.setFecha(dia);
+                franja.setHoraInicio(actual);
+                franja.setHoraFin(actual.plusMinutes(duracionMinutos));
+                franja.setEstado(EstadoFranja.DISPONIBLE);
+                franjaRepo.save(franja);
                 actual = actual.plusMinutes(duracionMinutos);
             }
         }
