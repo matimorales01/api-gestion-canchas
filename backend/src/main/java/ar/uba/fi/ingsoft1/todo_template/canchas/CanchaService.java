@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // <-- agregar
+
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaEditDTO;
+
 import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaConReservasFuturasException;
@@ -96,6 +99,7 @@ public class CanchaService {
         return cancha.toDTO();
     }
 
+    @Transactional // <-- agregar aquí para que deleteAll y delete() se ejecuten en una misma transacción
     public void eliminarCancha(Long id) {
         Cancha cancha = canchaRepo.findById(id)
             .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));
