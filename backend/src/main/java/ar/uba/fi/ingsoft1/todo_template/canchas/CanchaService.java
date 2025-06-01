@@ -1,41 +1,45 @@
 package ar.uba.fi.ingsoft1.todo_template.canchas;
 
-import org.springframework.stereotype.Service;
-import org.springframework.security.core.context.SecurityContextHolder;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import ar.uba.fi.ingsoft1.todo_template.user.User;
-import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaAlreadyExistsException;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotFoundException;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
-import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaConReservasFuturasException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // <-- agregar
+
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaEditDTO;
 
-import ar.uba.fi.ingsoft1.todo_template.partido.PartidoRepository;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaAlreadyExistsException;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaConReservasFuturasException;
+import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.user.User;
+import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
+import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
+import ar.uba.fi.ingsoft1.todo_template.reserva.FranjaDisponibleRepository;
 
 @Service
 public class CanchaService {
     private final CanchaRepository canchaRepo;
     private final UserRepository userRepo;
-    private final PartidoRepository partidoRepo;
+    private final ReservaRepository reservaRepo;
+    private final FranjaDisponibleRepository franjaRepo;
 
     public CanchaService(
         CanchaRepository canchaRepo,
         UserRepository userRepo,
-        PartidoRepository partidoRepo
+        ReservaRepository reservaRepo,
+        FranjaDisponibleRepository franjaRepo
     ) {
         this.canchaRepo = canchaRepo;
         this.userRepo   = userRepo;
-        this.partidoRepo = partidoRepo;
+        this.reservaRepo = reservaRepo;
+        this.franjaRepo = franjaRepo;
     }
 
     public CanchaDTO crearCancha(CanchaCreateDTO dto) {
@@ -52,7 +56,7 @@ public class CanchaService {
 
         User propietario = userRepo.findByEmail(email)
             .orElseThrow(() ->
-                new UserNotFoundException("Usuario con email: '" + email + "' no encontrado.")
+                new NotFoundException("Usuario con email: '" + email + "' no encontrado.")
             );
 
         Cancha cancha = dto.asCancha(propietario);
@@ -82,7 +86,7 @@ public class CanchaService {
 
     public CanchaDTO editarCancha(Long id, CanchaEditDTO dto) {
         Cancha cancha = canchaRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cancha no encontrada"));
+                .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada"));
 
         if (dto.getNombre() != null) cancha.setNombre(dto.getNombre());
         if (dto.getDireccion() != null) cancha.setDireccion(dto.getDireccion());
@@ -92,25 +96,21 @@ public class CanchaService {
         if (dto.getActiva() != null) cancha.setActiva(dto.getActiva());
 
         canchaRepo.save(cancha);
-
         return cancha.toDTO();
     }
 
+    @Transactional // <-- agregar aquí para que deleteAll y delete() se ejecuten en una misma transacción
     public void eliminarCancha(Long id) {
         Cancha cancha = canchaRepo.findById(id)
             .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));
 
-        String hoyStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        boolean abiertoFuturo = partidoRepo.existsPartidoAbiertoFuturoPorCancha(id, hoyStr);
-        boolean cerradoFuturo = partidoRepo.existsPartidoCerradoFuturoPorCancha(id, hoyStr);
-        if (abiertoFuturo || cerradoFuturo) {
+        LocalDate hoy = LocalDate.now();
+        boolean tieneReserva = reservaRepo.existsReservaFuturaPorCancha(id, hoy);
+        if (tieneReserva) {
             throw new CanchaConReservasFuturasException(id);
         }
 
-        cancha.setActiva(false);
-        canchaRepo.save(cancha);
-
-        // No se a que se refiere si liberar franjas es algo relacionado con la cancha
-        // Si se refiere a eliminar las reservas de la cancha o que
+        franjaRepo.deleteAllByCanchaId(id);
+        canchaRepo.delete(cancha);
     }
 }
