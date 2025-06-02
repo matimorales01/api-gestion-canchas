@@ -1,11 +1,10 @@
 package ar.uba.fi.ingsoft1.todo_template.canchas;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
-import java.util.List;
 
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
@@ -21,28 +20,35 @@ public class CanchaRestController {
         this.canchaService = canchaService;
     }
 
-    @PostMapping
-    public ResponseEntity<CanchaDTO> crearCancha(@Valid @RequestBody CanchaCreateDTO dto) {
-        CanchaDTO creada = canchaService.crearCancha(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creada);
+    @GetMapping
+    public ResponseEntity<List<CanchaDTO>> getAllCanchas() {
+        return ResponseEntity.ok(canchaService.listarCanchas());
     }
 
-    @GetMapping
-    public ResponseEntity<List<CanchaDTO>> listarCanchas() {
-        List<CanchaDTO> listado = canchaService.listarCanchas();
-        return ResponseEntity.ok(listado);
+    @GetMapping("/todas")
+    public ResponseEntity<List<CanchaDTO>> getTodasLasCanchas() {
+        return ResponseEntity.ok(canchaService.listarTodasLasCanchas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CanchaDTO> obtenerCancha(@PathVariable Long id) {
-        CanchaDTO cancha = canchaService.obtenerCancha(id);
-        return ResponseEntity.ok(cancha);
+    public ResponseEntity<CanchaDTO> getCanchaById(@PathVariable Long id) {
+        return ResponseEntity.ok(canchaService.obtenerCancha(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<CanchaDTO> crearCancha(@RequestBody CanchaCreateDTO dto) {
+        CanchaDTO creada = canchaService.crearCancha(dto);
+        return new ResponseEntity<>(creada, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CanchaDTO> editarCancha(@PathVariable Long id, @RequestBody CanchaEditDTO dto) {
-        CanchaDTO editada = canchaService.editarCancha(id, dto);
-        return ResponseEntity.ok(editada);
+        return ResponseEntity.ok(canchaService.editarCancha(id, dto));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarCancha(@PathVariable Long id) {
+        canchaService.eliminarCancha(id);
+        return ResponseEntity.noContent().build();
+    }
 }

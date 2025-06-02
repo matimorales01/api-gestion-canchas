@@ -50,26 +50,15 @@ return (
                   onChange={(e) => field.handleChange(e.target.value)}
                 >
                   <option value="">Seleccionar</option>
-                  <option value="pasto">Césped</option>
-                  <option value="sintetico">Sintético</option>
+                  <option value="Natural">Natural</option>
+                  <option value="Sintetico">Sintético</option>
                 </select>
               </div>
             )}
           </formData.AppField>
 
-            {/*no se porque no aparece el tick de iluminacion, pero funciona */}
           <formData.AppField name="iluminacion">
-            {(field) => (
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={field.value === true}
-                  onChange={(e) => field.handleChange(e.target.checked)}
-                  className="w-4 h-4 accent-black"
-                />
-                <label>Iluminación</label>
-              </div>
-            )}
+            {(field) => <field.CheckboxField />}
           </formData.AppField>
 
           <formData.AppField name="zona">

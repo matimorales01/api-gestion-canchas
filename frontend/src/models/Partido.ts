@@ -1,13 +1,18 @@
 import { z } from "zod";
 
 export const CrearPartidoSchema = z.object({
-  cancha: z.string().min(1, "La cancha no puede estar vacía"),
+  cancha:z.string().min(1, "los cupos no puede estar vacía"),
   franjaHoraria: z.string().min(1, "La franja horaria es obligatoria"),
-  jugadoresMinimos: z.number({ invalid_type_error: "Debe ser un número" }).min(1, "Debe haber al menos un jugador mínimo"),
-  jugadoresMaximos: z.number({ invalid_type_error: "Debe ser un número" }).min(1, "Debe haber al menos un jugador máximo")
-    .refine((max) => max >= 1, "Debe ser mayor o igual a 1"),
-  fecha: z.string().min(1, "La fecha es obligatoria"), // Si usás strings para fecha
-  horario: z.string().min(1, "El horario es obligatorio"), // También puede ser hora tipo string
-  canchaConfirmacion: z.string().min(1, "Confirmación de cancha requerida"), // o podrías usar z.boolean() si es un check
-  cupos: z.number({ invalid_type_error: "Debe ser un número" }).min(1, "Debe haber al menos 1 cupo disponible"),
+  jugadoresMinimos: z.string().min(1, "Los jugadores Minimos  no puede estar vacía").refine((val) => !isNaN(Number(val)), { message: "Debe ser un número" }),
+  jugadoresMaximos: z.string().min(1, "Los juagdores maximos no puede estar vacía").refine((val) => !isNaN(Number(val)), { message: "Debe ser un número" }),
+  fecha: z.string().min(1, "La fecha es obligatoria"),
+  cupos: z.string().min(1, "los cupos no puede estar vacía").refine((val) => !isNaN(Number(val)), { message: "Debe ser un número" }),
+});
+
+export const CrearPartidoCerradoSchema = z.object({
+  cancha:z.string().min(1, "Seleccione una cancha"),
+  fecha: z.string().min(1, "La fecha es obligatoria"),
+  franjaHoraria: z.string().min(1, "La franja horaria es obligatoria"),
+  equipo1: z.string().min(1, "Debe ingresar al equipo A"),
+  equipo2: z.string().min(1, "Debe ingresar al equipo B"),
 });

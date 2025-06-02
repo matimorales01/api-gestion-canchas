@@ -1,22 +1,17 @@
 package ar.uba.fi.ingsoft1.todo_template.canchas.dto;
 
+import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
+import ar.uba.fi.ingsoft1.todo_template.user.User;
 import jakarta.validation.constraints.NotBlank;
 
-public class CanchaCreateDTO {
-    @NotBlank private String nombre;
-    @NotBlank private String tipoCesped;
-    private boolean iluminacion;
-    @NotBlank private String zona;
-    @NotBlank private String direccion;
-
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getTipoCesped() { return tipoCesped; }
-    public void setTipoCesped(String tipoCesped) { this.tipoCesped = tipoCesped; }
-    public boolean isIluminacion() { return iluminacion; }
-    public void setIluminacion(boolean iluminacion) { this.iluminacion = iluminacion; }
-    public String getZona() { return zona; }
-    public void setZona(String zona) { this.zona = zona; }
-    public String getDireccion() { return direccion; }
-    public void setDireccion(String direccion) { this.direccion = direccion; }
+public record CanchaCreateDTO(
+    @NotBlank String nombre,
+    @NotBlank String tipoCesped,
+    boolean iluminacion,
+    @NotBlank String zona,
+    @NotBlank String direccion
+) {
+    public Cancha asCancha(User propietario) {
+        return new Cancha(nombre, tipoCesped, iluminacion, zona, direccion, propietario);
+    }
 }

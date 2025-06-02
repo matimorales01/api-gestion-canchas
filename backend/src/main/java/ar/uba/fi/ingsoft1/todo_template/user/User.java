@@ -4,9 +4,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+//import jakarta.persistence.OneToMany;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+//import ar.uba.fi.ingsoft1.todo_template.partido.Partido;
 
 import java.util.Collection;
 import java.util.List;
@@ -48,6 +52,9 @@ public class User implements UserDetails, UserCredentials {
     @Column(nullable = false)
     private String role;
 
+    //@OneToMany(mappedBy = "organizador")
+    //private List<Partido> partidosCreados;
+
     public User() {}
 
     public User(String username, String password, String email, String firstName, String lastName, String genre, Integer age, String zone) {
@@ -62,6 +69,8 @@ public class User implements UserDetails, UserCredentials {
         this.state = false;
         this.role = "USER";
     }
+    
+
 
     @Override
     public String email() {
@@ -87,6 +96,10 @@ public class User implements UserDetails, UserCredentials {
         return email;
     }
 
+    public Long getId(){
+        return id;
+    }
+
     public String getRole() {
         return role;
     }
@@ -98,11 +111,14 @@ public class User implements UserDetails, UserCredentials {
     public boolean getState() {
         return state;
     }
-    
-    public Long getId() {
-        return this.id;
-    }
 
+    /*public List<Partido> getPartidosCreados(){
+       return this.partidosCreados;
+    }*/
+
+    /*public void setPartidoCreados(List<Partido> partidosCreados){
+        this.partidosCreados = partidosCreados;
+    }*/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

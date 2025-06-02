@@ -1,9 +1,10 @@
 package ar.uba.fi.ingsoft1.todo_template.canchas;
 
 import jakarta.persistence.*;
+import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 
-// en unique contraint tomo en cuenta los campos nombre, zona y direccion como si fuese Primari key
+// en unique contraint tomo en cuenta los campos nombre, zona y direccion como si fuese Primary key
 // y no se creen dos canchas con el mismo nombre, zona y direccion por lo que dice la consigna
 
 @Entity
@@ -38,21 +39,54 @@ public class Cancha {
     @Column(nullable = false)
     private boolean activa = true;
 
+    public Cancha() {
+        
+    }
+
+    public Cancha(String nombre, String tipoCesped, boolean iluminacion, String zona, String direccion, User propietario) {
+        this.nombre = nombre;
+        this.tipoCesped = tipoCesped;
+        this.iluminacion = iluminacion;
+        this.zona = zona;
+        this.direccion = direccion;
+        this.propietario = propietario;
+
+    }
 
 
     public Long getId() { return id; }
+
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+
     public String getTipoCesped() { return tipoCesped; }
     public void setTipoCesped(String tipoCesped) { this.tipoCesped = tipoCesped; }
+
     public boolean isIluminacion() { return iluminacion; }
     public void setIluminacion(boolean iluminacion) { this.iluminacion = iluminacion; }
+
     public String getZona() { return zona; }
     public void setZona(String zona) { this.zona = zona; }
+
     public String getDireccion() { return direccion; }
     public void setDireccion(String direccion) { this.direccion = direccion; }
+
     public User getPropietario() { return propietario; }
     public void setPropietario(User propietario) { this.propietario = propietario; }
+
     public boolean getActiva() { return activa; }
     public void setActiva(boolean activa) { this.activa = activa; }
+
+    public CanchaDTO toDTO() {
+        return new CanchaDTO(
+            this.id,
+            this.nombre,
+            this.tipoCesped,
+            this.iluminacion,
+            this.zona,
+            this.direccion,
+            this.propietario.getId(),
+            this.activa
+        );
+    }
 }

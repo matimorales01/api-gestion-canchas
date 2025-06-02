@@ -25,7 +25,7 @@ import java.util.UUID;
 
 @Service
 @Transactional
-class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService {
 
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
@@ -107,10 +107,23 @@ class UserService implements UserDetailsService {
 
     private TokenDTO generateTokens(User user) {
         String accessToken = jwtService.createToken(new JwtUserDetails(
+                user.getUsername(),
                 user.getEmail(),
                 user.getRole()
         ));
         RefreshToken refreshToken = refreshTokenService.createFor(user);
         return new TokenDTO(accessToken, refreshToken.value());
+    }
+
+    public String obtenerEmailPorId(Long idUser){
+        return userRepository.findById(idUser)
+                .orElseThrow(()->new RuntimeException("Usuario no encontrado"))
+                .getEmail();
+    }
+
+    public User obtenerUsuarioPorId(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Usuario no encontrado con id: "+ id));
+                
     }
 }
