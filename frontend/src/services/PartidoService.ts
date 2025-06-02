@@ -1,49 +1,41 @@
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+// services/PartidoService.ts
 
+import { useMutation } from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
-import { LoginRequest, LoginResponseSchema } from "@/models/Login";
 import { useToken } from "@/services/TokenContext";
+import { PartidoRequest, Partido } from "@/models/Partido"; 
 
-    export function useGetCanchas() {
-    return useQuery({
-        queryKey: ["canchas"],
-        queryFn: async () => {
-        const response = await fetch(BASE_API_URL + "/canchas", {
-            method: "GET",
-            headers: {
-            Accept: "application/json",
-            },
-        });
+export function useCrearPartido(options?: {
+    onSuccess?: (data: Partido) => void;
+    onError?: (error: unknown) => void;
+    }) {
+    const [tokenState] = useToken();
 
-        if (!response.ok) {
-            throw new Error("Error al obtener las canchas");
-        }
-        return response.json(); // Espera un array de canchas
-        },
-    });
-    }
-
-    export function useCrearPartido() {
     return useMutation({
-        mutationFn: async (data: Record<string, any>) => {
-        const response = await fetch(BASE_API_URL + "/partidos", {
+        mutationFn: async (data: PartidoRequest) => {
+        if (tokenState.state !== "LOGGED_IN") {
+            throw new Error("No estás logueado. No se puede crear un partido.");
+        }
+
+        const response = await fetch(BASE_API_URL + "/partidos/abierto", {
             method: "POST",
             headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenState.accessToken}`,
             },
             body: JSON.stringify(data),
         });
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Error al crear partido: ${errorText}`);
+            throw new Error(`Error al crear el partido: ${errorText}`);
         }
 
-        return response.json(); // puedes retornar el partido creado o lo que tu backend devuelva
+        return await response.json() as Partido;
         },
+        onSuccess: options?.onSuccess,
+        onError: options?.onError,
     });
     }
-
- 
