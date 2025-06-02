@@ -5,6 +5,7 @@ import { MainScreen } from "@/screens/MainScreen";
 import { SignupScreen } from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
 import { CanchaScreen } from "@/screens/CrearCancha";
+import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
 import { HistorialScreen } from "@/screens/HistorialScreen";
 
 export const Navigation = () => {
@@ -18,6 +19,9 @@ export const Navigation = () => {
           </Route>
           <Route path="/crear-cancha">
             <CanchaScreen />
+            </Route>
+          <Route path="/crear-partido-abierto">
+            <CrearPartidoAbiertoScreen />
           </Route>
           <Route path="/ver-historial">
             <HistorialScreen />
