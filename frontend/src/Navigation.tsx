@@ -5,6 +5,7 @@ import { MainScreen } from "@/screens/MainScreen";
 import { SignupScreen } from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
 import { CanchaScreen } from "@/screens/CrearCancha";
+import { HistorialScreen } from "@/screens/HistorialScreen";
 import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
 import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
@@ -39,6 +40,9 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/crear-partido-cerrado">
                       <CrearPartidoCerradoScreen />
+                    </Route>
+                    <Route path="/ver-historial">
+                      <HistorialScreen />
                     </Route>
                     <Route>
                         <Redirect href="/" />
