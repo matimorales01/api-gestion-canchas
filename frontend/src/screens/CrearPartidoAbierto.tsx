@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { CrearPartidoSchema } from "@/models/Partido";
 import { useCrearPartido } from "@/services/PartidoService";
 import { useCanchas } from "@/services/CanchaService";
+import { string } from "zod";
 
 export const CrearPartidoAbiertoScreen = () => {
 const { data: canchas, isLoading, isError } = useCanchas();
@@ -73,7 +74,7 @@ if (isError) {
                 style={{
                     border: "1px solid #ccc",
                     borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    boxShadow: "0 2px 8px rgba(3, 3, 3, 0.1)",
                     overflow: "hidden",
                 }}
                 >
@@ -85,7 +86,7 @@ if (isError) {
                     </tr>
                     </thead>
                     <tbody>
-                    {canchas.map(({ id,nombre, zona }) => (
+                    {canchas && canchas.map(({ id,nombre, zona }) => (
                         <tr
                         key={id}
                         onClick={() => handleRowClick(id)}

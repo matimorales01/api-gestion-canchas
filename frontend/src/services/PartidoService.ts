@@ -1,7 +1,6 @@
 
-// services/PartidoService.ts
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
 import { PartidoRequest, Partido } from "@/models/Partido"; 
@@ -39,3 +38,30 @@ export function useCrearPartido(options?: {
         onError: options?.onError,
     });
     }
+
+
+
+export function usePartidoAbierto() {
+    const [tokenState] = useToken();
+
+    return useQuery<Partido[]>({
+        
+        queryKey: ["Partido"],
+        queryFn: async () => {
+        if (tokenState.state !== "LOGGED_IN") {
+            throw new Error("No estás logueado.");
+        }
+        const response = await fetch(`${BASE_API_URL}/partidos/abiertos`, {
+            headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${tokenState.accessToken}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error("Error al obtener partidos abiertos");
+        }
+        return await response.json() as Partido[];
+        },
+        enabled: tokenState.state === "LOGGED_IN",
+    });
+}
