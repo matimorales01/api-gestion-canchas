@@ -1,8 +1,38 @@
+import { useEffect, useState } from "react";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import {PartidoCerradoCard, PartidoCerradoHeader} from "@/components/PartidoCard/PartidoCard";
 import {PartidoAbiertoCard, PartidoAbiertoHeader} from "@/components/PartidoCard/PartidoCard";
+import {useObtenerPartidosAbiertos, useObtenerPartidosCerrados} from "@/services/HistorialService";
 
 export const HistorialScreen = () => {
+  const { getPartidosCerrados: getCerrados } = useObtenerPartidosCerrados();
+  const { getPartidosAbiertos: getAbiertos } = useObtenerPartidosAbiertos();
+  /*
+  const [cerrados, setCerrados] = useState<any[]>([]);
+  const [abiertos, setAbiertos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const cargarPartidos = async () => {
+      try {
+        const [c, a] = await Promise.all([getCerrados(), getAbiertos()]);
+        setCerrados(c);
+        setAbiertos(a);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarPartidos();
+  }, []);
+
+  if (loading) return <p>Cargando historial...</p>;
+  if (error) return <p className="text-red-500">Error: {error}</p>;
+ */
+
  
   const cerrados = [
   {
@@ -46,7 +76,7 @@ export const HistorialScreen = () => {
 
   return (
     <CommonLayout>
-      <div style={{ width: "100%" }}>
+      <div style={{ width: "100%", height: "100%"}}>
         <h1>Historial de Partidos</h1>
 
         <section>

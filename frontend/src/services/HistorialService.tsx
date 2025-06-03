@@ -6,7 +6,7 @@ export function useObtenerPartidosCerrados() {
     
     const getPartidosCerrados = async (): Promise<any[]> => {
       if (tokenState.state !== "LOGGED_IN") {
-        throw new Error("No estás logueado. No se puede obtener el historial.");
+        throw new Error("No estás logueado.");
       }
     
       const response = await fetch(BASE_API_URL + "/partidos/cerrados", {

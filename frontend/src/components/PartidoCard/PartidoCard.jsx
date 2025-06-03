@@ -30,7 +30,7 @@ export function PartidoAbiertoCard({ id, nroCancha, fecha, hora, minJugadores, m
 
 export function PartidoAbiertoHeader() {
     return (
-        <article className="partido-card">
+        <article className="partido-card-header">
             <p className="info-header">ID - Partido</p>
             <p className="info-header">Nro Cancha</p>
             <p className="info-header">Fecha</p>
@@ -45,7 +45,7 @@ export function PartidoAbiertoHeader() {
 
 export function PartidoCerradoHeader() {
     return (
-        <article className="partido-card">
+        <article className="partido-card-header">
             <p className="info-header">ID - Partido</p>
             <p className="info-header">Nro Cancha</p>
             <p className="info-header">Fecha</p>
