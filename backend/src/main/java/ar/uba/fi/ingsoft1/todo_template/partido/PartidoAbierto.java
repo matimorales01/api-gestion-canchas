@@ -3,7 +3,8 @@ package ar.uba.fi.ingsoft1.todo_template.partido;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
-
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.*;;
 
@@ -23,8 +24,10 @@ public class PartidoAbierto extends Partido {
 
     public PartidoAbierto() {}
 
-    public PartidoAbierto(Long nroCancha,String fechaPartido,String horaPartido, int minJugadores, int maxJugadores, String emailOrganizador) {
-        super(nroCancha,fechaPartido,horaPartido,emailOrganizador);
+    public PartidoAbierto(Long canchaId,
+            LocalDate fechaPartido,LocalTime horaPartido, 
+            int minJugadores, int maxJugadores) {
+        super(canchaId,fechaPartido,horaPartido);
         this.minJugadores=minJugadores;
         this.maxJugadores=maxJugadores;
         

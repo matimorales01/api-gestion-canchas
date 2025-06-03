@@ -28,23 +28,23 @@ public class PartidoRestController {
     @Operation(summary = "Crear un partido abierto")
     @PostMapping("/abierto")    
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<PartidoResponseDTO>crearAbierto(@Valid @RequestBody PartidoAbiertoCreateDTO dto) {
-        Partido partido=partidoService.crearPartidoAbierto(dto);
+    public ResponseEntity<PartidoAbiertoResponseDTO>crearAbierto(@Valid @RequestBody PartidoAbiertoCreateDTO dto) {
+        PartidoAbierto partido=partidoService.crearPartidoAbierto(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .header("Location","/partidos/" +partido.getIdPartido())
-                .body(PartidoResponseDTO.fromEntity(partido));
+                .body(PartidoAbiertoResponseDTO.fromEntity(partido));
     }
 
     @Operation(summary = "Crear un partido cerrado")
     @PostMapping("/cerrado")    
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<PartidoResponseDTO>crearCerrado(@Valid @RequestBody PartidoCerradoCreateDTO dto) {
-        Partido partido=partidoService.crearPartidoCerrado(dto);
+    public ResponseEntity<PartidoCerradoResponseDTO>crearCerrado(@Valid @RequestBody PartidoCerradoCreateDTO dto) {
+        PartidoCerrado partido=partidoService.crearPartidoCerrado(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .header("Location","/partidos/" +partido.getIdPartido())
-                .body(PartidoResponseDTO.fromEntity(partido));
+                .body(PartidoCerradoResponseDTO.fromEntity(partido));
     }
     
 
