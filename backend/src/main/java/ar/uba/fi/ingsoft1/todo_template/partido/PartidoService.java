@@ -1,107 +1,148 @@
 package ar.uba.fi.ingsoft1.todo_template.partido;
 
 
-import ar.uba.fi.ingsoft1.todo_template.canchas.CanchaService;
-import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.UnauthorizedCanchaAccessException;
+
+import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
+
+import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoAbiertoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCerradoCreateDTO;
 
+import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
 import ar.uba.fi.ingsoft1.todo_template.user.EmailService;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
-import ar.uba.fi.ingsoft1.todo_template.user.UserService;
+import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 
+import jakarta.transaction.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PartidoService {
     private final PartidoRepository partidoRepository;
     private final EmailService emailService;
-    private final UserService userService;
-    private final CanchaService canchaService;
+    private final UserRepository userRepository;
+    private final ReservaRepository reservaRepository;
 
     public PartidoService(
         PartidoRepository partidoRepository, 
         EmailService emailService, 
-        UserService userService,
-        CanchaService canchaService
+        UserRepository userRepository,
+        
+
+        ReservaRepository reservaRepository
         ) {
             this.partidoRepository = partidoRepository;
             this.emailService=emailService;
-            this.userService=userService;
-            this.canchaService=canchaService;
+            this.userRepository=userRepository;            
+            this.reservaRepository=reservaRepository;
         }
 
-    public Partido crearPartidoAbierto(PartidoAbiertoCreateDTO abiertoDto){
-        String email=userService.obtenerEmailPorId(abiertoDto.idOrganizador());        
-        User organizador =userService.obtenerUsuarioPorId(abiertoDto.idOrganizador());
+    private User autentificarUser(){
+        //esta parte es para validar y tener el email del usuario
+        JwtUserDetails infoUser=(JwtUserDetails) SecurityContextHolder.getContext()
+                                .getAuthentication().getPrincipal();
+        String emailUser= infoUser.email();
 
-        CanchaDTO cancha =canchaService.obtenerCancha(abiertoDto.nroCancha());
+        User organizador=userRepository.findByEmail(emailUser)
+                            .orElseThrow(()->new NotFoundException("El email no esta registrado"));
         
-        if (!cancha.propietarioId().equals(abiertoDto.idOrganizador())) {
-            throw new UnauthorizedCanchaAccessException("No eres propietario de la cancha");
+        if (!organizador.getState()) {
+            throw new IllegalStateException("Antes de crear un partido debe estar registrado");
             
         }
-        PartidoAbierto partido=new PartidoAbierto(
-            abiertoDto.nroCancha(),
+        return organizador;
+
+
+    }
+    
+    private boolean reservaExiste(Long canchaId, LocalDate fecha, LocalTime horaInicio){
+        //veamos si la reserva puede ser efectiva
+
+        LocalTime horaFin=horaInicio.plusHours(1);//segun la duracion es de 1 hora 
+
+        return(reservaRepository.existsReservaConHorarioExacto(
+            canchaId, 
+            fecha, 
+            horaInicio, 
+            horaFin));
+        
+        
+       
+    }
+
+    private void envioDeEmailPorCreacion(String email, Partido partido, String tipo){
+
+        //Enviar correo de confirmacion
+        //sendCreationPartido(String toEmail, String cancha, String fecha, String hora) 
+        emailService.sendCreationPartido(email,
+            partido.getNroCancha().toString(),
+            partido.getFechaPartido().toString(),
+            partido.getHoraPartido().toString(),
+            tipo);
+
+    }
+    @Transactional
+    public PartidoAbierto crearPartidoAbierto(PartidoAbiertoCreateDTO abiertoDto){
+
+        User organizador=autentificarUser();
+
+        if (!reservaExiste(abiertoDto.canchaId(),
+                           abiertoDto.fechaPartido(), 
+                           abiertoDto.horaPartido())) {
+            throw new IllegalStateException("No se encuentra reserva para la cancha y franja horaria");
+            
+        }
+        
+        PartidoAbierto partidoAbierto=new PartidoAbierto(
+            abiertoDto.canchaId(), 
             abiertoDto.fechaPartido(),
             abiertoDto.horaPartido(),
             abiertoDto.minJugadores(),
-            abiertoDto.maxJugadores(),
-            email
-            //abiertoDto.emailOrganizador()
-        );
-        partido.setORganizador(organizador);
+            abiertoDto.maxJugadores()
+            );
+        
+        partidoAbierto.setORganizador(organizador);
+        partidoAbierto.setEmailOrganizador(organizador.getEmail());
 
-        Partido partidoGuardadoA= partidoRepository.save(partido);
-        //Enviar correo de confirmacion
-        //sendCreationPartido(String toEmail, String cancha, String fecha, String hora) 
-        emailService.sendCreationPartido(
-            //partidoGuardadoA.getEmailOrganizador(), 
-            organizador.getEmail(),
-            partidoGuardadoA.getNroCancha().toString(),
-            partidoGuardadoA.getFechaPartido(),
-            partidoGuardadoA.getHoraPartido(),
-            "Abierto");
+        PartidoAbierto partidoGuardadoA= partidoRepository.save(partidoAbierto);
+        
+        envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardadoA,"Abierto");
         return partidoGuardadoA;
     }
 
 
-    public Partido crearPartidoCerrado(PartidoCerradoCreateDTO cerradoDTo){
-        String email=userService.obtenerEmailPorId(cerradoDTo.idOrganizador());
-        User organizador =userService.obtenerUsuarioPorId(cerradoDTo.idOrganizador());
+    public PartidoCerrado crearPartidoCerrado(PartidoCerradoCreateDTO cerradoDto){
+        
+        User organizador=autentificarUser();
 
-        CanchaDTO cancha =canchaService.obtenerCancha(cerradoDTo.nroCancha());
-        if (!cancha.propietarioId().equals(cerradoDTo.idOrganizador())) {
-            throw new UnauthorizedCanchaAccessException("No eres propietario de la cancha");
+        if (!reservaExiste(cerradoDto.canchaId(),
+                           cerradoDto.fechaPartido(),
+                           cerradoDto.horaPartido())) {
+            throw new IllegalStateException("No se encuentra reserva para la cancha y franja horaria");
             
         }
 
 
-
         PartidoCerrado partido = new PartidoCerrado(
-            cerradoDTo.nroCancha(),
-            cerradoDTo.fechaPartido(),
-            cerradoDTo.horaPartido(),
-            cerradoDTo.equipo1(),
-            cerradoDTo.equipo2(),
-            email
+            cerradoDto.canchaId(),
+            cerradoDto.fechaPartido(),
+            cerradoDto.horaPartido(),
+            cerradoDto.equipo1(),
+            cerradoDto.equipo2()
         );
         partido.setORganizador(organizador);
+        partido.setEmailOrganizador(organizador.getEmail());
 
-        Partido partidoGuardadoC= partidoRepository.save(partido);
-        //Enviar correo de confirmacion
-        //sendCreationPartido(String toEmail, String cancha, String fecha, String hora) 
-        emailService.sendCreationPartido(
-            //partidoGuardadoC.getEmailOrganizador(),
-            organizador.getEmail(), 
-            partidoGuardadoC.getNroCancha().toString(),
-            partidoGuardadoC.getFechaPartido(),
-            partidoGuardadoC.getHoraPartido(),
-            "Cerrado");
+        PartidoCerrado partidoGuardadoC= partidoRepository.save(partido);
+        envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardadoC, "Cerrado");
         return partidoGuardadoC;
     
     }

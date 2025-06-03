@@ -1,11 +1,14 @@
 package ar.uba.fi.ingsoft1.todo_template.partido;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public record PartidoResponseDTO(
     Long idPartido,
     String tipoPartido,
     Long nroCancha,
-    String fechaPartido,
-    String horaPartido,
+    LocalDate fechaPartido,
+    LocalTime horaPartido,
     Long organizadorId,
     String emailOrganizador
     
