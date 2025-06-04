@@ -15,8 +15,9 @@ export function crearEquipo(options?: {
             const response = await fetch(`${BASE_API_URL}/equipos`, {
                 method: "POST",
                 headers: {
+                    Accept: "application/json",
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${tokenState?.token}`,
+                    Authorization: `Bearer ${tokenState.accessToken}`,
                 },
                 body: JSON.stringify(data),
             });

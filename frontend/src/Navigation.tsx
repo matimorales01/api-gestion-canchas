@@ -41,7 +41,7 @@ export const Navigation = () => {
                     <Route path="/crear-partido-cerrado">
                       <CrearPartidoCerradoScreen />
                     </Route>
-                    <Route path="/equipo">
+                    <Route path="/crear-equipo">
                         <CrearEquipo />
                     </Route>
                     <Route path="/ver-historial">
