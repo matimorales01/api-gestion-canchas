@@ -20,12 +20,12 @@ export const SignupScreen = () => {
       age: "",
       genre: "",
       zone: "",
-      //foto: null as File | null,
+
     },
     validators: { onChange: SignupSchema },
-    // ...código existente...
+
   onSubmit: async ({ value }) => {
-    mutate(value); // value ya es un objeto plano
+    mutate(value);
   },
 
   });

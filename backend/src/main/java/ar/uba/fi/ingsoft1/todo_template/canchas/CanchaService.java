@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // <-- agregar
+import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -99,7 +99,7 @@ public class CanchaService {
         return cancha.toDTO();
     }
 
-    @Transactional // <-- agregar aquí para que deleteAll y delete() se ejecuten en una misma transacción
+    @Transactional
     public void eliminarCancha(Long id) {
         Cancha cancha = canchaRepo.findById(id)
             .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));

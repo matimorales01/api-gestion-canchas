@@ -1,22 +1,20 @@
 package ar.uba.fi.ingsoft1.todo_template.partido;
 
 import io.swagger.v3.oas.annotations.Operation;
-
 import jakarta.validation.Valid;
-
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoAbiertoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCerradoCreateDTO;
+import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 
 @RestController
 @RequestMapping("/partidos")
-
 public class PartidoRestController {
 
     private final PartidoService partidoService;
@@ -26,66 +24,84 @@ public class PartidoRestController {
     }
 
     @Operation(summary = "Crear un partido abierto")
-    @PostMapping("/abierto")    
+    @PostMapping("/abierto")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<PartidoAbiertoResponseDTO>crearAbierto(@Valid @RequestBody PartidoAbiertoCreateDTO dto) {
-        PartidoAbierto partido=partidoService.crearPartidoAbierto(dto);
+    public ResponseEntity<PartidoAbiertoResponseDTO> crearAbierto(@Valid @RequestBody PartidoAbiertoCreateDTO dto) {
+        PartidoAbierto partido = partidoService.crearPartidoAbierto(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .header("Location","/partidos/" +partido.getIdPartido())
-                .body(PartidoAbiertoResponseDTO.fromEntity(partido));
+                .header("Location", "/partidos/" + partido.getIdPartido())
+                .body(PartidoAbiertoResponseDTO.fromEntity(partido, partido.getOrganizador().getId()));
     }
 
     @Operation(summary = "Crear un partido cerrado")
-    @PostMapping("/cerrado")    
+    @PostMapping("/cerrado")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<PartidoCerradoResponseDTO>crearCerrado(@Valid @RequestBody PartidoCerradoCreateDTO dto) {
-        PartidoCerrado partido=partidoService.crearPartidoCerrado(dto);
+    public ResponseEntity<PartidoCerradoResponseDTO> crearCerrado(@Valid @RequestBody PartidoCerradoCreateDTO dto) {
+        PartidoCerrado partido = partidoService.crearPartidoCerrado(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .header("Location","/partidos/" +partido.getIdPartido())
+                .header("Location", "/partidos/" + partido.getIdPartido())
                 .body(PartidoCerradoResponseDTO.fromEntity(partido));
     }
-    
 
     @Operation(summary = "Listar todos los partidos abiertos")
     @GetMapping("/abiertos")
-    public ResponseEntity<List<PartidoAbiertoResponseDTO>> listarPartidosAbiertos(){
-        List<PartidoAbiertoResponseDTO> lista = partidoService
-                                                .obtenerPartidoAbiertos()
-                                                .stream()
-                                                .map(PartidoAbiertoResponseDTO :: fromEntity)
-                                                .toList();
+    public ResponseEntity<List<PartidoAbiertoResponseDTO>> listarPartidosAbiertos(Authentication authentication) {
+        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+        Long usuarioLogueadoId = userDetails.id().longValue();
+        List<PartidoAbiertoResponseDTO> lista = partidoService.obtenerPartidosAbiertosIncluyendoInscripcion(usuarioLogueadoId);
         return ResponseEntity.ok(lista);
-    } 
+    }
+
+
 
     @Operation(summary = "Listar todos los partidos cerrados")
     @GetMapping("/cerrados")
-    public ResponseEntity<List<PartidoCerradoResponseDTO>> listarPartidosCerrados(){
+    public ResponseEntity<List<PartidoCerradoResponseDTO>> listarPartidosCerrados() {
         List<PartidoCerradoResponseDTO> lista = partidoService
-                                                .obtenerPartidoCerrados()
-                                                .stream()
-                                                .map(PartidoCerradoResponseDTO :: fromEntity)
-                                                .toList();
+                .obtenerPartidoCerrados()
+                .stream()
+                .map(PartidoCerradoResponseDTO::fromEntity)
+                .toList();
         return ResponseEntity.ok(lista);
-    } 
+    }
 
     @Operation(summary = "Listar todo los partidos por idUser")
     @GetMapping("/historial/{userId}")
-    public ResponseEntity<Map<String, List<?>>> historialUsuario(@PathVariable Long userId){
-        List<PartidoAbiertoResponseDTO>abiertosPartidos=partidoService.historialPartidosAbiertosPorUsuario(userId)
-            .stream()
-            .map(PartidoAbiertoResponseDTO :: fromEntity)
-            .toList();
-        
-        List<PartidoCerradoResponseDTO>cerradosPartidos=partidoService.historialPartidosCerradosPorUsuario(userId)
-            .stream()
-            .map(PartidoCerradoResponseDTO :: fromEntity)
-            .toList();
+    public ResponseEntity<Map<String, List<?>>> historialUsuario(@PathVariable Long userId) {
+        List<PartidoAbiertoResponseDTO> abiertosPartidos = partidoService.historialPartidosAbiertosPorUsuario(userId)
+                .stream()
+                .map(pa -> PartidoAbiertoResponseDTO.fromEntity(pa, userId))
+                .toList();
+
+        List<PartidoCerradoResponseDTO> cerradosPartidos = partidoService.historialPartidosCerradosPorUsuario(userId)
+                .stream()
+                .map(PartidoCerradoResponseDTO::fromEntity)
+                .toList();
 
         return ResponseEntity.ok(Map.of(
-            "Partidos_Cerrados" , cerradosPartidos,
-            "Partidos_Abriertos", abiertosPartidos
+                "Partidos_Cerrados", cerradosPartidos,
+                "Partidos_Abriertos", abiertosPartidos
         ));
     }
+
+    @Operation(summary = "Inscribir usuario a partido abierto")
+    @PostMapping("/abierto/{id}/inscribir")
+    public ResponseEntity<?> inscribirAAbierto(@PathVariable Long id, Authentication authentication) {
+        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.id().longValue();
+        partidoService.inscribirAAbierto(id, userId);
+        return ResponseEntity.ok(Map.of("mensaje", "Inscripción exitosa"));
+    }
+
+    @Operation(summary = "Desinscribir usuario de partido abierto")
+    @PostMapping("/abierto/{id}/desinscribir")
+    public ResponseEntity<?> desinscribirDeAbierto(@PathVariable Long id, Authentication authentication) {
+        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.id().longValue();
+        partidoService.desinscribirDeAbierto(id, userId);
+        return ResponseEntity.ok(Map.of("mensaje", "Desinscripción exitosa"));
+    }
+
 }

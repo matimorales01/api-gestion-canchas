@@ -35,12 +35,10 @@ class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private void authenticateToken(HttpServletRequest request) {
-        // Is the user already authenticated?
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             return;
         }
 
-        // Try to get the token
         String authHeader = request.getHeader("Authorization");
         String headerPrefix = "Bearer ";
         if (authHeader == null || !authHeader.startsWith(headerPrefix)) {

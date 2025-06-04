@@ -28,8 +28,7 @@ export function useSignup() {
         },
         body: JSON.stringify(data),
       });
-      //console.log("Request URL:", BASE_API_URL + "/users");
-      //console.log("Request body:", data);
+
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -74,7 +73,7 @@ export function useGetCanchas() {
       if (!response.ok) {
         throw new Error("Error al obtener las canchas");
       }
-      return response.json(); // Espera un array de canchas
+      return response.json();
     },
   });
 }
@@ -96,7 +95,7 @@ export function useCrearPartido() {
         throw new Error(`Error al crear partido: ${errorText}`);
       }
 
-      return response.json(); // puedes retornar el partido creado o lo que tu backend devuelva
+      return response.json();
     },
   });
 }

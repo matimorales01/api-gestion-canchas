@@ -10,4 +10,6 @@ public record PartidoAbiertoCreateDTO(
     @NotNull LocalDate fechaPartido,
     @NotNull LocalTime horaPartido,
     @NotNull Integer minJugadores,
-    @NotNull Integer maxJugadores){}
+    @NotNull Integer maxJugadores,
+    @NotNull Integer cuposDisponibles)
+{ }

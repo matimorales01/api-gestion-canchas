@@ -64,7 +64,6 @@ export const Navigation = () => {
                 </Switch>
             );
         default:
-            // Make the compiler check this is unreachable
             return tokenState satisfies never;
     }
 };
