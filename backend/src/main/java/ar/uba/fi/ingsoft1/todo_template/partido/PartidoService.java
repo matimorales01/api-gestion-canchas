@@ -6,10 +6,9 @@ import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.UnauthorizedCanchaAccessException;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoAbiertoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCerradoCreateDTO;
-
-import ar.uba.fi.ingsoft1.todo_template.user.EmailService;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserService;
+import ar.uba.fi.ingsoft1.todo_template.user.verificacion.EmailService;
 
 import java.util.List;
 import java.util.Optional;

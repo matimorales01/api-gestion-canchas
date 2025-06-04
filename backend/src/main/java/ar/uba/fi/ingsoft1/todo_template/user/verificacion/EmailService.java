@@ -1,4 +1,4 @@
-package ar.uba.fi.ingsoft1.todo_template.user;
+package ar.uba.fi.ingsoft1.todo_template.user.verificacion;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
