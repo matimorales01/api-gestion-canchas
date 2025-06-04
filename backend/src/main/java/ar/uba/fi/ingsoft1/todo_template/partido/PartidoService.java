@@ -32,7 +32,7 @@ public class PartidoService {
     private final ReservaRepository reservaRepository;
 
     public PartidoService(
-        PartidoRepository partidoRepository, 
+        PartidoRepository partidoRepository,
         EmailService emailService, 
         UserRepository userRepository,
         
@@ -46,7 +46,6 @@ public class PartidoService {
         }
 
     private User autentificarUser(){
-        //esta parte es para validar y tener el email del usuario
         JwtUserDetails infoUser=(JwtUserDetails) SecurityContextHolder.getContext()
                                 .getAuthentication().getPrincipal();
         String emailUser= infoUser.email();
@@ -64,9 +63,8 @@ public class PartidoService {
     }
     
     private boolean reservaExiste(Long canchaId, LocalDate fecha, LocalTime horaInicio){
-        //veamos si la reserva puede ser efectiva
 
-        LocalTime horaFin=horaInicio.plusHours(1);//segun la duracion es de 1 hora 
+        LocalTime horaFin=horaInicio.plusHours(1);
 
         return(reservaRepository.existsReservaConHorarioExacto(
             canchaId, 
@@ -80,8 +78,6 @@ public class PartidoService {
 
     private void envioDeEmailPorCreacion(String email, Partido partido, String tipo){
 
-        //Enviar correo de confirmacion
-        //sendCreationPartido(String toEmail, String cancha, String fecha, String hora) 
         emailService.sendCreationPartido(email,
             partido.getNroCancha().toString(),
             partido.getFechaPartido().toString(),
@@ -106,7 +102,8 @@ public class PartidoService {
             abiertoDto.fechaPartido(),
             abiertoDto.horaPartido(),
             abiertoDto.minJugadores(),
-            abiertoDto.maxJugadores()
+            abiertoDto.maxJugadores(),
+            abiertoDto.cuposDisponibles()
             );
         
         partidoAbierto.setORganizador(organizador);
@@ -152,13 +149,23 @@ public class PartidoService {
     public List<Partido> obtenerTodosLosPartidos(){
         return partidoRepository.findAll();
     }
-    public List<PartidoAbierto> obtenerPartidoAbiertos(){
+
+
+    public List<PartidoAbierto> obtenerPartidosAbiertos(){
         return partidoRepository.findAll()
                 .stream()
                 .filter(p->p instanceof PartidoAbierto)
                 .map(p -> (PartidoAbierto) p)
                 .toList();
     }
+
+    @Transactional
+    public List<PartidoAbiertoResponseDTO> obtenerPartidosAbiertosIncluyendoInscripcion(Long userId) {
+        return obtenerPartidosAbiertos().stream()
+                .map(pa -> PartidoAbiertoResponseDTO.fromEntity(pa, userId))
+                .toList();
+    }
+
     public List<PartidoCerrado> obtenerPartidoCerrados(){
         return partidoRepository.findAll()
                 .stream()
@@ -182,4 +189,35 @@ public class PartidoService {
     public void eliminarPartido(Long idpartido){
         partidoRepository.deleteById(idpartido);
     }
+    @Transactional
+    public void inscribirAAbierto(Long partidoId, Long userId) {
+        PartidoAbierto partido = (PartidoAbierto) partidoRepository.findById(partidoId)
+                .orElseThrow(() -> new NotFoundException("Partido abierto no encontrado"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+
+        if (!partido.hayCupos()) {
+            throw new IllegalStateException("No hay cupos disponibles para este partido.");
+        }
+        if (partido.getJugadores().contains(user)) {
+            throw new IllegalStateException("El usuario ya está inscripto en este partido.");
+        }
+        partido.inscribirJugador(user);
+        partidoRepository.save(partido);
+    }
+
+    @Transactional
+    public void desinscribirDeAbierto(Long partidoId, Long userId) {
+        PartidoAbierto partido = (PartidoAbierto) partidoRepository.findById(partidoId)
+                .orElseThrow(() -> new NotFoundException("Partido abierto no encontrado"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+
+        if (!partido.getJugadores().contains(user)) {
+            throw new IllegalStateException("El usuario no está inscripto en este partido.");
+        }
+        partido.desinscribirJugador(user);
+        partidoRepository.save(partido);
+    }
+
 }

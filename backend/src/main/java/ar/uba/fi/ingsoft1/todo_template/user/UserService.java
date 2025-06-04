@@ -107,6 +107,7 @@ public class UserService implements UserDetailsService {
 
     private TokenDTO generateTokens(User user) {
         String accessToken = jwtService.createToken(new JwtUserDetails(
+                user.getId().intValue(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getRole()
@@ -114,6 +115,7 @@ public class UserService implements UserDetailsService {
         RefreshToken refreshToken = refreshTokenService.createFor(user);
         return new TokenDTO(accessToken, refreshToken.value());
     }
+
 
     public String obtenerEmailPorId(Long idUser){
         return userRepository.findById(idUser)

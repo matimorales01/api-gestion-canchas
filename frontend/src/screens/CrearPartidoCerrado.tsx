@@ -14,8 +14,6 @@ const canchas = [
 
 
 export const CrearPartidoCerradoScreen = () => {
-    //const { data: canchas, isLoading, isError } = useGetCanchas();
-    //const { mutate } = useCrearPartido();
 
     const form = useAppForm({
         defaultValues: {

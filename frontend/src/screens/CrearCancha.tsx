@@ -21,7 +21,7 @@ export const CanchaScreen = () => {
       iluminacion: false,
       zona: "",
       direccion: "",
-      //fotos: undefined,
+
     },
     validators: {
       onChange: CanchaRequestSchema,
