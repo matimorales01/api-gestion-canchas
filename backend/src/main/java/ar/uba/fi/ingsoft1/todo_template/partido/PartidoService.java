@@ -33,15 +33,15 @@ public class PartidoService {
 
     public PartidoService(
         PartidoRepository partidoRepository,
-        EmailService emailService, 
+        EmailService emailService,
         UserRepository userRepository,
-        
+
 
         ReservaRepository reservaRepository
         ) {
             this.partidoRepository = partidoRepository;
             this.emailService=emailService;
-            this.userRepository=userRepository;            
+            this.userRepository=userRepository;
             this.reservaRepository=reservaRepository;
         }
 
@@ -52,28 +52,28 @@ public class PartidoService {
 
         User organizador=userRepository.findByEmail(emailUser)
                             .orElseThrow(()->new NotFoundException("El email no esta registrado"));
-        
+
         if (!organizador.getState()) {
             throw new IllegalStateException("Antes de crear un partido debe estar registrado");
-            
+
         }
         return organizador;
 
 
     }
-    
+
     private boolean reservaExiste(Long canchaId, LocalDate fecha, LocalTime horaInicio){
 
         LocalTime horaFin=horaInicio.plusHours(1);
 
         return(reservaRepository.existsReservaConHorarioExacto(
-            canchaId, 
-            fecha, 
-            horaInicio, 
+            canchaId,
+            fecha,
+            horaInicio,
             horaFin));
-        
-        
-       
+
+
+
     }
 
     private void envioDeEmailPorCreacion(String email, Partido partido, String tipo){
@@ -91,40 +91,40 @@ public class PartidoService {
         User organizador=autentificarUser();
 
         if (!reservaExiste(abiertoDto.canchaId(),
-                           abiertoDto.fechaPartido(), 
+                           abiertoDto.fechaPartido(),
                            abiertoDto.horaPartido())) {
             throw new IllegalStateException("No se encuentra reserva para la cancha y franja horaria");
-            
+
         }
-        
+
         PartidoAbierto partidoAbierto=new PartidoAbierto(
-            abiertoDto.canchaId(), 
+            abiertoDto.canchaId(),
             abiertoDto.fechaPartido(),
             abiertoDto.horaPartido(),
             abiertoDto.minJugadores(),
             abiertoDto.maxJugadores(),
             abiertoDto.cuposDisponibles()
             );
-        
+
         partidoAbierto.setORganizador(organizador);
         partidoAbierto.setEmailOrganizador(organizador.getEmail());
 
         PartidoAbierto partidoGuardadoA= partidoRepository.save(partidoAbierto);
-        
+
         envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardadoA,"Abierto");
         return partidoGuardadoA;
     }
 
 
     public PartidoCerrado crearPartidoCerrado(PartidoCerradoCreateDTO cerradoDto){
-        
+
         User organizador=autentificarUser();
 
         if (!reservaExiste(cerradoDto.canchaId(),
                            cerradoDto.fechaPartido(),
                            cerradoDto.horaPartido())) {
             throw new IllegalStateException("No se encuentra reserva para la cancha y franja horaria");
-            
+
         }
 
 
@@ -141,7 +141,7 @@ public class PartidoService {
         PartidoCerrado partidoGuardadoC= partidoRepository.save(partido);
         envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardadoC, "Cerrado");
         return partidoGuardadoC;
-    
+
     }
 
 
@@ -173,7 +173,7 @@ public class PartidoService {
                 .map(p -> (PartidoCerrado) p)
                 .toList();
     }
-    
+
     public List<PartidoAbierto> historialPartidosAbiertosPorUsuario(Long userId){
         return partidoRepository.findPartidosAbiertosByOrganizadorId(userId);
     }
@@ -181,7 +181,7 @@ public class PartidoService {
     public List<PartidoCerrado> historialPartidosCerradosPorUsuario(Long userId){
         return partidoRepository.findPartidosCerradosByOrganizadorId(userId);
     }
-    
+
     public Optional<Partido> obtenerPartidoPorIdpartido(Long idpartido){
         return partidoRepository.findById(idpartido);
     }
@@ -202,8 +202,21 @@ public class PartidoService {
         if (partido.getJugadores().contains(user)) {
             throw new IllegalStateException("El usuario ya está inscripto en este partido.");
         }
+
         partido.inscribirJugador(user);
+
+        if (partido.getJugadores().size() >= partido.getMinJugadores()) {
+            partido.setPartidoConfirmado(true);
+        }
+
         partidoRepository.save(partido);
+
+        emailService.sendInscripcionPartido(
+                user.getEmail(),
+                String.valueOf(partido.getNroCancha()),
+                partido.getFechaPartido().toString(),
+                partido.getHoraPartido().toString()
+        );
     }
 
     @Transactional
@@ -213,11 +226,28 @@ public class PartidoService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
+        LocalDate hoy = LocalDate.now();
+        LocalTime ahora = LocalTime.now();
+        boolean yaEmpezo = partido.getFechaPartido().isBefore(hoy)
+                || (partido.getFechaPartido().isEqual(hoy) && partido.getHoraPartido().isBefore(ahora));
+
+        if (partido.isPartidoConfirmado() || yaEmpezo) {
+            throw new IllegalStateException("No se puede dar de baja, el partido ya está confirmado o comenzó.");
+        }
         if (!partido.getJugadores().contains(user)) {
             throw new IllegalStateException("El usuario no está inscripto en este partido.");
         }
         partido.desinscribirJugador(user);
         partidoRepository.save(partido);
+
+        emailService.sendDesinscripcionPartido(
+                user.getEmail(),
+                String.valueOf(partido.getNroCancha()),
+                partido.getFechaPartido().toString(),
+                partido.getHoraPartido().toString()
+        );
     }
+
+
 
 }

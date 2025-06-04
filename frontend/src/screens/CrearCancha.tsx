@@ -7,7 +7,7 @@ import { useLocation } from "wouter";
 export const CanchaScreen = () => {
   const [, navigate] = useLocation();
 
-  const { mutate, error, isPending } = useCrearCancha({
+  const { mutate, error, } = useCrearCancha({
     onSuccess: () => {
       alert("Cancha creada con exito!");
       navigate("/");
@@ -46,7 +46,7 @@ return (
               <div>
                 <label>Tipo de Césped</label>
                 <select
-                  value={field.value}
+                  value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                 >
                   <option value="">Seleccionar</option>

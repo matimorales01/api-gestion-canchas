@@ -3,11 +3,14 @@ import { z } from "zod";
 export interface Partido {
   idPartido: number;
   nroCancha: number;
+  fechaPartido: string;
   horaPartido: string;
   cuposDisponibles: number;
   emailOrganizador: string;
   inscripto: boolean;
+  partidoConfirmado: boolean;
 }
+
 
 export const CrearPartidoSchema = z.object({
   nroCancha: z.string().min(1, "La cancha no puede estar vacía").refine((val) => !isNaN(Number(val)), { message: "Debe ser un número" }),

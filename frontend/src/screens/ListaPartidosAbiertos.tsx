@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import {
     usePartidosAbiertos,
@@ -8,6 +8,16 @@ import {
 import { useCanchas } from "@/services/CanchaService";
 import { Partido } from "@/models/Partido";
 import { Cancha } from "@/models/Cancha";
+
+function partidoYaEmpezo(fecha: string, hora: string): boolean {
+    try {
+        if (!fecha || !hora) return false;
+        const fechaHora = new Date(`${fecha}T${hora}`);
+        return fechaHora.getTime() <= Date.now();
+    } catch {
+        return false;
+    }
+}
 
 const PartidosAbiertos = () => {
     const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -70,6 +80,65 @@ const PartidosAbiertos = () => {
                             const cancha = (canchas as Cancha[]).find(c => c.id === partido.nroCancha);
                             const nombreCancha = cancha?.nombre ?? partido.nroCancha;
                             const direccionCancha = cancha?.direccion ?? "-";
+
+                            const yaEmpezo = partido.fechaPartido && partido.horaPartido
+                                ? partidoYaEmpezo(partido.fechaPartido, partido.horaPartido)
+                                : false;
+
+
+                            let accion: React.ReactNode = null;
+                            if (yaEmpezo) {
+                                accion = <span style={{ color: "#ffb300", fontWeight: 600 }}>Partido en curso</span>;
+                            } else if (partido.partidoConfirmado) {
+                                accion = <span style={{ color: "#1c8a3e", fontWeight: 600 }}>Partido confirmado</span>;
+                            } else if (!partido.inscripto && partido.cuposDisponibles === 0) {
+                                accion = <span style={{ color: "#d32f2f", fontWeight: 600 }}>Partido lleno</span>;
+                            } else if (!partido.inscripto && partido.cuposDisponibles > 0) {
+                                accion = (
+                                    <button
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            inscribir.mutate(partido.idPartido, {
+                                                onSuccess: () => alert("¡Inscripción exitosa!"),
+                                                onError: (error) =>
+                                                    alert(
+                                                        "No se pudo inscribir: " +
+                                                        (error instanceof Error ? error.message : "Error desconocido")
+                                                    ),
+                                            });
+                                        }}
+                                        disabled={inscribir.isPending}
+                                        style={btnGreen}
+                                    >
+                                        Inscribirse
+                                    </button>
+                                );
+                            } else if (
+                                partido.inscripto &&
+                                !partido.partidoConfirmado &&
+                                !yaEmpezo
+                            ) {
+                                accion = (
+                                    <button
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            desinscribir.mutate(partido.idPartido, {
+                                                onSuccess: () => alert("Desinscripción exitosa"),
+                                                onError: (error) =>
+                                                    alert(
+                                                        "No se pudo desinscribir: " +
+                                                        (error instanceof Error ? error.message : "Error desconocido")
+                                                    ),
+                                            });
+                                        }}
+                                        disabled={desinscribir.isPending}
+                                        style={btnRed}
+                                    >
+                                        Desinscribirse
+                                    </button>
+                                );
+                            }
+
                             return (
                                 <tr
                                     key={partido.idPartido}
@@ -85,31 +154,7 @@ const PartidosAbiertos = () => {
                                     <td style={tdStyle}>{partido.horaPartido}</td>
                                     <td style={tdStyle}>{partido.cuposDisponibles}</td>
                                     <td style={tdStyle}>{partido.emailOrganizador}</td>
-                                    <td style={tdStyle}>
-                                        {!partido.inscripto ? (
-                                            <button
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    inscribir.mutate(partido.idPartido);
-                                                }}
-                                                disabled={inscribir.isPending}
-                                                style={btnGreen}
-                                            >
-                                                Inscribirse
-                                            </button>
-                                        ) : (
-                                            <button
-                                                onClick={e => {
-                                                    e.stopPropagation();
-                                                    desinscribir.mutate(partido.idPartido);
-                                                }}
-                                                disabled={desinscribir.isPending}
-                                                style={btnRed}
-                                            >
-                                                Desinscribirse
-                                            </button>
-                                        )}
-                                    </td>
+                                    <td style={tdStyle}>{accion}</td>
                                 </tr>
                             );
                         })}

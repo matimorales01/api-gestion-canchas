@@ -12,7 +12,8 @@ public record PartidoAbiertoResponseDTO(
         Integer cuposDisponibles,
         Long organizadorId,
         String emailOrganizador,
-        boolean inscripto
+        boolean inscripto,
+        boolean partidoConfirmado
 ) {
     public static PartidoAbiertoResponseDTO fromEntity(PartidoAbierto partido, Long usuarioLogueadoId){
         boolean inscripto = partido.getJugadores().stream()
@@ -27,7 +28,8 @@ public record PartidoAbiertoResponseDTO(
                 partido.getCuposDisponibles(),
                 partido.getOrganizador().getId(),
                 partido.getOrganizador().getEmail(),
-                inscripto
+                inscripto,
+                partido.isPartidoConfirmado()
         );
     }
 }

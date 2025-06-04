@@ -20,6 +20,9 @@ public class PartidoAbierto extends Partido {
     @Column(nullable = false)
     private int cuposDisponibles;
 
+    private boolean partidoConfirmado = false;
+
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "partido_abierto_inscriptos",
@@ -87,6 +90,13 @@ public class PartidoAbierto extends Partido {
             return true;
         }
         return false;
+    }
+
+    public boolean isPartidoConfirmado() {
+        return partidoConfirmado;
+    }
+    public void setPartidoConfirmado(boolean partidoConfirmado) {
+        this.partidoConfirmado = partidoConfirmado;
     }
 
     @Override
