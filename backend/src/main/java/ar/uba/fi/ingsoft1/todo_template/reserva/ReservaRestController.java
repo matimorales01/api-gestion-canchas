@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaCreateDTO;
+import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.ReservacionHorarioCanchaCoincideException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 
@@ -29,5 +30,10 @@ public class ReservaRestController {
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<ReservaDTO> obtenerReserva() {
+        return ResponseEntity.ok(reservaService.obtenerReserva());
     }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
+import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
 
 @Entity
 @Table(name = "reservas")
@@ -40,4 +41,8 @@ public class Reserva {
 
     public LocalTime getHoraFin() { return horaFin; }
     public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin; }
+
+    public ReservaDTO toReservaDTO() {
+        return new ReservaDTO(id, cancha.getId(), fecha, horaInicio, horaFin);
+    }
 }
