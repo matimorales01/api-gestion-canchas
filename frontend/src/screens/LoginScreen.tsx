@@ -21,7 +21,7 @@ export const LoginScreen = () => {
     mutate(value, {
       onSuccess: (data) => {
         if (data?.token) {
-          setToken(data.token); // ← guardar el token en el contexto
+          setToken(data.token);
         }
       },
     });

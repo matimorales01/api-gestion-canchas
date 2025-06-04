@@ -5,6 +5,7 @@ import { MainScreen } from "@/screens/MainScreen";
 import { SignupScreen } from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
 import { CanchaScreen } from "@/screens/CrearCancha";
+import { HistorialScreen } from "@/screens/HistorialScreen";
 import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
 import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
@@ -43,6 +44,9 @@ export const Navigation = () => {
                     <Route path="/equipo">
                         <CrearEquipo />
                     </Route>
+                    <Route path="/ver-historial">
+                      <HistorialScreen />
+                    </Route>
                     <Route>
                         <Redirect href="/" />
                     </Route>
@@ -63,7 +67,6 @@ export const Navigation = () => {
                 </Switch>
             );
         default:
-            // Make the compiler check this is unreachable
             return tokenState satisfies never;
     }
 };

@@ -1,9 +1,12 @@
 package ar.uba.fi.ingsoft1.todo_template.partido;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 public record PartidoCerradoResponseDTO(
     Long idPartido,
-    String fechaPartido,
-    String horaPartido,
+    LocalDate fechaPartido,
+    LocalTime horaPartido,
     Long nroCancha,
     String equipo1,
     String equipo2,

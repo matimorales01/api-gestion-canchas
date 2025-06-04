@@ -60,6 +60,9 @@ const LoggedInLinks = () => {
             <li>
                 <Link href="/crear-partido-cerrado">Crear partido cerrado</Link>
             </li>
+            <li>
+                <Link href="/ver-historial">Historial</Link>
+            </li>
             <li>Projects</li>
             <li>Tasks</li>
             <li>

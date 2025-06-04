@@ -4,13 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-//import jakarta.persistence.OneToMany;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-//import ar.uba.fi.ingsoft1.todo_template.partido.Partido;
 
 import java.util.Collection;
 import java.util.List;
@@ -52,8 +50,6 @@ public class User implements UserDetails, UserCredentials {
     @Column(nullable = false)
     private String role;
 
-    //@OneToMany(mappedBy = "organizador")
-    //private List<Partido> partidosCreados;
 
     public User() {}
 

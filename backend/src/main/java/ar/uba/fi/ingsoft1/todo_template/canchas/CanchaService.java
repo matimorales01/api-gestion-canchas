@@ -1,28 +1,45 @@
 package ar.uba.fi.ingsoft1.todo_template.canchas;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.security.core.context.SecurityContextHolder;
-import ar.uba.fi.ingsoft1.todo_template.user.User;
-import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaAlreadyExistsException;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotFoundException;
-import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
+
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaEditDTO;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaAlreadyExistsException;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.CanchaConReservasFuturasException;
+import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.user.User;
+import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
+
+import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
+import ar.uba.fi.ingsoft1.todo_template.reserva.FranjaDisponibleRepository;
 
 @Service
 public class CanchaService {
     private final CanchaRepository canchaRepo;
     private final UserRepository userRepo;
+    private final ReservaRepository reservaRepo;
+    private final FranjaDisponibleRepository franjaRepo;
 
-    public CanchaService(CanchaRepository canchaRepo, UserRepository userRepo) {
+    public CanchaService(
+        CanchaRepository canchaRepo,
+        UserRepository userRepo,
+        ReservaRepository reservaRepo,
+        FranjaDisponibleRepository franjaRepo
+    ) {
         this.canchaRepo = canchaRepo;
         this.userRepo   = userRepo;
+        this.reservaRepo = reservaRepo;
+        this.franjaRepo = franjaRepo;
     }
 
     public CanchaDTO crearCancha(CanchaCreateDTO dto) {
@@ -33,16 +50,14 @@ public class CanchaService {
             );
         }
         
-        // Obtengo la información del usuario autenticado desde el access token
-        JwtUserDetails userInfo = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication()
-        .getPrincipal();
+        JwtUserDetails userInfo = (JwtUserDetails) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
         String email = userInfo.email();
 
         User propietario = userRepo.findByEmail(email)
             .orElseThrow(() ->
-                new UserNotFoundException("Usuario con email: '" + email + "' no encontrado.")
+                new NotFoundException("Usuario con email: '" + email + "' no encontrado.")
             );
-
 
         Cancha cancha = dto.asCancha(propietario);
         canchaRepo.save(cancha);
@@ -66,13 +81,12 @@ public class CanchaService {
     public CanchaDTO obtenerCancha(Long id) {
         Cancha cancha = canchaRepo.findById(id)
             .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));
-        CanchaDTO dto = cancha.toDTO();
-        return dto;
+        return cancha.toDTO();
     }
 
     public CanchaDTO editarCancha(Long id, CanchaEditDTO dto) {
         Cancha cancha = canchaRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cancha no encontrada"));
+                .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada"));
 
         if (dto.getNombre() != null) cancha.setNombre(dto.getNombre());
         if (dto.getDireccion() != null) cancha.setDireccion(dto.getDireccion());
@@ -82,8 +96,21 @@ public class CanchaService {
         if (dto.getActiva() != null) cancha.setActiva(dto.getActiva());
 
         canchaRepo.save(cancha);
-
         return cancha.toDTO();
     }
 
+    @Transactional
+    public void eliminarCancha(Long id) {
+        Cancha cancha = canchaRepo.findById(id)
+            .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));
+
+        LocalDate hoy = LocalDate.now();
+        boolean tieneReserva = reservaRepo.existsReservaFuturaPorCancha(id, hoy);
+        if (tieneReserva) {
+            throw new CanchaConReservasFuturasException(id);
+        }
+
+        franjaRepo.deleteAllByCanchaId(id);
+        canchaRepo.delete(cancha);
+    }
 }

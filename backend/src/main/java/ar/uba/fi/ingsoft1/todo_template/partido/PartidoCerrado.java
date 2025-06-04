@@ -1,5 +1,8 @@
 package ar.uba.fi.ingsoft1.todo_template.partido;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.*;;
 
 @Entity
@@ -15,8 +18,10 @@ public class PartidoCerrado extends Partido {
 
     public PartidoCerrado() {}
 
-    public PartidoCerrado(Long nroCancha,String fechaPartido,String horaPartido, String equipo1, String equipo2, String emailOrganizador) {
-        super(nroCancha,fechaPartido,horaPartido,emailOrganizador);
+    public PartidoCerrado(Long canchaId,
+            LocalDate fechaPartido,LocalTime horaPartido, 
+            String equipo1, String equipo2) {
+        super(canchaId,fechaPartido,horaPartido);
         this.equipo1=equipo1;
         this.equipo2=equipo2;
     

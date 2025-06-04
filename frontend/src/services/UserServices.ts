@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import { BASE_API_URL } from "@/config/app-query-client";
 import { LoginRequest, LoginResponseSchema } from "@/models/Login";
@@ -28,8 +28,7 @@ export function useSignup() {
         },
         body: JSON.stringify(data),
       });
-      //console.log("Request URL:", BASE_API_URL + "/users");
-      //console.log("Request body:", data);
+
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -58,4 +57,45 @@ async function auth(endpoint: string, data: LoginRequest) {
   } else {
     throw new Error(`Failed with status ${response.status}: ${await response.text()}`);
   }
+}
+
+export function useGetCanchas() {
+  return useQuery({
+    queryKey: ["canchas"],
+    queryFn: async () => {
+      const response = await fetch(BASE_API_URL + "/canchas", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al obtener las canchas");
+      }
+      return response.json();
+    },
+  });
+}
+
+export function useCrearPartido() {
+  return useMutation({
+    mutationFn: async (data: Record<string, any>) => {
+      const response = await fetch(BASE_API_URL + "/partidos", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al crear partido: ${errorText}`);
+      }
+
+      return response.json();
+    },
+  });
 }

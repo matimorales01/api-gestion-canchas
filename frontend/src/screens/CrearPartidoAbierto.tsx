@@ -1,74 +1,68 @@
-    import React, { useState } from "react";
-    import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
-    import { useAppForm } from "@/config/use-app-form";
-    import { CrearPartidoSchema } from "@/models/Partido";
-    import { useCrearPartido, useGetCanchas } from "@/services/PartidoService";
+import { useState } from "react";
+import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
+import { useAppForm } from "@/config/use-app-form";
+import { CrearPartidoSchema } from "@/models/Partido";
+import { useCrearPartido } from "@/services/PartidoService";
+import { useCanchas } from "@/services/CanchaService";
+import { string } from "zod";
 
-const canchas = [
-    { id: 1, nombre: "Cancha Norte", zona: "Barrio Norte" },
-    { id: 2, nombre: "Cancha Sur", zona: "Barracas" },
-    { id: 3, nombre: "Cancha Oeste", zona: "Liniers" },
-    { id: 4, nombre: "Cancha Central", zona: "Microcentro" },
-    { id: 5, nombre: "Cancha Este", zona: "Puerto Madero" },
-]; 
- 
+export const CrearPartidoAbiertoScreen = () => {
+const { data: canchas, isLoading, isError } = useCanchas();
+const { mutate } = useCrearPartido();
 
-    export const CrearPartidoAbiertoScreen = () => {
-    //const { data: canchas, isLoading, isError } = useGetCanchas();
-    //const { mutate } = useCrearPartido();
-
-    const form = useAppForm({
+const form = useAppForm({
     defaultValues: {
-        cancha: "",
-        franjaHoraria: "",
-        jugadoresMinimos: "",
-        jugadoresMaximos: "",
-        fecha: "",
-        cupos: "",
+    nroCancha: "",
+    horaPartido: "",
+    minJugadores: "",
+    maxJugadores: "",
+    fechaPartido: "",
     },
     validators: {
-        onChange: CrearPartidoSchema,
+    onChange: CrearPartidoSchema,
     },
     onSubmit: async (values) => {
-      /**  mutate(values, {
+
+    mutate(values.value, {
         onSuccess: () => {
-            alert("¡Partido creado con éxito!");
+        alert("¡Partido creado con éxito!");
         },
         onError: (error) => {
+        if (error instanceof Error) {
             alert("Error al crear el partido: " + error.message);
-        },
-        }); */
-        alert("¡Partido creado con éxito!");
+        } else {
+            alert("Error desconocido al crear el partido");
+        }
+    }
+
+    });
     },
 });
 
 const { AppForm, FormContainer, AppField } = form;
-    
-    console.log("form:", form);
 
-    const [selectedId, setSelectedId] = useState<number | null>(null);
+const [selectedId, setSelectedId] = useState<number | null>(null);
 
-    const handleRowClick = (id: number) => {
+const handleRowClick = (id: number) => {
     setSelectedId(id);
-    form.setFieldValue("cancha", id.toString());
+    form.setFieldValue("nroCancha", id.toString());
     };
 
-/**
-    if (isLoading) {
-        return (
-        <CommonLayout>
-            <p>Cargando canchas...</p>
-        </CommonLayout>
-        );
-    }
+if (isLoading) {
+    return (
+    <CommonLayout>
+        <p>Cargando canchas...</p>
+    </CommonLayout>
+    );
+}
 
-    if (isError) {
-        return (
-        <CommonLayout>
-            <p>Error al cargar las canchas.</p>
-        </CommonLayout>
-        );
-    } */
+if (isError) {
+    return (
+    <CommonLayout>
+        <p>Error al cargar las canchas.</p>
+    </CommonLayout>
+    );
+}
 
     return (
         <CommonLayout>
@@ -80,7 +74,7 @@ const { AppForm, FormContainer, AppField } = form;
                 style={{
                     border: "1px solid #ccc",
                     borderRadius: 8,
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    boxShadow: "0 2px 8px rgba(3, 3, 3, 0.1)",
                     overflow: "hidden",
                 }}
                 >
@@ -92,7 +86,7 @@ const { AppForm, FormContainer, AppField } = form;
                     </tr>
                     </thead>
                     <tbody>
-                    {canchas.map(({ id,nombre, zona }) => (
+                    {canchas && canchas.map(({ id,nombre, zona }) => (
                         <tr
                         key={id}
                         onClick={() => handleRowClick(id)}
@@ -115,15 +109,16 @@ const { AppForm, FormContainer, AppField } = form;
                 </div>
             </div>
             <div>
-                <AppField name="jugadoresMinimos" children={(field) => <field.TextField label="Jugadores Mínimos" />} />
-                <AppField name="jugadoresMaximos" children={(field) => <field.TextField label="Jugadores Máximos" />} />
-                <AppField name="fecha" children={(field) => <field.TextField label="Fecha" />} />
-                <AppField name="cupos" children={(field) => <field.TextField label="Cupos" />} />
-                <AppField name="franjaHoraria" children={(field) => <field.TextField label="Franja Horaria" />} />
+               <div>
+                <AppField name="minJugadores" children={(field) => <field.TextField label="Jugadores Mínimos" />} />
+                <AppField name="maxJugadores" children={(field) => <field.TextField label="Jugadores Máximos" />} />
+                <AppField name="fechaPartido" children={(field) => <field.TextField label="Fecha" />} />
+                <AppField name="horaPartido" children={(field) => <field.TextField label="Franja Horaria" />} />
+            </div>
             </div>
             
         </FormContainer>
-        </AppForm>
-        </CommonLayout>
-    );
+    </AppForm>
+    </CommonLayout>
+);
 };

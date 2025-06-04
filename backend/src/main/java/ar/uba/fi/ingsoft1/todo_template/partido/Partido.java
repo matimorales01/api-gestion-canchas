@@ -4,6 +4,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import jakarta.persistence.*;;
 
@@ -20,10 +24,10 @@ public abstract class Partido {
     private Long nroCancha;
 
     @Column(nullable = true)
-    private String fechaPartido;
+    private LocalDate fechaPartido;
 
     @Column(nullable = false)
-    private String horaPartido;
+    private LocalTime horaPartido;
 
     @Column(nullable = false)
     private int cantJugadoresActuales=0;
@@ -41,12 +45,13 @@ public abstract class Partido {
 
     public Partido() {}
 
-    public Partido(Long nroCancha,String fechaPartido,String horaPartido, String emailOrganizador) {
+    public Partido(Long nroCancha,
+    LocalDate fechaPartido,LocalTime horaPartido) {
         
         this.nroCancha=nroCancha;
         this.fechaPartido=fechaPartido;
         this.horaPartido=horaPartido;
-        this.emailOrganizador=emailOrganizador;
+        
         this.cantJugadoresActuales=0;
     }
 
@@ -63,17 +68,17 @@ public abstract class Partido {
         this.nroCancha=nroCancha;
     }
 
-    public String getFechaPartido() {
+    public LocalDate getFechaPartido() {
         return this.fechaPartido;
     }
-    public void setFechaPartido(String fechaPartido) {
+    public void setFechaPartido(LocalDate fechaPartido) {
         this.fechaPartido = fechaPartido;
     }    
 
-    public String getHoraPartido() {
+    public LocalTime getHoraPartido() {
         return this.horaPartido;
     }
-    public void setHoraPartido(String horaPartido) {
+    public void setHoraPartido(LocalTime horaPartido) {
         this.horaPartido = horaPartido;
     }
     
