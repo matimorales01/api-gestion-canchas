@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { useCanchas, useEditarCancha } from "@/services/CanchaService";
+import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import type { Cancha, CanchaEditRequest } from "@/models/Cancha";
 
 const EditarCanchaScreen: React.FC = () => {
@@ -51,74 +52,80 @@ const EditarCanchaScreen: React.FC = () => {
         });
     };
 
-    if (!cancha) return <div>Cargando datos de la cancha...</div>;
+    if (!cancha) return (
+        <CommonLayout>
+            <div>Cargando datos de la cancha...</div>
+        </CommonLayout>
+    );
 
     return (
-        <div className="container mt-4">
-            <h2>Editar Cancha</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label>Nombre:</label>
-                    <input
-                        className="form-control"
-                        value={nombre}
-                        onChange={e => setNombre(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="mb-3">
-                    <label>Dirección:</label>
-                    <input
-                        className="form-control"
-                        value={direccion}
-                        onChange={e => setDireccion(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="mb-3">
-                    <label>Tipo Césped:</label>
-                    <select
-                        className="form-control"
-                        value={tipoCesped}
-                        onChange={e => setTipoCesped(e.target.value as "Sintetico" | "Natural")}
-                        required
-                    >
-                        <option value="Sintetico">Sintético</option>
-                        <option value="Natural">Natural</option>
-                    </select>
-                </div>
-                <div className="mb-3">
-                    <label>Iluminación:</label>
-                    <input
-                        type="checkbox"
-                        checked={iluminacion}
-                        onChange={e => setIluminacion(e.target.checked)}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label>Zona:</label>
-                    <input
-                        className="form-control"
-                        value={zona}
-                        onChange={e => setZona(e.target.value)}
-                    />
-                </div>
-                <div className="mb-3">
-                    <label>
+        <CommonLayout>
+            <div className="container mt-4">
+                <h2>Editar Cancha</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label>Nombre:</label>
+                        <input
+                            className="form-control"
+                            value={nombre}
+                            onChange={e => setNombre(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label>Dirección:</label>
+                        <input
+                            className="form-control"
+                            value={direccion}
+                            onChange={e => setDireccion(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label>Tipo Césped:</label>
+                        <select
+                            className="form-control"
+                            value={tipoCesped}
+                            onChange={e => setTipoCesped(e.target.value as "Sintetico" | "Natural")}
+                            required
+                        >
+                            <option value="Sintetico">Sintético</option>
+                            <option value="Natural">Natural</option>
+                        </select>
+                    </div>
+                    <div className="mb-3">
+                        <label>Iluminación:</label>
                         <input
                             type="checkbox"
-                            checked={activa}
-                            onChange={e => setActiva(e.target.checked)}
+                            checked={iluminacion}
+                            onChange={e => setIluminacion(e.target.checked)}
                         />
-                        {" "}
-                        Activa
-                    </label>
-                </div>
-                <button className="btn btn-success" type="submit" disabled={editarCancha.isPending}>
-                    {editarCancha.isPending ? "Guardando..." : "Guardar Cambios"}
-                </button>
-            </form>
-        </div>
+                    </div>
+                    <div className="mb-3">
+                        <label>Zona:</label>
+                        <input
+                            className="form-control"
+                            value={zona}
+                            onChange={e => setZona(e.target.value)}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={activa}
+                                onChange={e => setActiva(e.target.checked)}
+                            />
+                            {" "}
+                            Activa
+                        </label>
+                    </div>
+                    <button className="btn btn-success" type="submit" disabled={editarCancha.isPending}>
+                        {editarCancha.isPending ? "Guardando..." : "Guardar Cambios"}
+                    </button>
+                </form>
+            </div>
+        </CommonLayout>
     );
 };
 

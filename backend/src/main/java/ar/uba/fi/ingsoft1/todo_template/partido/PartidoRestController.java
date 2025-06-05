@@ -13,11 +13,13 @@ import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoAbiertoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCerradoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 
+
 @RestController
 @RequestMapping("/partidos")
 public class PartidoRestController {
 
     private final PartidoService partidoService;
+
 
     public PartidoRestController(PartidoService partidoService) {
         this.partidoService = partidoService;
@@ -67,25 +69,6 @@ public class PartidoRestController {
         return ResponseEntity.ok(lista);
     }
 
-    @Operation(summary = "Listar todo los partidos por idUser")
-    @GetMapping("/historial/{userId}")
-    public ResponseEntity<Map<String, List<?>>> historialUsuario(@PathVariable Long userId) {
-        List<PartidoAbiertoResponseDTO> abiertosPartidos = partidoService.historialPartidosAbiertosPorUsuario(userId)
-                .stream()
-                .map(pa -> PartidoAbiertoResponseDTO.fromEntity(pa, userId))
-                .toList();
-
-        List<PartidoCerradoResponseDTO> cerradosPartidos = partidoService.historialPartidosCerradosPorUsuario(userId)
-                .stream()
-                .map(PartidoCerradoResponseDTO::fromEntity)
-                .toList();
-
-        return ResponseEntity.ok(Map.of(
-                "Partidos_Cerrados", cerradosPartidos,
-                "Partidos_Abriertos", abiertosPartidos
-        ));
-    }
-
     @Operation(summary = "Inscribir usuario a partido abierto")
     @PostMapping("/abierto/{id}/inscribir")
     public ResponseEntity<?> inscribirAAbierto(@PathVariable Long id, Authentication authentication) {
@@ -103,5 +86,30 @@ public class PartidoRestController {
         partidoService.desinscribirDeAbierto(id, userId);
         return ResponseEntity.ok(Map.of("mensaje", "Desinscripción exitosa"));
     }
+
+    @Operation(summary = "Historial de partidos del usuario autenticado")
+    @GetMapping("/mis-partidos")
+    public ResponseEntity<Map<String, List<?>>> miHistorial(Authentication authentication) {
+        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+        Long usuarioLogueadoId = userDetails.id().longValue();
+
+        List<PartidoAbiertoResponseDTO> partidosAbiertos =
+                partidoService.historialPartidosAbiertosPorUsuario(usuarioLogueadoId)
+                        .stream()
+                        .map(pa -> PartidoAbiertoResponseDTO.fromEntity(pa, usuarioLogueadoId))
+                        .toList();
+
+        List<PartidoCerradoResponseDTO> partidosCerrados =
+                partidoService.historialPartidosCerradosPorUsuario(usuarioLogueadoId)
+                        .stream()
+                        .map(PartidoCerradoResponseDTO::fromEntity)
+                        .toList();
+
+        return ResponseEntity.ok(Map.of(
+                "partidos_abiertos", partidosAbiertos,
+                "partidos_cerrados", partidosCerrados
+        ));
+    }
+
 
 }

@@ -108,13 +108,9 @@ public class User implements UserDetails, UserCredentials {
         return state;
     }
 
-    /*public List<Partido> getPartidosCreados(){
-       return this.partidosCreados;
-    }*/
-
-    /*public void setPartidoCreados(List<Partido> partidosCreados){
-        this.partidosCreados = partidosCreados;
-    }*/
+    public String getNombre() {
+        return firstName + " " + lastName;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

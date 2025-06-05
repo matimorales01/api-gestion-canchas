@@ -1,15 +1,10 @@
 package ar.uba.fi.ingsoft1.todo_template.partido;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-
 import ar.uba.fi.ingsoft1.todo_template.user.User;
-import jakarta.persistence.*;;
+import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 
 @Entity(name = "partido")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -19,9 +14,10 @@ public abstract class Partido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPartido;
-    
-    @Column(nullable = true)
-    private Long nroCancha;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cancha_id")
+    private Cancha cancha;
 
     @Column(nullable = true)
     private LocalDate fechaPartido;
@@ -30,7 +26,7 @@ public abstract class Partido {
     private LocalTime horaPartido;
 
     @Column(nullable = false)
-    private int cantJugadoresActuales=0;
+    private int cantJugadoresActuales = 0;
 
     @Column(nullable = false)
     private String emailOrganizador;
@@ -38,21 +34,14 @@ public abstract class Partido {
     @ManyToOne
     @JoinColumn(name="organizador_id", nullable = false)
     private User organizador;
-    
-    
-
-    
 
     public Partido() {}
 
-    public Partido(Long nroCancha,
-    LocalDate fechaPartido,LocalTime horaPartido) {
-        
-        this.nroCancha=nroCancha;
-        this.fechaPartido=fechaPartido;
-        this.horaPartido=horaPartido;
-        
-        this.cantJugadoresActuales=0;
+    public Partido(Cancha cancha, LocalDate fechaPartido, LocalTime horaPartido) {
+        this.cancha = cancha;
+        this.fechaPartido = fechaPartido;
+        this.horaPartido = horaPartido;
+        this.cantJugadoresActuales = 0;
     }
 
     public abstract String getTipoPartido();
@@ -61,34 +50,38 @@ public abstract class Partido {
         return this.idPartido;
     }
 
-    public Long getNroCancha() {
-        return this.nroCancha;
+    public Cancha getCancha() {
+        return this.cancha;
     }
-    public void setNroCancha(Long nroCancha){
-        this.nroCancha=nroCancha;
+
+    public void setCancha(Cancha cancha) {
+        this.cancha = cancha;
     }
 
     public LocalDate getFechaPartido() {
         return this.fechaPartido;
     }
+
     public void setFechaPartido(LocalDate fechaPartido) {
         this.fechaPartido = fechaPartido;
-    }    
+    }
 
     public LocalTime getHoraPartido() {
         return this.horaPartido;
     }
+
     public void setHoraPartido(LocalTime horaPartido) {
         this.horaPartido = horaPartido;
     }
-    
-    public int getCantJugadoresActuales(){
+
+    public int getCantJugadoresActuales() {
         return this.cantJugadoresActuales;
     }
 
-    public void setCantJugadoresActuales(int cantJugadoresActuales) { 
+    public void setCantJugadoresActuales(int cantJugadoresActuales) {
         this.cantJugadoresActuales = cantJugadoresActuales;
     }
+
     public String getEmailOrganizador() {
         return this.emailOrganizador;
     }
@@ -97,10 +90,11 @@ public abstract class Partido {
         this.emailOrganizador = emailOrganizador;
     }
 
-    public User getOrganizador(){
+    public User getOrganizador() {
         return organizador;
     }
-    public void setORganizador(User organizador){
-        this.organizador=organizador;
+
+    public void setOrganizador(User organizador) {
+        this.organizador = organizador;
     }
 }

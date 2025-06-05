@@ -58,10 +58,7 @@ const LoggedInLinks = () => {
                 <Link href="/admin/canchas">Panel de Administración</Link>
             </li>
             <li>
-                <Link href="/crear-partido-abierto">Crear partido abierto</Link>
-            </li>
-            <li>
-                <Link href="/crear-partido-cerrado">Crear partido cerrado</Link>
+                <Link href="/crear-reserva">Crear reserva</Link>
             </li>
             <li>
                 <Link href="/ver-historial">Historial</Link>
