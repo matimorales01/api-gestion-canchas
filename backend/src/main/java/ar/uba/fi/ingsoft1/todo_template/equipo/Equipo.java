@@ -1,5 +1,7 @@
 package ar.uba.fi.ingsoft1.todo_template.equipo;
 
+import java.util.Optional;
+
 import ar.uba.fi.ingsoft1.todo_template.equipo.dtos.EquipoDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import jakarta.persistence.Column;
@@ -56,5 +58,15 @@ public class Equipo {
 
     public EquipoDTO asEquipoDTO() {
         return new EquipoDTO(id, teamName, category, mainColors, secondaryColors, captain.getId());
+    }
+
+    public void update(String teamName,
+                       Optional<String> category,
+                       Optional<String> mainColors,
+                       Optional<String> secondaryColors) {
+        this.teamName = teamName;
+        this.category = category.orElse(this.category);
+        this.mainColors = mainColors.orElse(this.mainColors);
+        this.secondaryColors = secondaryColors.orElse(this.secondaryColors);
     }
 }
