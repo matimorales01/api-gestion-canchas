@@ -8,6 +8,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Equipo {
@@ -18,7 +20,8 @@ public class Equipo {
     @Column(unique = true, nullable = false)
     private String teamName;
 
-    @Column(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "captain_id", nullable = false)
     private User captain;
 
     @Column(nullable = true)
