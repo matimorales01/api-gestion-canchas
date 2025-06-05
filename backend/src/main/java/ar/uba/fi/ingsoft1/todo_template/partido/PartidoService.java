@@ -7,7 +7,6 @@ import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoAbiertoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCerradoCreateDTO;
-
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
 import ar.uba.fi.ingsoft1.todo_template.user.EmailService;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
