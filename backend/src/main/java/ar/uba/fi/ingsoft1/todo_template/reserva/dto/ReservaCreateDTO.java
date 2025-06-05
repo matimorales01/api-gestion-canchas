@@ -8,6 +8,6 @@ public record ReservaCreateDTO(
     @NotNull Long canchaId,
     @NotNull LocalDate fecha,
     @NotNull LocalTime horaInicio,
-    @NotNull LocalTime horaFin,
-    @NotNull Long usuarioId
+    @NotNull LocalTime horaFin
+
 ) {}
