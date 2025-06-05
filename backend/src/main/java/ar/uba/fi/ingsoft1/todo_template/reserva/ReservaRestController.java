@@ -1,5 +1,6 @@
 package ar.uba.fi.ingsoft1.todo_template.reserva;
 
+import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,8 @@ import jakarta.validation.Valid;
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.ReservacionHorarioCanchaCoincideException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
+import org.springframework.security.core.Authentication;
+
 
 @RestController
 @RequestMapping("/reservas")
@@ -20,9 +23,11 @@ public class ReservaRestController {
     }
 
     @PostMapping
-    public ResponseEntity<String> crearReserva(@Valid @RequestBody ReservaCreateDTO dto) {
+    public ResponseEntity<String> crearReserva(@Valid @RequestBody ReservaCreateDTO dto, Authentication authentication) {
         try {
-            reservaService.crearReserva(dto);
+            JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+            Long userId = userDetails.id().longValue();
+            reservaService.crearReserva(userId, dto);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (ReservacionHorarioCanchaCoincideException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -30,4 +35,5 @@ public class ReservaRestController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 }
