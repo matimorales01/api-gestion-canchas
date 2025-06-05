@@ -7,7 +7,6 @@ import {
 } from "@/services/PartidoService";
 import { useCanchas } from "@/services/CanchaService";
 import { Partido } from "@/models/Partido";
-import { Cancha } from "@/models/Cancha";
 
 function partidoYaEmpezo(fecha: string, hora: string): boolean {
     try {
@@ -77,9 +76,9 @@ const PartidosAbiertos = () => {
                         </thead>
                         <tbody>
                         {partidos.map((partido: Partido) => {
-                            const cancha = (canchas as Cancha[]).find(c => c.id === partido.nroCancha);
-                            const nombreCancha = cancha?.nombre ?? partido.nroCancha;
-                            const direccionCancha = cancha?.direccion ?? "-";
+                            const nombreCancha = partido.canchaNombre;
+                            const direccionCancha = partido.canchaDireccion;
+
 
                             const yaEmpezo = partido.fechaPartido && partido.horaPartido
                                 ? partidoYaEmpezo(partido.fechaPartido, partido.horaPartido)
