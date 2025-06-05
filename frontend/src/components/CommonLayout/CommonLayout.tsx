@@ -61,10 +61,11 @@ const LoggedInLinks = () => {
                 <Link href="/crear-reserva">Crear reserva</Link>
             </li>
             <li>
+                <Link href="/administrar-reservas">Administrar reserva</Link>
+            </li>
+            <li>
                 <Link href="/ver-historial">Historial</Link>
             </li>
-            <li>Projects</li>
-            <li>Tasks</li>
             <li>
                 <button onClick={logOut}>Log out</button>
             </li>

@@ -14,6 +14,7 @@ import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
 import { CrearEquipo } from "./screens/CrearEquipo";
 import { LoginRequestSchema } from "./models/Login";
 import { CrearReservaScreen } from "./screens/CrearReservaScreen";
+import { AdministrarReservasScreen } from "./screens/AdministrarReservasScreen";
 
 
 export const Navigation = () => {
@@ -40,6 +41,9 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/crear-reserva">
                         <CrearReservaScreen />
+                    </Route>
+                    <Route path="/administrar-reservas">
+                      <AdministrarReservasScreen />
                     </Route>
                     <Route path="/crear-equipo">
                         <CrearEquipo />
