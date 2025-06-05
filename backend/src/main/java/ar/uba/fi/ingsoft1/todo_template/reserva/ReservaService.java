@@ -36,20 +36,24 @@ public class ReservaService {
     }
 
     @Transactional
-    public Reserva crearReserva(ReservaCreateDTO dto) throws ReservacionHorarioCanchaCoincideException {
+    public Reserva crearReserva(Long userId, ReservaCreateDTO dto) throws ReservacionHorarioCanchaCoincideException {
         canchaRepo.findById(dto.canchaId())
-            .orElseThrow(() -> new NotFoundException("Cancha con id " + dto.canchaId() + " no encontrada."));
+                .orElseThrow(() -> new NotFoundException("Cancha con id " + dto.canchaId() + " no encontrada."));
+
+
+        User usuario = userRepo.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Usuario con id " + userId + " no encontrado."));
 
         LocalDate fecha = dto.fecha();
         LocalTime inicio = dto.horaInicio();
         LocalTime fin = dto.horaFin();
 
         FranjaDisponible franja = franjaRepo.findByCanchaIdAndFechaAndHoraInicioAndHoraFin(
-            dto.canchaId(), fecha, inicio, fin
+                dto.canchaId(), fecha, inicio, fin
         );
         if (franja == null) {
             throw new NotFoundException("No existe franja para cancha " + dto.canchaId() +
-                                        " en " + fecha + " " + inicio + "-" + fin);
+                    " en " + fecha + " " + inicio + "-" + fin);
         }
         if (franja.getEstado() == EstadoFranja.OCUPADA) {
             throw new ReservacionHorarioCanchaCoincideException("Franja ya ocupada");
@@ -63,6 +67,7 @@ public class ReservaService {
         r.setFecha(franja.getFecha());
         r.setHoraInicio(franja.getHoraInicio());
         r.setHoraFin(franja.getHoraFin());
+        r.setUsuario(usuario);
         reservaRepo.save(r);
 
         return r;

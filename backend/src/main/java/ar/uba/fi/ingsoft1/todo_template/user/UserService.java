@@ -10,6 +10,9 @@ import ar.uba.fi.ingsoft1.todo_template.user.dtos.TokenDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.UserCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.refresh_token.RefreshToken;
 import ar.uba.fi.ingsoft1.todo_template.user.refresh_token.RefreshTokenService;
+import ar.uba.fi.ingsoft1.todo_template.user.verificacion.EmailService;
+import ar.uba.fi.ingsoft1.todo_template.user.verificacion.VerificationToken;
+import ar.uba.fi.ingsoft1.todo_template.user.verificacion.VerificationTokenRepository;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

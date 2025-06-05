@@ -5,9 +5,7 @@ import {
     useInscribirPartido,
     useDesinscribirPartido,
 } from "@/services/PartidoService";
-import { useCanchas } from "@/services/CanchaService";
 import { Partido } from "@/models/Partido";
-import { Cancha } from "@/models/Cancha";
 
 function partidoYaEmpezo(fecha: string, hora: string): boolean {
     try {
@@ -19,13 +17,18 @@ function partidoYaEmpezo(fecha: string, hora: string): boolean {
     }
 }
 
+function formatearFecha(fechaIso: string): string {
+    if (!fechaIso) return "";
+    const [yyyy, mm, dd] = fechaIso.split("-");
+    return `${dd}/${mm}/${yyyy}`;
+}
+
 const PartidosAbiertos = () => {
     const [selectedId, setSelectedId] = useState<number | null>(null);
 
     const { data: partidos = [], isLoading, isError } = usePartidosAbiertos();
     const inscribir = useInscribirPartido();
     const desinscribir = useDesinscribirPartido();
-    const { data: canchas = [], isLoading: isLoadingCanchas } = useCanchas();
 
     return (
         <CommonLayout>
@@ -43,14 +46,14 @@ const PartidosAbiertos = () => {
                     Lista de partidos abiertos
                 </h2>
 
-                {(isLoading || isLoadingCanchas) && <p style={{ color: "#ccc" }}>Cargando partidos...</p>}
+                {(isLoading) && <p style={{ color: "#ccc" }}>Cargando partidos...</p>}
                 {isError && (
                     <p style={{ color: "#ff6060" }}>
                         Error al cargar los partidos. Intentá recargar.
                     </p>
                 )}
 
-                {!isLoading && !isLoadingCanchas && partidos.length === 0 && (
+                {!isLoading && partidos.length === 0 && (
                     <p style={{ color: "#ccc" }}>No hay partidos abiertos disponibles.</p>
                 )}
 
@@ -69,6 +72,7 @@ const PartidosAbiertos = () => {
                         <tr>
                             <th style={thStyle}>Cancha</th>
                             <th style={thStyle}>Dirección</th>
+                            <th style={thStyle}>Fecha</th>
                             <th style={thStyle}>Hora</th>
                             <th style={thStyle}>Cupos</th>
                             <th style={thStyle}>Mail Organizador</th>
@@ -77,14 +81,12 @@ const PartidosAbiertos = () => {
                         </thead>
                         <tbody>
                         {partidos.map((partido: Partido) => {
-                            const cancha = (canchas as Cancha[]).find(c => c.id === partido.nroCancha);
-                            const nombreCancha = cancha?.nombre ?? partido.nroCancha;
-                            const direccionCancha = cancha?.direccion ?? "-";
+                            const nombreCancha = partido.canchaNombre;
+                            const direccionCancha = partido.canchaDireccion;
 
                             const yaEmpezo = partido.fechaPartido && partido.horaPartido
                                 ? partidoYaEmpezo(partido.fechaPartido, partido.horaPartido)
                                 : false;
-
 
                             let accion: React.ReactNode = null;
                             if (yaEmpezo) {
@@ -151,6 +153,7 @@ const PartidosAbiertos = () => {
                                 >
                                     <td style={tdStyle}>{nombreCancha}</td>
                                     <td style={tdStyle}>{direccionCancha}</td>
+                                    <td style={tdStyle}>{formatearFecha(partido.fechaPartido)}</td>
                                     <td style={tdStyle}>{partido.horaPartido}</td>
                                     <td style={tdStyle}>{partido.cuposDisponibles}</td>
                                     <td style={tdStyle}>{partido.emailOrganizador}</td>

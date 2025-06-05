@@ -1,5 +1,6 @@
 package ar.uba.fi.ingsoft1.todo_template.partido;
 
+import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import jakarta.persistence.*;
 import java.time.LocalDate;
@@ -22,7 +23,6 @@ public class PartidoAbierto extends Partido {
 
     private boolean partidoConfirmado = false;
 
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "partido_abierto_inscriptos",
@@ -33,10 +33,10 @@ public class PartidoAbierto extends Partido {
 
     public PartidoAbierto() {}
 
-    public PartidoAbierto(Long canchaId,
+    public PartidoAbierto(Cancha cancha,
                           LocalDate fechaPartido, LocalTime horaPartido,
                           int minJugadores, int maxJugadores, int cuposDisponibles) {
-        super(canchaId, fechaPartido, horaPartido);
+        super(cancha, fechaPartido, horaPartido);
         this.minJugadores = minJugadores;
         this.maxJugadores = maxJugadores;
         this.cuposDisponibles = cuposDisponibles;

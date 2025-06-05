@@ -13,7 +13,9 @@ export const CommonLayout = ({ children }: React.PropsWithChildren) => {
             <ul className={styles.topBar}>
                 {tokenState.state === "LOGGED_OUT" ? <LoggedOutLinks /> : <LoggedInLinks />}
             </ul>
-            <div className={styles.body}>{children}</div>
+            <div className={styles.mainContent} >
+                {children}
+            </div>
         </div>
     );
 };
@@ -47,16 +49,16 @@ const LoggedInLinks = () => {
                 <Link href="/crear-cancha">Crear Cancha</Link>
             </li>
             <li>
+                <Link href="/crear-equipo">Crear Equipo</Link>
+            </li>
+            <li>
                 <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
             </li>
             <li>
                 <Link href="/admin/canchas">Panel de Administración</Link>
             </li>
             <li>
-                <Link href="/crear-partido-abierto">Crear partido abierto</Link>
-            </li>
-            <li>
-                <Link href="/crear-partido-cerrado">Crear partido cerrado</Link>
+                <Link href="/crear-reserva">Crear reserva</Link>
             </li>
             <li>
                 <Link href="/ver-historial">Historial</Link>

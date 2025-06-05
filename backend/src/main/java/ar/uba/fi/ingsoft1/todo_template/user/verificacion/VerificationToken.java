@@ -1,5 +1,6 @@
-package ar.uba.fi.ingsoft1.todo_template.user;
+package ar.uba.fi.ingsoft1.todo_template.user.verificacion;
 
+import ar.uba.fi.ingsoft1.todo_template.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

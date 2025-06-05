@@ -1,10 +1,15 @@
 package ar.uba.fi.ingsoft1.todo_template.partido;
 
+import ar.uba.fi.ingsoft1.todo_template.partido.dtos.JugadorDTO;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public record PartidoAbiertoResponseDTO(
         Long idPartido,
-        Long nroCancha,
+        String canchaNombre,
+        String canchaDireccion,
         LocalDate fechaPartido,
         LocalTime horaPartido,
         Integer minJugador,
@@ -13,14 +18,21 @@ public record PartidoAbiertoResponseDTO(
         Long organizadorId,
         String emailOrganizador,
         boolean inscripto,
-        boolean partidoConfirmado
+        boolean partidoConfirmado,
+        List<JugadorDTO> jugadores
 ) {
     public static PartidoAbiertoResponseDTO fromEntity(PartidoAbierto partido, Long usuarioLogueadoId){
         boolean inscripto = partido.getJugadores().stream()
                 .anyMatch(j -> j.getId().equals(usuarioLogueadoId));
+
+        List<JugadorDTO> jugadoresDTO = partido.getJugadores().stream()
+                .map(JugadorDTO::fromEntity)
+                .collect(Collectors.toList());
+
         return new PartidoAbiertoResponseDTO(
                 partido.getIdPartido(),
-                partido.getNroCancha(),
+                partido.getCancha().getNombre(),
+                partido.getCancha().getDireccion(),
                 partido.getFechaPartido(),
                 partido.getHoraPartido(),
                 partido.getMinJugadores(),
@@ -29,7 +41,8 @@ public record PartidoAbiertoResponseDTO(
                 partido.getOrganizador().getId(),
                 partido.getOrganizador().getEmail(),
                 inscripto,
-                partido.isPartidoConfirmado()
+                partido.isPartidoConfirmado(),
+                jugadoresDTO
         );
     }
 }
