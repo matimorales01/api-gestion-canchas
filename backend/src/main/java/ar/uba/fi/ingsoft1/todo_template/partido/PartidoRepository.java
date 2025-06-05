@@ -15,20 +15,20 @@ public interface PartidoRepository extends JpaRepository<Partido, Long> {
     List<PartidoCerrado> findPartidosCerradosByOrganizadorId(@Param("userId") Long userId);
 
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END "
-         + "FROM PartidoAbierto p "
-         + "WHERE p.nroCancha = :canchaId "
-         + "  AND p.fechaPartido >= :fechaHoy")
+            + "FROM PartidoAbierto p "
+            + "WHERE p.cancha.id = :canchaId "
+            + "  AND p.fechaPartido >= :fechaHoy")
     boolean existsPartidoAbiertoFuturoPorCancha(
-        @Param("canchaId") Long canchaId,
-        @Param("fechaHoy") String fechaHoy
+            @Param("canchaId") Long canchaId,
+            @Param("fechaHoy") String fechaHoy
     );
 
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END "
-         + "FROM PartidoCerrado p "
-         + "WHERE p.nroCancha = :canchaId "
-         + "  AND p.fechaPartido >= :fechaHoy")
+            + "FROM PartidoCerrado p "
+            + "WHERE p.cancha.id = :canchaId "
+            + "  AND p.fechaPartido >= :fechaHoy")
     boolean existsPartidoCerradoFuturoPorCancha(
-        @Param("canchaId") Long canchaId,
-        @Param("fechaHoy") String fechaHoy
+            @Param("canchaId") Long canchaId,
+            @Param("fechaHoy") String fechaHoy
     );
 }

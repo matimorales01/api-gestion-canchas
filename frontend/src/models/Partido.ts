@@ -2,20 +2,32 @@ import { z } from "zod";
 
 export interface Partido {
   idPartido: number;
-  nroCancha: number;
+  canchaNombre: string;
+  canchaDireccion: string;
   fechaPartido: string;
   horaPartido: string;
+  minJugador?: number;
+  maxJugador?: number;
   cuposDisponibles: number;
   emailOrganizador: string;
   inscripto: boolean;
   partidoConfirmado: boolean;
+  organizadorId?: number;
+  jugadores?: Jugador[];
 }
+
+export interface Jugador {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 
 export const CrearPartidoAbiertoSchema = z.object({
   canchaId: z.string().min(1, "La cancha es obligatoria"),
   fechaPartido: z.string().min(1, "La fecha es obligatoria"),
-  horaInicio:z.string().optional(),
-  horaFin:z.string().optional(),
+  horaPartido: z.string().min(1, "La hora es obligatoria"),
   minJugadores: z.string().min(1, "Jugadores mínimos es obligatorio"),
   maxJugadores: z.string().min(1, "Jugadores máximos es obligatorio"),
   cuposDisponibles: z.string().min(1, "Cupos disponibles es obligatorio"),
@@ -27,8 +39,6 @@ export const CrearPartidoCerradoSchema = z.object({
   canchaId: z.string().min(1, "La cancha es obligatoria"),
   fechaPartido: z.string().min(1, "La fecha es obligatoria"),
   horaPartido: z.string().min(1, "La hora es obligatoria"),
-  horaInicio:z.string().optional(),
-  horaFin: z.string().optional(),
   minJugadores: z.string().optional(),
   maxJugadores: z.string().optional(),
   cuposDisponibles: z.string().optional(),

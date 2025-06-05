@@ -42,15 +42,16 @@ export const HistorialScreen = () => {
                 <ul>
                   <PartidoCerradoHeader />
                   {cerrados.map((pc) => (
-                      <PartidoCerradoCard
-                          id={pc.idPartido}
-                          cancha={pc.nroCancha}
-                          fecha={pc.fechaPartido}
-                          hora={pc.horaPartido}
-                          equipoA={pc.equipo1}
-                          equipoB={pc.equipo2}
-                          key={pc.idPartido}
-                      />
+                      <li key={pc.idPartido}>
+                        <PartidoCerradoCard
+                            canchaNombre={pc.canchaNombre}
+                            canchaDireccion={pc.canchaDireccion}
+                            fecha={pc.fechaPartido}
+                            hora={pc.horaPartido}
+                            equipoA={pc.equipo1}
+                            equipoB={pc.equipo2}
+                        />
+                      </li>
                   ))}
                 </ul>
             )}
@@ -66,16 +67,31 @@ export const HistorialScreen = () => {
                 <ul>
                   <PartidoAbiertoHeader />
                   {abiertos.map((pa) => (
-                      <PartidoAbiertoCard
-                          id={pa.idPartido}
-                          nroCancha={pa.nroCancha}
-                          fecha={pa.fechaPartido}
-                          hora={pa.horaPartido}
-                          minJugadores={pa.minJugador}
-                          maxJugadores={pa.maxJugador}
-                          organizadorMail={pa.emailOrganizador}
-                          key={pa.idPartido}
-                      />
+                      <li key={pa.idPartido}>
+                        <PartidoAbiertoCard
+                            canchaNombre={pa.canchaNombre}
+                            canchaDireccion={pa.canchaDireccion}
+                            fecha={pa.fechaPartido}
+                            hora={pa.horaPartido}
+                            minJugadores={pa.minJugador}
+                            maxJugadores={pa.maxJugador}
+                            organizadorMail={pa.emailOrganizador}
+                        />
+                        <div>
+                          <strong>Jugadores:</strong>
+                          {pa.jugadores && pa.jugadores.length > 0 ? (
+                              <ul>
+                                {pa.jugadores.map(j => (
+                                    <li key={j.id}>
+                                      {j.nombre} ({j.email})
+                                    </li>
+                                ))}
+                              </ul>
+                          ) : (
+                              <span>Sin jugadores inscriptos.</span>
+                          )}
+                        </div>
+                      </li>
                   ))}
                 </ul>
             )}

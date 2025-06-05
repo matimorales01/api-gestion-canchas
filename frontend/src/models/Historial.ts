@@ -1,6 +1,13 @@
+export type Jugador = {
+    id: number;
+    nombre: string;
+    email: string;
+};
+
 export type PartidoAbiertoResponseDTO = {
     idPartido: number;
-    nroCancha: number;
+    canchaNombre: string;
+    canchaDireccion: string;
     fechaPartido: string;
     horaPartido: string;
     minJugador: number;
@@ -10,13 +17,15 @@ export type PartidoAbiertoResponseDTO = {
     emailOrganizador: string;
     inscripto: boolean;
     partidoConfirmado: boolean;
+    jugadores: Jugador[];
 };
 
 export type PartidoCerradoResponseDTO = {
     idPartido: number;
+    canchaNombre: string;
+    canchaDireccion: string;
     fechaPartido: string;
     horaPartido: string;
-    nroCancha: number;
     equipo1: string;
     equipo2: string;
     organizadorId: number;
