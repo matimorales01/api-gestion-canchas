@@ -1,7 +1,12 @@
 .mainLayout {
   display: flex;
   flex-direction: column;
+  height: 100%;
   background-color: #232a33;
+}
+
+.mainContent {
+    flex: 1;
 }
 
 .topBar {
@@ -18,20 +23,4 @@
 .topBar > * {
   margin: 1rem;
 
-}
-
-.body {
-  color:#040a0f;
-  background-image: url('/fondo.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  margin: 0;
-  padding: 0;
-  flex: 1 0 0;
-  background-color: #12243b;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  padding: 0 2rem;
 }

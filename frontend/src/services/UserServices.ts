@@ -5,7 +5,7 @@ import { LoginRequest, LoginResponseSchema } from "@/models/Login";
 import { useToken } from "@/services/TokenContext";
 
 export function useLogin() {
-  const [, setToken] = useToken();
+  const [token, setToken] = useToken();
 
   return useMutation({
     mutationFn: async (req: LoginRequest) => {

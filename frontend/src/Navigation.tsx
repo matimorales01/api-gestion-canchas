@@ -8,9 +8,13 @@ import { CanchaScreen } from "@/screens/CrearCancha";
 import { HistorialScreen } from "@/screens/HistorialScreen";
 import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
-import { LoginRequestSchema } from "./models/Login";
+import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
+import {CrearPartidoCerradoScreen} from "@/screens/CrearPartidoCerrado.tsx";
 import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
+import { CrearEquipo } from "./screens/CrearEquipo";
+import { LoginRequestSchema } from "./models/Login";
 import { CrearReservaScreen } from "./screens/CrearReservaScreen";
+
 
 export const Navigation = () => {
 
@@ -36,6 +40,9 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/crear-reserva">
                         <CrearReservaScreen />
+                    </Route>
+                    <Route path="/crear-equipo">
+                        <CrearEquipo />
                     </Route>
                     <Route path="/ver-historial">
                       <HistorialScreen />

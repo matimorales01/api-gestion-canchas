@@ -1,0 +1,21 @@
+/* $SELECTION_PLACEHOLDER$ */
+.under-construction {
+        display: flex;              /* activa flexbox */
+        flex-direction: row;        /* hijos en fila */
+        justify-content: space-between; /* separa los hijos */
+        align-items: stretch;       /* estira hijos para llenar altura */
+        width: 100%;                /* 100% del contenedor padre */
+        height: 100%;               /* 100% del contenedor padre */
+}
+
+.user-section { 
+    background-color: #3a3a3a;
+    color: #fff;
+    width: 25%;
+}
+
+.main-section {            
+    background-color: #1f1f1f;
+    color: #fff;
+    width: 75%;
+}

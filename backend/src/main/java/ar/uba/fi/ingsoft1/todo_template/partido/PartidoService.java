@@ -9,7 +9,7 @@ import ar.uba.fi.ingsoft1.todo_template.partido.PartidoAbiertoResponseDTO;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCerradoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.partido.PartidoCerradoResponseDTO;
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
-import ar.uba.fi.ingsoft1.todo_template.user.EmailService;
+import ar.uba.fi.ingsoft1.todo_template.user.verificacion.EmailService;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 
