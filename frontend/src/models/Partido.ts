@@ -10,29 +10,6 @@ export interface Partido {
   inscripto: boolean;
   partidoConfirmado: boolean;
 }
-/**
-public record PartidoAbiertoCreateDTO(
-
-
-    @NotNull Long canchaId,
-    @NotNull LocalDate fechaPartido,
-    @NotNull LocalTime horaPartido,
-    @NotNull Integer minJugadores,
-    @NotNull Integer maxJugadores,
-    @NotNull Integer cuposDisponibles) 
-   
-    // crear partido cerrado
-      @NotNull Long canchaId,
-    @NotNull LocalDate fechaPartido,
-    @NotNull LocalTime horaPartido,
-    @NotBlank String equipo1,
-    @NotBlank String equipo2
-    
-    //reservas
-        @NotNull Long canchaId,
-    @NotNull LocalDate fecha,
-    @NotNull LocalTime horaInicio,
-    @NotNull LocalTime horaFin*/
 
 export const CrearPartidoAbiertoSchema = z.object({
   canchaId: z.string().min(1, "La cancha es obligatoria"),

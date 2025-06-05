@@ -174,10 +174,15 @@ public class PartidoService {
                 .toList();
     }
 
-    public List<PartidoAbierto> historialPartidosAbiertosPorUsuario(Long userId){
-        return partidoRepository.findPartidosAbiertosByOrganizadorId(userId);
+    @Transactional
+    public List<PartidoAbierto> historialPartidosAbiertosPorUsuario(Long userId) {
+        List<PartidoAbierto> partidos = partidoRepository.findPartidosAbiertosByOrganizadorId(userId);
+        for (PartidoAbierto partido : partidos) {
+            partido.getJugadores().size();
+        }
+        return partidos;
     }
-
+    @Transactional
     public List<PartidoCerrado> historialPartidosCerradosPorUsuario(Long userId){
         return partidoRepository.findPartidosCerradosByOrganizadorId(userId);
     }
