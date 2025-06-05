@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
-import { PartidoRequest, Partido } from "@/models/Partido";
+import { PartidoRequest, Partido, PartidoCerradoRequest } from "@/models/Partido";
 
-export function useCrearPartido(options?: {
+export function useCrearPartidoAbierto(options?: {
     onSuccess?: (data: Partido) => void;
     onError?: (error: unknown) => void;
 }) {
@@ -27,7 +27,7 @@ export function useCrearPartido(options?: {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`Error al crear el partido: ${errorText}`);
+                throw new Error(`Error al crear el partido abierto: ${errorText}`);
             }
 
             return (await response.json()) as Partido;
@@ -36,6 +36,41 @@ export function useCrearPartido(options?: {
         onError: options?.onError,
     });
 }
+
+export function useCrearPartidoCerrado(options?: {
+    onSuccess?: (data: Partido) => void;
+    onError?: (error: unknown) => void;
+}) {
+    const [tokenState] = useToken();
+
+    return useMutation({
+        mutationFn: async (data: PartidoCerradoRequest) => {
+            if (tokenState.state !== "LOGGED_IN") {
+                throw new Error("No estás logueado. No se puede crear un partido.");
+            }
+
+            const response = await fetch(BASE_API_URL + "/partidos/cerrado", {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${tokenState.accessToken}`,
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Error al crear el partido cerrado: ${errorText}`);
+            }
+
+            return (await response.json()) as Partido;
+        },
+        onSuccess: options?.onSuccess,
+        onError: options?.onError,
+    });
+}
+
 
 export function usePartidosAbiertos() {
     const [tokenState] = useToken();
