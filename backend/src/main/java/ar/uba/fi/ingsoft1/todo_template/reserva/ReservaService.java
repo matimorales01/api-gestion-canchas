@@ -1,86 +1,84 @@
 package ar.uba.fi.ingsoft1.todo_template.reserva;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
+import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.canchas.CanchaRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.ReservacionHorarioCanchaCoincideException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 
 @Service
 public class ReservaService {
 
     private final ReservaRepository reservaRepo;
-    private final FranjaDisponibleRepository franjaRepo;
     private final CanchaRepository canchaRepo;
     private final UserRepository userRepo;
 
     public ReservaService(
         ReservaRepository reservaRepo,
-        FranjaDisponibleRepository franjaRepo,
         CanchaRepository canchaRepo,
         UserRepository userRepo
     ) {
         this.reservaRepo = reservaRepo;
-        this.franjaRepo = franjaRepo;
         this.canchaRepo = canchaRepo;
         this.userRepo = userRepo;
     }
 
-    @Transactional
-    public Reserva crearReserva(Long userId, ReservaCreateDTO dto) throws ReservacionHorarioCanchaCoincideException {
-        canchaRepo.findById(dto.canchaId())
-                .orElseThrow(() -> new NotFoundException("Cancha con id " + dto.canchaId() + " no encontrada."));
-
-
-        User usuario = userRepo.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Usuario con id " + userId + " no encontrado."));
-
-        LocalDate fecha = dto.fecha();
-        LocalTime inicio = dto.horaInicio();
-        LocalTime fin = dto.horaFin();
-
-        FranjaDisponible franja = franjaRepo.findByCanchaIdAndFechaAndHoraInicioAndHoraFin(
-                dto.canchaId(), fecha, inicio, fin
-        );
-        if (franja == null) {
-            throw new NotFoundException("No existe franja para cancha " + dto.canchaId() +
-                    " en " + fecha + " " + inicio + "-" + fin);
-        }
-        if (franja.getEstado() == EstadoFranja.OCUPADA) {
-            throw new ReservacionHorarioCanchaCoincideException("Franja ya ocupada");
+    public ResponseEntity<String> crearReservas(ReservaCreateDTO dto) {
+        Cancha cancha = canchaRepo.findById(dto.canchaId())
+            .orElseThrow(() -> new NotFoundException("Cancha con ID: '" + dto.canchaId() + "' no encontrada."));
+        
+        List<Reserva> reservas = new ArrayList<Reserva>();
+        
+        for (LocalDate fecha = dto.fechaInicial(); fecha.isAfter(dto.fechaFinal()); fecha = fecha.plusDays(1)) {
+            for (LocalTime hr = dto.horarioInicio(); hr.isAfter(dto.horarioFin()); hr = hr.plusMinutes(dto.minutos())) {
+                reservas.add(new Reserva(cancha, State.DISPONIBLE, Optional.empty(), Optional.empty(), fecha, hr, hr.plusMinutes(dto.minutos())));
+            }
         }
 
-        franja.setEstado(EstadoFranja.OCUPADA);
-        franjaRepo.save(franja);
+        reservaRepo.saveAll(reservas);
 
-        Reserva r = new Reserva();
-        r.setCancha(franja.getCancha());
-        r.setFecha(franja.getFecha());
-        r.setHoraInicio(franja.getHoraInicio());
-        r.setHoraFin(franja.getHoraFin());
-        r.setUsuario(usuario);
-        reservaRepo.save(r);
-
-        return r;
+        return ResponseEntity.status(HttpStatus.CREATED).body("Reservas creadas exitosamente.");
     }
 
-    public ReservaDTO obtenerReserva() {
+    public List<ReservaDTO> obtenerReserva() {
         JwtUserDetails userInfo = (JwtUserDetails) SecurityContextHolder.getContext()
             .getAuthentication().getPrincipal();
 
         User user = userRepo.findByEmail(userInfo.email())
             .orElseThrow(() -> new NotFoundException("Usuario con email: '" + userInfo.email() + "' no encontrado."));
             
-        return reservaRepo.findByUserId(user.getId())
-            .map(Reserva::toReservaDTO)
-            .orElseThrow(() -> new NotFoundException("No se encontraron reservas para el usuario con email: '" + userInfo.email() + "'."));    }
+        List<Cancha> canchas = canchaRepo.findByPropietarioId(user.getId());
+        List<Reserva> reservas = new ArrayList<Reserva>();
+
+        canchas.forEach(cancha -> {
+            reservas.addAll(reservaRepo.findByCanchaId(cancha.getId()));
+        });
+
+        return reservas.stream().map(
+            (Reserva reserva) -> new ReservaDTO(
+                reserva.getId(),
+                reserva.getCancha().getId(),
+                reserva.getState(),
+                reserva.getUsuarioCancha().map(User::getId),
+                reserva.getPartido(),
+                reserva.getFecha(),
+                reserva.getInicioTurno(),
+                reserva.getFinTurno()
+            )
+        ).toList();
+    }
 }
+

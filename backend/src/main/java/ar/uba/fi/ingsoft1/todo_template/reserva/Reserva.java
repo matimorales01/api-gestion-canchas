@@ -3,6 +3,8 @@ package ar.uba.fi.ingsoft1.todo_template.reserva;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
+
 import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
@@ -19,19 +21,35 @@ public class Reserva {
     @JoinColumn(name = "cancha_id")
     private Cancha cancha;
 
-    @ManyToOne(optional = false)
+    @Column(nullable = false)
+    private State state;
+
+    @ManyToOne(optional = true)
     @JoinColumn(name = "usuario_id")
-    private User usuario;
+    private Optional<User> usuarioCancha;
+
+    @Column(nullable = true)
+    private Optional<String> partido;
 
     @Column(nullable = false)
     private LocalDate fecha;
 
     @Column(nullable = false)
-    private LocalTime horaInicio;
+    private LocalTime inicioTurno;
 
     @Column(nullable = false)
-    private LocalTime horaFin;
+    private LocalTime finTurno;
 
+    public Reserva(){}
+    public Reserva(Cancha cancha, State state, Optional<User> user, Optional<String> partido, LocalDate fecha, LocalTime inicioTurno, LocalTime finTurno) {
+        this.cancha = cancha;
+        this.state = state;
+        this.usuarioCancha = user;
+        this.partido = partido;
+        this.fecha = fecha;
+        this.inicioTurno = inicioTurno;
+        this.finTurno = finTurno;
+    }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -39,19 +57,25 @@ public class Reserva {
     public Cancha getCancha() { return cancha; }
     public void setCancha(Cancha cancha) { this.cancha = cancha; }
 
-    public User getUsuario() { return usuario; }
-    public void setUsuario(User usuario) { this.usuario = usuario; }
+    public State getState() { return state; }
+    public void setState(State state) { this.state = state; }
+
+    public Optional<User> getUsuarioCancha() { return usuarioCancha; }
+    public void setUsuarioCancha(Optional<User> usuarioCancha) { this.usuarioCancha = usuarioCancha; }
+
+    public Optional<String> getPartido() { return partido; }
+    public void setPartido(Optional<String> partido) { this.partido = partido; }
 
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
 
-    public LocalTime getHoraInicio() { return horaInicio; }
-    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
+    public LocalTime getInicioTurno() { return inicioTurno; }
+    public void setInicioTurno(LocalTime inicioTurno) { this.inicioTurno = inicioTurno; }
 
-    public LocalTime getHoraFin() { return horaFin; }
-    public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin; }
+    public LocalTime getFinTurno() { return finTurno; }
+    public void setFinTurno(LocalTime finTurno) { this.finTurno = finTurno; }
 
     public ReservaDTO toReservaDTO() {
-        return new ReservaDTO(id, cancha.getId(), fecha, horaInicio, horaFin);
+        return new ReservaDTO(this.id, this.cancha.getId(), this.state, this.usuarioCancha.map(User::getId), this.partido, this.fecha, this.inicioTurno, this.finTurno);
     }
 }
