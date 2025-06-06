@@ -1,9 +1,7 @@
 package ar.uba.fi.ingsoft1.todo_template.reserva;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,7 +18,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
         @Param("hoy") LocalDate hoy
     );
 
-    Optional<Reserva> findByUserId(Long id);
     List<Reserva> findByCanchaId(Long id);
     boolean existsByCanchaId(Long id);
 }
