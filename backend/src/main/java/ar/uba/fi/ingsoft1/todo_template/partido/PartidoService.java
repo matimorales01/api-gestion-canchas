@@ -58,11 +58,7 @@ public class PartidoService {
 
     private boolean reservaExiste(Long canchaId, LocalDate fecha, LocalTime horaInicio) {
         LocalTime horaFin = horaInicio.plusHours(1);
-        return (reservaRepository.existsReservaConHorarioExacto(
-                canchaId,
-                fecha,
-                horaInicio,
-                horaFin));
+        return false;
     }
 
     private void envioDeEmailPorCreacion(String email, Partido partido, String tipo) {

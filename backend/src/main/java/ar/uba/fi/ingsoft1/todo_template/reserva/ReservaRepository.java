@@ -20,21 +20,6 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
         @Param("hoy") LocalDate hoy
     );
 
-    @Query("""
-        SELECT CASE WHEN COUNT(r) > 0 THEN TRUE ELSE FALSE END 
-         FROM Reserva r
-         WHERE r.cancha.id = :canchaId 
-            AND r.fecha = :fecha
-            AND r.horaInicio = :inicioTurno
-            AND r.horaFin = :finTurno""")
-    boolean existsReservaConHorarioExacto(
-        @Param("canchaId") Long canchaId,
-        @Param("fecha") LocalDate fecha,
-        @Param("inicioTurno") LocalTime inicioTurno,
-        @Param("finTurno") LocalTime finTurno
-
-    );
-
     Optional<Reserva> findByUserId(Long id);
     List<Reserva> findByCanchaId(Long id);
     boolean existsByCanchaId(Long id);
