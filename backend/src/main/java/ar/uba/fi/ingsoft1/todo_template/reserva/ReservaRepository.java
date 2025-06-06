@@ -25,13 +25,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
          FROM Reserva r
          WHERE r.cancha.id = :canchaId 
             AND r.fecha = :fecha
-            AND r.horaInicio = :horaInicio
-            AND r.horaFin = :horaFin""")
+            AND r.horaInicio = :inicioTurno
+            AND r.horaFin = :finTurno""")
     boolean existsReservaConHorarioExacto(
         @Param("canchaId") Long canchaId,
         @Param("fecha") LocalDate fecha,
-        @Param("horaInicio") LocalTime horaInicio,
-        @Param("horaFin") LocalTime horaFin
+        @Param("inicioTurno") LocalTime inicioTurno,
+        @Param("finTurno") LocalTime finTurno
 
     );
 
