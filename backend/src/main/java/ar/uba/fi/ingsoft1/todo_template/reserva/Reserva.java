@@ -3,7 +3,6 @@ package ar.uba.fi.ingsoft1.todo_template.reserva;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 
 import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
@@ -26,10 +25,10 @@ public class Reserva {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "usuario_id")
-    private Optional<User> usuarioCancha;
+    private User usuarioCancha;
 
     @Column(nullable = true)
-    private Optional<String> partido;
+    private String partido;
 
     @Column(nullable = false)
     private LocalDate fecha;
@@ -41,7 +40,7 @@ public class Reserva {
     private LocalTime finTurno;
 
     public Reserva(){}
-    public Reserva(Cancha cancha, State state, Optional<User> user, Optional<String> partido, LocalDate fecha, LocalTime inicioTurno, LocalTime finTurno) {
+    public Reserva(Cancha cancha, State state, User user, String partido, LocalDate fecha, LocalTime inicioTurno, LocalTime finTurno) {
         this.cancha = cancha;
         this.state = state;
         this.usuarioCancha = user;
@@ -60,11 +59,11 @@ public class Reserva {
     public State getState() { return state; }
     public void setState(State state) { this.state = state; }
 
-    public Optional<User> getUsuarioCancha() { return usuarioCancha; }
-    public void setUsuarioCancha(Optional<User> usuarioCancha) { this.usuarioCancha = usuarioCancha; }
+    public User getUsuarioCancha() { return usuarioCancha; }
+    public void setUsuarioCancha(User usuarioCancha) { this.usuarioCancha = usuarioCancha; }
 
-    public Optional<String> getPartido() { return partido; }
-    public void setPartido(Optional<String> partido) { this.partido = partido; }
+    public String getPartido() { return partido; }
+    public void setPartido(String partido) { this.partido = partido; }
 
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
@@ -76,6 +75,6 @@ public class Reserva {
     public void setFinTurno(LocalTime finTurno) { this.finTurno = finTurno; }
 
     public ReservaDTO toReservaDTO() {
-        return new ReservaDTO(this.id, this.cancha.getId(), this.state, this.usuarioCancha.map(User::getId), this.partido, this.fecha, this.inicioTurno, this.finTurno);
+        return new ReservaDTO(this.id, this.cancha.getId(), this.state, this.usuarioCancha.getId(), this.partido, this.fecha, this.inicioTurno, this.finTurno);
     }
 }

@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
@@ -44,7 +43,7 @@ public class ReservaService {
         
         for (LocalDate fecha = dto.fechaInicial(); fecha.isAfter(dto.fechaFinal()); fecha = fecha.plusDays(1)) {
             for (LocalTime hr = dto.horarioInicio(); hr.isAfter(dto.horarioFin()); hr = hr.plusMinutes(dto.minutos())) {
-                reservas.add(new Reserva(cancha, State.DISPONIBLE, Optional.empty(), Optional.empty(), fecha, hr, hr.plusMinutes(dto.minutos())));
+                reservas.add(new Reserva(cancha, State.DISPONIBLE, null, null, fecha, hr, hr.plusMinutes(dto.minutos())));
             }
         }
 
@@ -72,7 +71,7 @@ public class ReservaService {
                 reserva.getId(),
                 reserva.getCancha().getId(),
                 reserva.getState(),
-                reserva.getUsuarioCancha().map(User::getId),
+                reserva.getUsuarioCancha().getId(),
                 reserva.getPartido(),
                 reserva.getFecha(),
                 reserva.getInicioTurno(),
