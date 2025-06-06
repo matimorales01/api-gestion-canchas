@@ -41,8 +41,8 @@ public class ReservaService {
         
         List<Reserva> reservas = new ArrayList<Reserva>();
         
-        for (LocalDate fecha = dto.fechaInicial(); fecha.isAfter(dto.fechaFinal()); fecha = fecha.plusDays(1)) {
-            for (LocalTime hr = dto.horarioInicio(); hr.isAfter(dto.horarioFin()); hr = hr.plusMinutes(dto.minutos())) {
+        for (LocalDate fecha = dto.fechaInicial(); !fecha.isAfter(dto.fechaFinal()); fecha = fecha.plusDays(1)) {
+            for (LocalTime hr = dto.horarioInicio(); !hr.isAfter(dto.horarioFin()); hr = hr.plusMinutes(dto.minutos())) {
                 reservas.add(new Reserva(cancha, State.DISPONIBLE, null, null, fecha, hr, hr.plusMinutes(dto.minutos())));
             }
         }
@@ -63,21 +63,10 @@ public class ReservaService {
         List<Reserva> reservas = new ArrayList<Reserva>();
 
         canchas.forEach(cancha -> {
-            reservas.addAll(reservaRepo.findByCanchaId(cancha.getId()));
+            reservas.addAll(reservaRepo.findAll());
         });
 
-        return reservas.stream().map(
-            (Reserva reserva) -> new ReservaDTO(
-                reserva.getId(),
-                reserva.getCancha().getId(),
-                reserva.getState(),
-                reserva.getUsuarioCancha().getId(),
-                reserva.getPartido(),
-                reserva.getFecha(),
-                reserva.getInicioTurno(),
-                reserva.getFinTurno()
-            )
-        ).toList();
+        return reservas.stream().map(Reserva::toReservaDTO).toList();
     }
 }
 

@@ -75,6 +75,6 @@ public class Reserva {
     public void setFinTurno(LocalTime finTurno) { this.finTurno = finTurno; }
 
     public ReservaDTO toReservaDTO() {
-        return new ReservaDTO(this.id, this.cancha.getId(), this.state, this.usuarioCancha.getId(), this.partido, this.fecha, this.inicioTurno, this.finTurno);
+        return new ReservaDTO(this.id, this.cancha.getId(), this.state, this.usuarioCancha == null ? null : this.usuarioCancha.getId(), this.partido == null ? null : this.partido, this.fecha, this.inicioTurno, this.finTurno);
     }
 }
