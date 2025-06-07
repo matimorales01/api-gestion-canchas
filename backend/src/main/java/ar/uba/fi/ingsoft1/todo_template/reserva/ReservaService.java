@@ -43,7 +43,7 @@ public class ReservaService {
         
         for (LocalDate fecha = dto.fechaInicial(); !fecha.isAfter(dto.fechaFinal()); fecha = fecha.plusDays(1)) {
             for (LocalTime hr = dto.horarioInicio(); !hr.isAfter(dto.horarioFin()); hr = hr.plusMinutes(dto.minutos())) {
-                reservas.add(new Reserva(cancha, State.DISPONIBLE, null, null, fecha, hr, hr.plusMinutes(dto.minutos())));
+                reservas.add(new Reserva(cancha, State.DISPONIBLE, null, fecha, hr, hr.plusMinutes(dto.minutos())));
             }
         }
 

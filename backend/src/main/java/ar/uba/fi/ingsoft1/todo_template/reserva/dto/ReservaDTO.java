@@ -6,13 +6,10 @@ import java.time.LocalTime;
 import ar.uba.fi.ingsoft1.todo_template.reserva.State;
 
 public record ReservaDTO(
-    Long id,
-    Long canchaId,
+    String canchaName,
     State state,
-    Long usuarioCanchaId,
-    String partido,
+    String tipoPartido,
     LocalDate fecha,
     LocalTime inicioTurno,
     LocalTime finTurno
-) {
-}
+) {}

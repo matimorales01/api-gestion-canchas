@@ -6,7 +6,6 @@ import java.time.LocalTime;
 
 import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
-import ar.uba.fi.ingsoft1.todo_template.user.User;
 
 @Entity
 @Table(name = "reservas")
@@ -23,10 +22,6 @@ public class Reserva {
     @Column(nullable = false)
     private State state;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "usuario_id")
-    private User usuarioCancha;
-
     @Column(nullable = true)
     private String partido;
 
@@ -40,10 +35,9 @@ public class Reserva {
     private LocalTime finTurno;
 
     public Reserva(){}
-    public Reserva(Cancha cancha, State state, User user, String partido, LocalDate fecha, LocalTime inicioTurno, LocalTime finTurno) {
+    public Reserva(Cancha cancha, State state, String partido, LocalDate fecha, LocalTime inicioTurno, LocalTime finTurno) {
         this.cancha = cancha;
         this.state = state;
-        this.usuarioCancha = user;
         this.partido = partido;
         this.fecha = fecha;
         this.inicioTurno = inicioTurno;
@@ -59,9 +53,6 @@ public class Reserva {
     public State getState() { return state; }
     public void setState(State state) { this.state = state; }
 
-    public User getUsuarioCancha() { return usuarioCancha; }
-    public void setUsuarioCancha(User usuarioCancha) { this.usuarioCancha = usuarioCancha; }
-
     public String getPartido() { return partido; }
     public void setPartido(String partido) { this.partido = partido; }
 
@@ -75,6 +66,6 @@ public class Reserva {
     public void setFinTurno(LocalTime finTurno) { this.finTurno = finTurno; }
 
     public ReservaDTO toReservaDTO() {
-        return new ReservaDTO(this.id, this.cancha.getId(), this.state, this.usuarioCancha == null ? null : this.usuarioCancha.getId(), this.partido == null ? null : this.partido, this.fecha, this.inicioTurno, this.finTurno);
+        return new ReservaDTO(this.cancha.getNombre(), this.state, this.partido == null ? null : this.partido, this.fecha, this.inicioTurno, this.finTurno);
     }
 }
