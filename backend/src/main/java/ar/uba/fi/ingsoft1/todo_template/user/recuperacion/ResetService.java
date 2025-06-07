@@ -39,7 +39,7 @@ public class ResetService {
 
         resetRepository.save(resetToken);
 
-        String resetLink = "http://localhost:8080/recuperacion?token=" + token;
+        String resetLink = "http://localhost:8080/change-password/" + token;
 
         emailService.sendVerificationEmail(
                 user.getEmail(),
@@ -51,7 +51,7 @@ public class ResetService {
     }
 
     public String changePassword(String token, ChangePasswordDTO changePasswordDTO) {
-        ResetToken resetToken = resetRepository.findByValue(token)
+        ResetToken resetToken = resetRepository.findById(token)
                 .orElseThrow(() -> new RuntimeException("Token de recuperación no encontrado"));
 
         if (resetToken.isExpired()) {
