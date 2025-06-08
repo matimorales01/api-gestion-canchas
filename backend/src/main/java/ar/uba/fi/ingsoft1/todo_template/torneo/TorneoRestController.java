@@ -5,9 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
-import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoCreateDTO;
-import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO;
-import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoUpdateDTO;
+import ar.uba.fi.ingsoft1.todo_template.torneo.dto.*;
 
 @RestController
 @RequestMapping("/torneos")
@@ -20,35 +18,36 @@ public class TorneoRestController {
 
     @GetMapping
     public ResponseEntity<List<TorneoDTO>> all() {
-        List<TorneoDTO> torneos = service.listTorneos()
+        var lista = service.listTorneos()
             .stream()
             .map(Torneo::toDTO)
             .toList();
-        return ResponseEntity.ok(torneos);
+        return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TorneoDTO> one(@PathVariable Long id) {
-        Torneo torneo = service.getTorneo(id);
-        return ResponseEntity.ok(torneo.toDTO());
+        return ResponseEntity.ok(
+            service.getTorneo(id).toDTO()
+        );
     }
 
     @PostMapping
     public ResponseEntity<TorneoDTO> create(
         @Valid @RequestBody TorneoCreateDTO dto
     ) {
-        Torneo creado = service.createTorneo(dto);
+        var creado = service.createTorneo(dto);
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(creado.toDTO());
+            .status(HttpStatus.CREATED)
+            .body(creado.toDTO());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TorneoDTO> update(
         @PathVariable Long id,
-        @Valid @RequestBody TorneoUpdateDTO dto
+        @RequestBody TorneoUpdateDTO dto
     ) {
-        Torneo actualizado = service.updateTorneo(id, dto);
+        var actualizado = service.updateTorneo(id, dto);
         return ResponseEntity.ok(actualizado.toDTO());
     }
 
