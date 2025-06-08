@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
 public class TorneoAlreadyExistsException extends RuntimeException {
-    public TorneoAlreadyExistsException(String name) {
-        super(String.format("El torneo '%s' ya existe.", name));
+    public TorneoAlreadyExistsException(String nombre) {
+        super("El torneo '" + nombre + "' ya existe.");
     }
 }

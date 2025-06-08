@@ -9,15 +9,23 @@ import ar.uba.fi.ingsoft1.todo_template.torneo.TorneoFormato;
 public record TorneoCreateDTO(
     @NotBlank String nombre,
     @NotNull  LocalDate fechaInicio,
+               LocalDate fechaFin,
     @NotNull  TorneoFormato formato,
-    @NotNull  Integer cantidadMaximaEquipos
+    @NotNull  Integer cantidadMaximaEquipos,
+               String descripcion,
+               String premios,
+               Double costoInscripcion
 ) {
     public Torneo asTorneo() {
         return new Torneo(
             nombre,
             fechaInicio,
+            fechaFin,
             formato,
-            cantidadMaximaEquipos
+            cantidadMaximaEquipos,
+            descripcion,
+            premios,
+            costoInscripcion
         );
     }
 }
