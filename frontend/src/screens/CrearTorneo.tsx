@@ -34,12 +34,39 @@ export const CrearTorneo = () => {
       <h1 className="text-xl font-bold mb-4">Crear Torneo</h1>
       <formData.AppForm>
         <formData.FormContainer extraError={error}>
+
           <formData.AppField name="nombre">
             {(field) => <field.TextField label="Nombre del Torneo" />}
           </formData.AppField>
 
           <formData.AppField name="fechaInicio">
-            {(field) => <field.TextField label="Fecha de inicio" type="date" />}
+            {(field) => (
+                <div className="mb-2">
+                <label>Fecha de inicio</label>
+                <input
+                    type="date"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className="input input-bordered w-full"
+                />
+                </div>
+            )}
+          </formData.AppField>
+
+          <formData.AppField name="maxEquipos">
+            {(field) => (
+                <div className="mb-2">
+                  <label>Maximo de Equipos</label>
+                  <input
+                      type="number"
+                      min={2}
+                      step={1}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(Number(e.target.value))}
+                      className="input input-bordered w-full"
+                  />
+                </div>
+            )}
           </formData.AppField>
 
           <formData.AppField name="formato">
@@ -54,9 +81,6 @@ export const CrearTorneo = () => {
             )}
           </formData.AppField>
 
-          <formData.AppField name="maxEquipos">
-            {(field) => <field.TextField label="Máximo de equipos" type="number" />}
-          </formData.AppField>
         </formData.FormContainer>
       </formData.AppForm>
     </CommonLayout>
