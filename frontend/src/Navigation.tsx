@@ -14,6 +14,7 @@ import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
 import { CrearEquipo } from "./screens/CrearEquipo";
 import { LoginRequestSchema } from "./models/Login";
 import { CrearReservaScreen } from "./screens/CrearReservaScreen";
+import { CrearTorneo } from "./screens/CrearTorneo";
 import { AdministrarReservasScreen } from "./screens/AdministrarReservasScreen";
 
 
@@ -47,6 +48,9 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/crear-equipo">
                         <CrearEquipo />
+                    </Route>
+                    <Route path="/crear-torneo">
+                        <CrearTorneo />
                     </Route>
                     <Route path="/ver-historial">
                       <HistorialScreen />
