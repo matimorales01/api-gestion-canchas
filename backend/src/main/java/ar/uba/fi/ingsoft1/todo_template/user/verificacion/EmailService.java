@@ -42,6 +42,29 @@ public class EmailService {
         }
     }
 
+    public void sendResetPasswordEmail(String toEmail, String subject, String resetLink) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+
+            String htmlContent = "<p>Hola,</p>"
+                    + "<p>Hemos recibido una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>"
+                    + "<p><a href=\"" + resetLink + "\">Restablecer mi contraseña</a></p>"
+                    + "<br><p>Este enlace expirará en 24 horas.</p>";
+
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new RuntimeException("No se pudo enviar el correo de restablecimiento de contraseña", e);
+        }
+    }
+
     public void sendCreationPartido(String toEmail, String cancha, String fecha, String hora,String tipoPartido) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
