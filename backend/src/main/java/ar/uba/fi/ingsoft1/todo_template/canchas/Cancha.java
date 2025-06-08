@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 
-// en unique contraint tomo en cuenta los campos nombre, zona y direccion como si fuese Primary key
-// y no se creen dos canchas con el mismo nombre, zona y direccion por lo que dice la consigna
 
 @Entity
 @Table(
