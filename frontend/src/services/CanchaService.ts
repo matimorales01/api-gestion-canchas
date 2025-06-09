@@ -3,51 +3,47 @@ import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
 import type { Cancha, CanchaRequest } from "@/models/Cancha";
 
-export function usePoblarFranjas() {
+
+type PoblarFranjasParams = {
+  canchaId: number;
+  fechaInicial: string;
+  fechaFinal: string;
+  horarioInicio: string;
+  horarioFin: string;
+  minutos: number;
+};
+
+export function usePoblarFranjas(options?: {
+  onSuccess?: (data: string) => void;
+  onError?: (error: unknown) => void;
+}) {
   const [tokenState] = useToken();
-  return async ({
-                  canchaId,
-                  desde,
-                  hasta,
-                  horaInicio,
-                  horaFin,
-                  duracionMinutos,
-                }: {
-    canchaId: number;
-    desde: string;
-    hasta: string;
-    horaInicio: string;
-    horaFin: string;
-    duracionMinutos: number;
-  }) => {
-    if (tokenState.state !== "LOGGED_IN") {
-      throw new Error("No estás logueado. No se pueden poblar franjas.");
-    }
-    const params = new URLSearchParams({
-      canchaId: canchaId.toString(),
-      desde,
-      hasta,
-      horaInicio,
-      horaFin,
-      duracionMinutos: duracionMinutos.toString(),
-    });
-    const response = await fetch(
-        BASE_API_URL + "/franjas/poblar?" + params.toString(),
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${tokenState.accessToken}`,
-          },
-        }
-    );
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Error al poblar franjas: ${errorText}`);
-    }
-    return await response.text();
-  };
+
+  return useMutation({
+    mutationFn: async (params: PoblarFranjasParams) => {
+      if (tokenState.state !== "LOGGED_IN") {
+        throw new Error("No estás logueado. No se pueden poblar franjas.");
+      }
+      const response = await fetch(BASE_API_URL + "/reservas", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenState.accessToken}`,
+        },
+        body: JSON.stringify(params),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al poblar franjas: ${errorText}`);
+      }
+      return await response.text();
+    },
+    onSuccess: options?.onSuccess,
+    onError: options?.onError,
+  });
 }
+
 
 export function useCrearCancha(options?: {
   onSuccess?: (data: Cancha) => void;
