@@ -1,21 +1,35 @@
 import { useMutation } from "@tanstack/react-query";
-import { TorneoRequest } from "@/models/Torneo";
+import { BASE_API_URL } from "@/config/app-query-client";
+import { useToken } from "@/services/TokenContext";
+import { TorneoRequest, Torneo } from "@/models/Torneo";
 
-//es de prueba, falta el back
 export function crearTorneo(options?: {
-  onSuccess?: () => void;
+  onSuccess?: (data: Torneo) => void;
   onError?: (error: unknown) => void;
 }) {
+  const [tokenState] = useToken();
+
   return useMutation({
     mutationFn: async (data: TorneoRequest) => {
-      try {
-        console.log("Torneo a crear:", data);
-        options?.onSuccess?.();
-        return { success: true };
-      } catch (err) {
-        options?.onError?.(err);
-        throw err;
+      const response = await fetch(`${BASE_API_URL}/torneos`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenState.accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        options?.onError?.(new Error(`Error al crear torneo: ${errorText}`));
+        throw new Error(`Error al crear torneo: ${errorText}`);
       }
+
+      const torneoCreado = await response.json();
+      options?.onSuccess?.(torneoCreado);
+      return torneoCreado;
     },
   });
 }
