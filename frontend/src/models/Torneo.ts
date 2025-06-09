@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const FormatoTorneoEnum = z.enum([
-  "Eliminación directa",
-  "Fase de grupos y luego eliminación",
-  "Liga todos contra todos",
+  "ELIMINACION_DIRECTA",
+  "FASE_GRUPOS_ELIMINACION",
+  "LIGA",
 ]);
 
 export const TorneoRequestSchema = z.object({
