@@ -1,7 +1,5 @@
 package ar.uba.fi.ingsoft1.todo_template.reserva;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -11,6 +9,7 @@ import java.util.List;
 
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
+import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaIdDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
@@ -35,7 +34,7 @@ public class ReservaService {
         this.userRepo = userRepo;
     }
 
-    public ResponseEntity<String> crearReservas(ReservaCreateDTO dto) {
+    public String crearReservas(ReservaCreateDTO dto) {
         Cancha cancha = canchaRepo.findById(dto.canchaId())
             .orElseThrow(() -> new NotFoundException("Cancha con ID: '" + dto.canchaId() + "' no encontrada."));
         
@@ -43,13 +42,30 @@ public class ReservaService {
         
         for (LocalDate fecha = dto.fechaInicial(); !fecha.isAfter(dto.fechaFinal()); fecha = fecha.plusDays(1)) {
             for (LocalTime hr = dto.horarioInicio(); !hr.isAfter(dto.horarioFin()); hr = hr.plusMinutes(dto.minutos())) {
-                reservas.add(new Reserva(cancha, State.DISPONIBLE, null, fecha, hr, hr.plusMinutes(dto.minutos())));
+                ReservaId reservaId = new ReservaId(cancha, fecha, hr, hr.plusMinutes(dto.minutos()));
+                reservas.add(new Reserva(reservaId, "DISPONIBLE", null));
             }
         }
 
         reservaRepo.saveAll(reservas);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Reservas creadas exitosamente.");
+        return "Reservas creadas exitosamente.";
+    }
+
+    public ReservaDTO actualizarReserva(ReservaIdDTO dto) {
+        // Cambiar como se arma el ID de la cancha
+        Cancha cancha = canchaRepo.findByNombre(dto.canchaName())
+            .orElseThrow(() -> new NotFoundException("Cancha con nombre: '" + dto.canchaName() + "' no encontrada."));
+    
+        ReservaId reservaId = new ReservaId(cancha, dto.fecha(), dto.horaInicio(), dto.horaFin());
+        Reserva reserva = reservaRepo.findById(reservaId)
+            .orElseThrow(() -> new NotFoundException("Reserva con ID: '" + reservaId + "' no encontrada."));
+    
+        reserva.setState(dto.state());
+
+        reservaRepo.save(reserva);
+
+        return reserva.toDTO();
     }
 
     public List<ReservaDTO> obtenerReserva() {
@@ -66,7 +82,7 @@ public class ReservaService {
             reservas.addAll(reservaRepo.findAll());
         });
 
-        return reservas.stream().map(Reserva::toReservaDTO).toList();
+        return reservas.stream().map(Reserva::toDTO).toList();
     }
 }
 

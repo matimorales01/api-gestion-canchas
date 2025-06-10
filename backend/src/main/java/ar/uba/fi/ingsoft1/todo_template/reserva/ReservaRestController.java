@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
+import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaIdDTO;
 
 
 @RestController
@@ -22,7 +23,12 @@ public class ReservaRestController {
 
     @PostMapping
     public ResponseEntity<String> crearReserva(@Valid @RequestBody ReservaCreateDTO dto) {
-        return reservaService.crearReservas(dto);
+        return ResponseEntity.ok(reservaService.crearReservas(dto));
+    }
+
+    @PatchMapping()
+    public ResponseEntity<ReservaDTO> actualizarReserva(@Valid @RequestBody ReservaIdDTO dto) {
+        return ResponseEntity.ok(reservaService.actualizarReserva(dto));
     }
 
     @GetMapping
