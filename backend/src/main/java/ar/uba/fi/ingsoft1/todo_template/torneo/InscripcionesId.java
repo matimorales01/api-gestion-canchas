@@ -17,6 +17,8 @@ public class InscripcionesId implements Serializable {
     @JoinColumn(name = "equipo_id", nullable = false)
     private Equipo equipo;
 
+    public InscripcionesId() {}
+
     public InscripcionesId(Torneo torneo, Equipo equipoName) {
         this.torneo = torneo;
         this.equipo = equipoName;
