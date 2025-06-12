@@ -24,7 +24,7 @@ public class EquipoService {
     }
 
     public EquipoDTO crearEquipo(EquipoCreateDTO equipoDTO) {
-        if (equipoRepo.existsByTeamName(equipoDTO.teamName())){
+        if (equipoRepo.existsById(equipoDTO.teamName())){
             throw new UserNotFoundException("Ya existe un equipo con ese nombre");
         }
         
@@ -41,7 +41,7 @@ public class EquipoService {
     public EquipoDTO actualizarEquipo(EquipoUpdateDTO equipoDTO) {
         JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Equipo equipo = equipoRepo.findByTeamName(equipoDTO.teamName())
+        Equipo equipo = equipoRepo.findById(equipoDTO.teamName())
                 .orElseThrow(() -> new UserNotFoundException("Equipo no encontrado"));
 
         if (!equipo.getCaptain().getEmail().equals(userDetails.email())) {
