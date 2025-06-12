@@ -27,6 +27,8 @@ public class ReservaId implements Serializable {
     @Column(nullable = false)
     private LocalTime horaFin;
 
+    public ReservaId() {}
+    
     public ReservaId(Cancha canchaId, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
         this.cancha = canchaId;
         this.fecha = fecha;
