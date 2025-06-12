@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
+import ar.uba.fi.ingsoft1.todo_template.torneo.dto.InscripcionDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoUpdateDTO;
@@ -16,6 +17,12 @@ public class TorneoRestController {
 
     public TorneoRestController(TorneoService service) {
         this.service = service;
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<String> inscribirEquipo(@PathVariable Long idTorneo, @Valid @RequestBody InscripcionDTO equipo) {
+        String msj = service.inscribirEquipo(idTorneo, equipo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(msj);
     }
 
     @GetMapping
