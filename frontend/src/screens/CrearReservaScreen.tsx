@@ -4,7 +4,7 @@ import { useAppForm } from "@/config/use-app-form";
 import { CrearReservaSchema } from "@/models/Reserva";
 import { useCanchas } from "@/services/CanchaService";
 import { useCrearReserva } from "@/services/ReservasService";
-import { MiComposedChart,CrearPartidoCerradoForm,CrearPartidoAbiertoForm } from "@/Components/UnderConstruction/graficos.jsx";
+import { MiComposedChart,CrearPartidoCerradoForm,CrearPartidoAbiertoForm } from "@/components/UnderConstruction/graficos.jsx";
 
 export const CrearReservaScreen = () => {
 const { data: canchas, isLoading, isError } = useCanchas();
