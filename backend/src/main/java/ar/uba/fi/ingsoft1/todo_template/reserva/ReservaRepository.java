@@ -11,13 +11,16 @@ public interface ReservaRepository extends JpaRepository<Reserva, ReservaId> {
 
     @Query("SELECT CASE WHEN COUNT(r) > 0 THEN TRUE ELSE FALSE END "
          + "FROM Reserva r "
-         + "WHERE r.cancha.id = :canchaId "
-         + "  AND r.fecha >= :hoy")
+         + "WHERE r.id.cancha.id = :canchaId "
+         + "  AND r.id.fecha >= :hoy")
     boolean existsReservaFuturaPorCancha(
         @Param("canchaId") Long canchaId,
         @Param("hoy") LocalDate hoy
     );
 
+    @Query("SELECT r FROM Reserva r WHERE r.id.cancha.id = :canchaId")
     List<Reserva> findByCanchaId(Long id);
+
+    @Query("SELECT COUNT(r) > 0 FROM Reserva r WHERE r.id.cancha.id = :canchaId")
     boolean existsByCanchaId(Long id);
 }

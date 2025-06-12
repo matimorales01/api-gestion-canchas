@@ -16,7 +16,7 @@ public class ReservaId implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "cancha_id", nullable = false)
-    private Cancha canchaId;
+    private Cancha cancha;
 
     @Column(nullable = false)
     private LocalDate fecha;
@@ -28,7 +28,7 @@ public class ReservaId implements Serializable {
     private LocalTime horaFin;
 
     public ReservaId(Cancha canchaId, LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
-        this.canchaId = canchaId;
+        this.cancha = canchaId;
         this.fecha = fecha;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
@@ -41,7 +41,7 @@ public class ReservaId implements Serializable {
         if (!(other instanceof ReservaId)) return false;
         
         ReservaId that = (ReservaId) other;
-        return canchaId.equals(that.canchaId) &&
+        return cancha.equals(that.cancha) &&
                fecha.equals(that.fecha) &&
                horaInicio.equals(that.horaInicio) &&
                horaFin.equals(that.horaFin);
@@ -49,11 +49,11 @@ public class ReservaId implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(canchaId, fecha, horaInicio, horaFin);
+        return Objects.hash(cancha, fecha, horaInicio, horaFin);
     }
 
     public Cancha getCanchaId() {
-        return canchaId;
+        return cancha;
     }
 
     public LocalDate getFecha() {

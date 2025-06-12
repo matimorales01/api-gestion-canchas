@@ -11,7 +11,7 @@ import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
 @Table(name = "reservas")
 public class Reserva {
     @EmbeddedId
-    private ReservaId reservaId;
+    private ReservaId id;
 
     @Column(nullable = false)
     private String state;
@@ -21,13 +21,13 @@ public class Reserva {
 
     public Reserva() {}
 
-    public Reserva(ReservaId reservaId, String state, String partido) {
-        this.reservaId = reservaId;
+    public Reserva(ReservaId id, String state, String partido) {
+        this.id = id;
         this.state = state;
         this.partido = partido;
     }
 
-    public Cancha getCancha() { return reservaId.getCanchaId(); }
+    public Cancha getCancha() { return id.getCanchaId(); }
 
     public String getState() { return state; }
     public void setState(String state) { this.state = state; }
@@ -35,18 +35,18 @@ public class Reserva {
     public String getPartido() { return partido; }
     public void setPartido(String partido) { this.partido = partido; }
 
-    public LocalDate getFecha() { return reservaId.getFecha(); }
+    public LocalDate getFecha() { return id.getFecha(); }
 
-    public LocalTime getHoraInicio() { return reservaId.getHoraInicio(); }
+    public LocalTime getHoraInicio() { return id.getHoraInicio(); }
 
-    public LocalTime getHoraFin() { return reservaId.getHoraFin(); }
+    public LocalTime getHoraFin() { return id.getHoraFin(); }
 
     public ReservaDTO toDTO() {
         return new ReservaDTO(
-            this.reservaId.getCanchaId().getNombre(),
-            this.reservaId.getFecha(),
-            this.reservaId.getHoraInicio(),
-            this.reservaId.getHoraFin(),
+            this.id.getCanchaId().getNombre(),
+            this.id.getFecha(),
+            this.id.getHoraInicio(),
+            this.id.getHoraFin(),
             this.state,
             this.partido
         );
