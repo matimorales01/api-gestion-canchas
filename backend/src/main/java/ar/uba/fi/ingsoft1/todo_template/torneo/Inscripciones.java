@@ -8,6 +8,8 @@ public class Inscripciones {
     @EmbeddedId
     private InscripcionesId id;
     
+    public Inscripciones() {}
+
     public Inscripciones(InscripcionesId id) {
         this.id = id;
     }
