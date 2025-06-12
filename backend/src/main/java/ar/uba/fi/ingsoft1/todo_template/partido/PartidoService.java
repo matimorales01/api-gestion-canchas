@@ -5,9 +5,7 @@ import ar.uba.fi.ingsoft1.todo_template.canchas.CanchaRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoAbiertoCreateDTO;
-import ar.uba.fi.ingsoft1.todo_template.partido.PartidoAbiertoResponseDTO;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCerradoCreateDTO;
-import ar.uba.fi.ingsoft1.todo_template.partido.PartidoCerradoResponseDTO;
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
 import ar.uba.fi.ingsoft1.todo_template.user.verificacion.EmailService;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
@@ -60,11 +58,7 @@ public class PartidoService {
 
     private boolean reservaExiste(Long canchaId, LocalDate fecha, LocalTime horaInicio) {
         LocalTime horaFin = horaInicio.plusHours(1);
-        return (reservaRepository.existsReservaConHorarioExacto(
-                canchaId,
-                fecha,
-                horaInicio,
-                horaFin));
+        return false;
     }
 
     private void envioDeEmailPorCreacion(String email, Partido partido, String tipo) {
