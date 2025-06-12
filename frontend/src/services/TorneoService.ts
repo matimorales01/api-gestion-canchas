@@ -1,7 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
-import { TorneoRequest, Torneo } from "@/models/Torneo";
+import { TorneoRequest, Torneo, TorneoDisponible } from "@/models/Torneo";
 
 export function crearTorneo(options?: {
   onSuccess?: (data: Torneo) => void;
@@ -31,5 +31,29 @@ export function crearTorneo(options?: {
       options?.onSuccess?.(torneoCreado);
       return torneoCreado;
     },
+  });
+}
+
+export function useGetTorneosDisponibles() {
+  const [tokenState] = useToken();
+
+  return useQuery<TorneoDisponible[]>({
+    queryKey: ["torneosDisponibles"],
+    queryFn: async () => {
+      if (tokenState.state !== "LOGGED_IN") {
+        throw new Error("No estás logueado.");
+      }
+      const response = await fetch(BASE_API_URL + "/torneos", {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${tokenState.accessToken}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Error al obtener los torneos disponibles");
+      }
+      return (await response.json()) as TorneoDisponible[];
+    },
+    enabled: tokenState.state === "LOGGED_IN",
   });
 }

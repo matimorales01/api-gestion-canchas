@@ -1,12 +1,12 @@
 .mainLayout {
   display: flex;
   flex-direction: column;
-  height: 100%;
   background-color: #232a33;
 }
 
 .mainContent {
     flex: 1;
+    height: 100%;
 }
 
 .topBar {

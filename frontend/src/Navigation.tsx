@@ -6,13 +6,11 @@ import { SignupScreen } from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
 import { CanchaScreen } from "@/screens/CrearCancha";
 import { HistorialScreen } from "@/screens/HistorialScreen";
+import { UserListaTorneo } from "@/screens/UserListaTorneo";
 import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
-import { CrearPartidoAbiertoScreen } from "./screens/CrearPartidoAbierto";
-import {CrearPartidoCerradoScreen} from "@/screens/CrearPartidoCerrado.tsx";
 import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
 import { CrearEquipo } from "./screens/CrearEquipo";
-import { LoginRequestSchema } from "./models/Login";
 import { CrearReservaScreen } from "./screens/CrearReservaScreen";
 import { CrearTorneo } from "./screens/CrearTorneo";
 import { AdministrarReservasScreen } from "./screens/AdministrarReservasScreen";
@@ -54,6 +52,9 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/ver-historial">
                       <HistorialScreen />
+                    </Route>
+                    <Route path="/listar-torneos">
+                      <UserListaTorneo />
                     </Route>
                     <Route>
                         <Redirect href="/" />

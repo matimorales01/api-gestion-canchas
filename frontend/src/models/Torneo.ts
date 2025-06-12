@@ -27,3 +27,17 @@ export interface Torneo extends TorneoRequest {
 }
 
 export interface TorneoEditRequest extends Partial<TorneoRequest> {}
+
+export interface TorneoDisponible {
+  id: number;
+  nombre: string;
+  fechaInicio: string;
+  fechaFin: string;
+  formato: "ELIMINACION_DIRECTA" | "FASE_GRUPOS_ELIMINACION" | "LIGA";
+  cantidadMaximaEquipos: number;
+  descripcion: string;
+  premios: string;
+  costoInscripcion: number;
+  estado: "ABIERTO" | "EN_CURSO" | "FINALIZADO";
+  organizadorId: number;
+}
