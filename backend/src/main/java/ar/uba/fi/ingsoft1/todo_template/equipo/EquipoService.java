@@ -1,6 +1,9 @@
 package ar.uba.fi.ingsoft1.todo_template.equipo;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
@@ -49,5 +52,14 @@ public class EquipoService {
         equipoRepo.save(equipo);
 
         return equipo.asEquipoDTO();
+    }
+
+    public List<EquipoDTO> obtenerEquipos() {
+        JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Equipo> equipos = equipoRepo.findByCaptainId(userDetails.id())
+                .orElseThrow(() -> new UserNotFoundException("No se encontraron equipos para el usuario"));
+    
+        return equipos.stream().map(Equipo::asEquipoDTO).toList();
     }
 }

@@ -2,9 +2,13 @@ package ar.uba.fi.ingsoft1.todo_template.equipo;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,5 +46,12 @@ public class EquipoRestController {
             @Valid @NonNull @RequestBody EquipoUpdateDTO equipoDTO
     ) {
         return ResponseEntity.ok(equipoService.actualizarEquipo(equipoDTO));
+    }
+
+    @GetMapping(produces = "application/json")
+    @Operation(summary = "Obtener todos los equipos")
+    public ResponseEntity<List<EquipoDTO>> obtenerEquipos() {
+  
+        return ResponseEntity.ok(equipoService.obtenerEquipos());
     }
 }
