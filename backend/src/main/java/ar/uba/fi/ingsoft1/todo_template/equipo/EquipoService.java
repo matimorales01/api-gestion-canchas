@@ -24,7 +24,7 @@ public class EquipoService {
     }
 
     public EquipoDTO crearEquipo(EquipoCreateDTO equipoDTO) {
-        if (equipoRepo.existsByTeamName(equipoDTO.teamName())){
+        if (equipoRepo.existsById(equipoDTO.teamName())){
             throw new UserNotFoundException("Ya existe un equipo con ese nombre");
         }
         

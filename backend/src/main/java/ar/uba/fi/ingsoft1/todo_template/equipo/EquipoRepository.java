@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EquipoRepository extends JpaRepository<Equipo, String>  {
-    boolean existsByTeamName(String teamName);
     Optional<List<Equipo>> findByCaptainId(Integer id);
 }
