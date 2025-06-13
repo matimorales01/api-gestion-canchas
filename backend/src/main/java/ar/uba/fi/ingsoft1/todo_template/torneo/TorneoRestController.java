@@ -25,8 +25,8 @@ public class TorneoRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TorneoDTO> one(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getTorneo(id).toDTO());
+    public ResponseEntity<TorneoDTO> one(@PathVariable Long id_to_get) {
+        return ResponseEntity.ok(service.getTorneo(id_to_get).toDTO());
     }
 
     @PostMapping
