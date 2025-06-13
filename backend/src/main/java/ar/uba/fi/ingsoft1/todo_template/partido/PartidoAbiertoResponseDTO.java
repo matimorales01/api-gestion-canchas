@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record PartidoAbiertoResponseDTO(
-        Long idPartido,
+        PartidoId idPartido,
         String canchaNombre,
         String canchaDireccion,
         LocalDate fechaPartido,
@@ -21,7 +21,7 @@ public record PartidoAbiertoResponseDTO(
         boolean partidoConfirmado,
         List<JugadorDTO> jugadores
 ) {
-    public static PartidoAbiertoResponseDTO fromEntity(PartidoAbierto partido, Long usuarioLogueadoId){
+    public static PartidoAbiertoResponseDTO fromEntity(Partido partido, Long usuarioLogueadoId){
         boolean inscripto = partido.getJugadores().stream()
                 .anyMatch(j -> j.getId().equals(usuarioLogueadoId));
 

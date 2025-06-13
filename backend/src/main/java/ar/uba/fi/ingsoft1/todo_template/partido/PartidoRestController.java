@@ -2,8 +2,13 @@ package ar.uba.fi.ingsoft1.todo_template.partido;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +34,7 @@ public class PartidoRestController {
     @PostMapping("/abierto")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<PartidoAbiertoResponseDTO> crearAbierto(@Valid @RequestBody PartidoAbiertoCreateDTO dto) {
-        PartidoAbierto partido = partidoService.crearPartidoAbierto(dto);
+        Partido partido = partidoService.crearPartido(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .header("Location", "/partidos/" + partido.getIdPartido())
@@ -40,7 +45,7 @@ public class PartidoRestController {
     @PostMapping("/cerrado")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<PartidoCerradoResponseDTO> crearCerrado(@Valid @RequestBody PartidoCerradoCreateDTO dto) {
-        PartidoCerrado partido = partidoService.crearPartidoCerrado(dto);
+        Partido partido = partidoService.crearPartido(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .header("Location", "/partidos/" + partido.getIdPartido())
@@ -68,22 +73,35 @@ public class PartidoRestController {
                 .toList();
         return ResponseEntity.ok(lista);
     }
-
     @Operation(summary = "Inscribir usuario a partido abierto")
-    @PostMapping("/abierto/{id}/inscribir")
-    public ResponseEntity<?> inscribirAAbierto(@PathVariable Long id, Authentication authentication) {
+    @PostMapping("/abierto/inscribir/{canchaId}/{fechaPartido}/{horaPartido}")
+    public ResponseEntity<?> inscribirAAbierto(
+        @PathVariable Long canchaId,
+        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaPartido,
+        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horaPartido,
+        Authentication authentication) {
+
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
         Long userId = userDetails.id().longValue();
-        partidoService.inscribirAAbierto(id, userId);
+
+        PartidoId partidoId = new PartidoId(canchaId, fechaPartido, horaPartido);
+        partidoService.inscribirAAbierto(partidoId, userId);
         return ResponseEntity.ok(Map.of("mensaje", "Inscripción exitosa"));
     }
 
     @Operation(summary = "Desinscribir usuario de partido abierto")
-    @PostMapping("/abierto/{id}/desinscribir")
-    public ResponseEntity<?> desinscribirDeAbierto(@PathVariable Long id, Authentication authentication) {
+    @PostMapping("/abierto/desinscribir/{canchaId}/{fechaPartido}/{horaPartido}")
+    public ResponseEntity<?> desinscribirDeAbierto(
+        @PathVariable Long canchaId,
+        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaPartido,
+        @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horaPartido,
+        Authentication authentication) {
+
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
         Long userId = userDetails.id().longValue();
-        partidoService.desinscribirDeAbierto(id, userId);
+
+        PartidoId partidoId = new PartidoId(canchaId, fechaPartido, horaPartido);
+        partidoService.desinscribirDeAbierto(partidoId, userId);
         return ResponseEntity.ok(Map.of("mensaje", "Desinscripción exitosa"));
     }
 
