@@ -171,11 +171,7 @@ public class PartidoService {
         if(!partido.inscribirJugador(user)) {
             throw new IllegalStateException("No hay cupos disponibles o el usuario ya está inscripto.");
         }
-        if (partido.getJugadores().contains(user)) {
-            throw new IllegalStateException("El usuario ya está inscripto en este partido.");
-        }
 
-        partido.inscribirJugador(user);
 
         if (partido.getJugadores().size() >= partido.getMinJugadores()) {
             partido.setPartidoConfirmado(true);

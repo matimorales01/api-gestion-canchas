@@ -95,19 +95,24 @@ public class Partido {
     public TipoPartido getTipoPartido() {
         return tipoPartido;
     }
+    
     public void setTipoPartido(TipoPartido tipoPartido) {
         this.tipoPartido = tipoPartido;
     }
+
     //pc
     public String getEquipo1() {
         return this.equipo1;
     }
+
     public void setEquipo1(String equipo1) {
         this.equipo1 = equipo1;
     }
+
     public String getEquipo2() {
         return this.equipo2;
     }
+
     public void setEquipo2(String equipo2) {
         this.equipo2 = equipo2;
     }
@@ -117,30 +122,39 @@ public class Partido {
     public int getMinJugadores() {
         return minJugadores;
     }
+
     public void setMinJugadores(int minJugadores) {
         this.minJugadores = minJugadores;
     }
+
     public int getMaxJugadores() {
         return maxJugadores;
     }
+
     public void setMaxJugadores(int maxJugadores) {
         this.maxJugadores = maxJugadores;
     }
+
     public int getCuposDisponibles() {
         return cuposDisponibles;
     }
+
     public void setCuposDisponibles(int cuposDisponibles) {
         this.cuposDisponibles = cuposDisponibles;
     }
+
     public List<User> getJugadores() {
         return jugadores;
     }
+
     public void setJugadores(List<User> jugadores) {
         this.jugadores = jugadores;
     }
+
     public boolean hayCupos() {
         return cuposDisponibles > 0;
     }
+
     public boolean inscribirJugador(User user) {
         if (!jugadores.contains(user) && hayCupos()) {
             jugadores.add(user);
@@ -149,6 +163,7 @@ public class Partido {
         }
         return false;
     }
+
     public boolean desinscribirJugador(User user) {
         if (jugadores.contains(user)) {
             jugadores.remove(user);
@@ -157,9 +172,11 @@ public class Partido {
         }
         return false;
     }
+
     public boolean isPartidoConfirmado() {
         return partidoConfirmado;
     }
+
     public void setPartidoConfirmado(boolean partidoConfirmado) {
         this.partidoConfirmado = partidoConfirmado;
     }
