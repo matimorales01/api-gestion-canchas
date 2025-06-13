@@ -6,11 +6,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.equipo.Equipo;
+import ar.uba.fi.ingsoft1.todo_template.equipo.EquipoRepository;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.TorneoAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.TorneoNotEditableException;
+import ar.uba.fi.ingsoft1.todo_template.torneo.dto.InscripcionDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoUpdateDTO;
 import java.time.LocalDate;
@@ -20,10 +23,14 @@ import java.util.List;
 public class TorneoService {
     private final TorneoRepository repo;
     private final UserRepository userRepo;
+    private final EquipoRepository equipoRepo;
+    private final InscripcionService inscripcionService;
 
-    public TorneoService(TorneoRepository repo, UserRepository userRepo) {
+    public TorneoService(TorneoRepository repo, UserRepository userRepo, EquipoRepository equipoRepo, InscripcionService inscripcionService) {
         this.repo = repo;
         this.userRepo = userRepo;
+        this.equipoRepo = equipoRepo;
+        this.inscripcionService = inscripcionService;
     }
 
     @Transactional
@@ -88,6 +95,14 @@ public class TorneoService {
         if (dto.getCostoInscripcion() != null)      torneo_a_actualizar.setCostoInscripcion(dto.getCostoInscripcion());
         if (dto.getEstado() != null)                torneo_a_actualizar.setEstado(dto.getEstado());
         return repo.save(torneo_a_actualizar);
+    }
+
+    public String inscribirEquipo(Long idTorneo, InscripcionDTO dto) {
+        Torneo torneo = getTorneo(idTorneo);
+        Equipo equipo = equipoRepo.findById(dto.teamName())
+            .orElseThrow(() -> new NotFoundException("Equipo con ID " + dto.teamName() + " no encontrado."));
+
+        return inscripcionService.inscribirEquipo(torneo, equipo);
     }
 
     @Transactional

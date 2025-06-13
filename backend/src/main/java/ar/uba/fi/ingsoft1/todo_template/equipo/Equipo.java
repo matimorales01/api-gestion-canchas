@@ -6,19 +6,16 @@ import ar.uba.fi.ingsoft1.todo_template.equipo.dtos.EquipoDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Equipo {
-    @Id
-    @GeneratedValue
-    private Long id;
     
+    @Id
     @Column(unique = true, nullable = false)
-    private String teamName;
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "captain_id", nullable = false)
@@ -35,24 +32,16 @@ public class Equipo {
 
     public Equipo() {}
 
-    public Equipo(String teamName, User captain, String category, String mainColors, String secondaryColors) {
-        this.teamName = teamName;
+    public Equipo(String id, User captain, String category, String mainColors, String secondaryColors) {
+        this.id = id;
         this.captain = captain;
         this.category = category;
         this.mainColors = mainColors;
         this.secondaryColors = secondaryColors;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTeamName() {
-        return teamName;
     }
 
     public User getCaptain() {
@@ -60,14 +49,14 @@ public class Equipo {
     }
 
     public EquipoDTO asEquipoDTO() {
-        return new EquipoDTO(id, teamName, category, mainColors, secondaryColors, captain.getId());
+        return new EquipoDTO(id, category, mainColors, secondaryColors, captain.getId());
     }
 
-    public void update(String teamName,
+    public void update(String id,
                        Optional<String> category,
                        Optional<String> mainColors,
                        Optional<String> secondaryColors) {
-        this.teamName = teamName;
+        this.id = id;
         this.category = category.orElse(this.category);
         this.mainColors = mainColors.orElse(this.mainColors);
         this.secondaryColors = secondaryColors.orElse(this.secondaryColors);

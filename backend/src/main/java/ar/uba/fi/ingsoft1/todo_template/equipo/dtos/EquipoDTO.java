@@ -4,7 +4,6 @@ import ar.uba.fi.ingsoft1.todo_template.equipo.Equipo;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 
 public record EquipoDTO(
-    Long id,
     String teamName,
     String category,
     String mainColors,

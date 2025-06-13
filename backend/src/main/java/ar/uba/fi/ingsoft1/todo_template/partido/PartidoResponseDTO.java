@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record PartidoResponseDTO(
-        Long idPartido,
-        String tipoPartido,
+        PartidoId idPartido,
+        TipoPartido tipoPartido,
         String canchaNombre,
         String canchaDireccion,
         LocalDate fechaPartido,

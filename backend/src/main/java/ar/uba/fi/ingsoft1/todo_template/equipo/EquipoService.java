@@ -1,6 +1,9 @@
 package ar.uba.fi.ingsoft1.todo_template.equipo;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
@@ -21,7 +24,7 @@ public class EquipoService {
     }
 
     public EquipoDTO crearEquipo(EquipoCreateDTO equipoDTO) {
-        if (equipoRepo.existsByTeamName(equipoDTO.teamName())){
+        if (equipoRepo.existsById(equipoDTO.teamName())){
             throw new UserNotFoundException("Ya existe un equipo con ese nombre");
         }
         
@@ -38,7 +41,7 @@ public class EquipoService {
     public EquipoDTO actualizarEquipo(EquipoUpdateDTO equipoDTO) {
         JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Equipo equipo = equipoRepo.findByTeamName(equipoDTO.teamName())
+        Equipo equipo = equipoRepo.findById(equipoDTO.teamName())
                 .orElseThrow(() -> new UserNotFoundException("Equipo no encontrado"));
 
         if (!equipo.getCaptain().getEmail().equals(userDetails.email())) {
@@ -49,5 +52,14 @@ public class EquipoService {
         equipoRepo.save(equipo);
 
         return equipo.asEquipoDTO();
+    }
+
+    public List<EquipoDTO> obtenerEquipos() {
+        JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<Equipo> equipos = equipoRepo.findByCaptainId(userDetails.id())
+                .orElseThrow(() -> new UserNotFoundException("No se encontraron equipos para el usuario"));
+    
+        return equipos.stream().map(Equipo::asEquipoDTO).toList();
     }
 }

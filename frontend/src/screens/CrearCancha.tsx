@@ -7,7 +7,6 @@ import { useLocation } from "wouter";
 
 export const CanchaScreen = () => {
   const [, navigate] = useLocation();
-
   const { mutateAsync } = useCrearCancha();
   const poblarFranjas = usePoblarFranjas();
   const [loadingFranjas, setLoadingFranjas] = React.useState(false);
@@ -19,7 +18,6 @@ export const CanchaScreen = () => {
       iluminacion: false,
       zona: "",
       direccion: "",
-
       desde: "",
       hasta: "",
       horaInicio: "",
@@ -30,8 +28,11 @@ export const CanchaScreen = () => {
       onChange: CanchaRequestSchema,
     },
     onSubmit: async ({ value }) => {
+      if (value.desde && value.hasta && value.hasta < value.desde) {
+        alert("La fecha 'Hasta' no puede ser menor que 'Desde'");
+        return;
+      }
       try {
-
         const cancha = await mutateAsync({
           nombre: value.nombre,
           tipoCesped: value.tipoCesped,
@@ -49,13 +50,13 @@ export const CanchaScreen = () => {
             value.duracionMinutos
         ) {
           setLoadingFranjas(true);
-          await poblarFranjas({
+          await poblarFranjas.mutateAsync({
             canchaId: cancha.id,
-            desde: value.desde,
-            hasta: value.hasta,
-            horaInicio: value.horaInicio,
-            horaFin: value.horaFin,
-            duracionMinutos: value.duracionMinutos,
+            fechaInicial: value.desde,
+            fechaFinal: value.hasta,
+            horarioInicio: value.horaInicio,
+            horarioFin: value.horaFin,
+            minutos: value.duracionMinutos,
           });
           setLoadingFranjas(false);
         }
@@ -74,7 +75,6 @@ export const CanchaScreen = () => {
         <h1 className="text-xl font-bold mb-4">Registrar Cancha</h1>
         <formData.AppForm>
           <formData.FormContainer extraError={formData.error}>
-            {}
             <formData.AppField name="nombre">
               {(field) => <field.TextField label="Nombre" />}
             </formData.AppField>
@@ -95,7 +95,7 @@ export const CanchaScreen = () => {
               )}
             </formData.AppField>
             <formData.AppField name="iluminacion">
-              {(field) => <field.CheckboxField />}
+              {(field) => <field.CheckboxField label="Iluminación artificial" />}
             </formData.AppField>
             <formData.AppField name="zona">
               {(field) => <field.TextField label="Zona" />}
@@ -103,78 +103,83 @@ export const CanchaScreen = () => {
             <formData.AppField name="direccion">
               {(field) => <field.TextField label="Dirección" />}
             </formData.AppField>
-            {}
+
             <div className="mt-6 border-t pt-4">
               <h2 className="font-bold mb-2">Franjas horarias</h2>
-              <formData.AppField name="desde">
-                {(field) => (
-                    <div className="mb-2">
-                      <label>Desde (fecha)</label>
-                      <input
-                          type="date"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          className="input input-bordered w-full"
-                      />
-                    </div>
-                )}
-              </formData.AppField>
-              <formData.AppField name="hasta">
-                {(field) => (
-                    <div className="mb-2">
-                      <label>Hasta (fecha)</label>
-                      <input
-                          type="date"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          className="input input-bordered w-full"
-                      />
-                    </div>
-                )}
-              </formData.AppField>
-              <formData.AppField name="horaInicio">
-                {(field) => (
-                    <div className="mb-2">
-                      <label>Hora inicio</label>
-                      <input
-                          type="time"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          className="input input-bordered w-full"
-                      />
-                    </div>
-                )}
-              </formData.AppField>
-              <formData.AppField name="horaFin">
-                {(field) => (
-                    <div className="mb-2">
-                      <label>Hora fin</label>
-                      <input
-                          type="time"
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          className="input input-bordered w-full"
-                      />
-                    </div>
-                )}
-              </formData.AppField>
-              <formData.AppField name="duracionMinutos">
-                {(field) => (
-                    <div className="mb-2">
-                      <label>Duración (minutos)</label>
-                      <input
-                          type="number"
-                          min={15}
-                          step={15}
-                          value={field.state.value}
-                          onChange={(e) => field.handleChange(Number(e.target.value))}
-                          className="input input-bordered w-full"
-                      />
-                    </div>
-                )}
-              </formData.AppField>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <formData.AppField name="desde">
+                  {(field) => (
+                      <div className="mb-2">
+                        <label>Desde (fecha)</label>
+                        <input
+                            type="date"
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            className="input input-bordered w-full"
+                        />
+                      </div>
+                  )}
+                </formData.AppField>
+                <formData.AppField name="hasta">
+                  {(field) => (
+                      <div className="mb-2">
+                        <label>Hasta (fecha)</label>
+                        <input
+                            type="date"
+                            value={field.state.value}
+                            min={formData.state.values.desde}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            className="input input-bordered w-full"
+                        />
+                      </div>
+                  )}
+                </formData.AppField>
+                <formData.AppField name="horaInicio">
+                  {(field) => (
+                      <div className="mb-2">
+                        <label>Hora inicio</label>
+                        <input
+                            type="time"
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            className="input input-bordered w-full"
+                        />
+                      </div>
+                  )}
+                </formData.AppField>
+                <formData.AppField name="horaFin">
+                  {(field) => (
+                      <div className="mb-2">
+                        <label>Hora fin</label>
+                        <input
+                            type="time"
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            className="input input-bordered w-full"
+                        />
+                      </div>
+                  )}
+                </formData.AppField>
+                <formData.AppField name="duracionMinutos">
+                  {(field) => (
+                      <div className="mb-2">
+                        <label>Duración (minutos)</label>
+                        <input
+                            type="number"
+                            min={15}
+                            step={15}
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(Number(e.target.value))}
+                            className="input input-bordered w-full"
+                        />
+                      </div>
+                  )}
+                </formData.AppField>
+              </div>
             </div>
-            {loadingFranjas && <div>Generando franjas horarias...</div>}
+            {loadingFranjas && (
+                <div className="mt-4 text-blue-600">Generando franjas horarias...</div>
+            )}
           </formData.FormContainer>
         </formData.AppForm>
       </CommonLayout>

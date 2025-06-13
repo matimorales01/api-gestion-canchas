@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record PartidoCerradoResponseDTO(
-        Long idPartido,
+        PartidoId idPartido,
         String canchaNombre,
         String canchaDireccion,
         LocalDate fechaPartido,
@@ -14,7 +14,7 @@ public record PartidoCerradoResponseDTO(
         Long organizadorId,
         String emailOrganizador
 ) {
-    public static PartidoCerradoResponseDTO fromEntity(PartidoCerrado partido){
+    public static PartidoCerradoResponseDTO fromEntity(Partido partido){
         return new PartidoCerradoResponseDTO(
                 partido.getIdPartido(),
                 partido.getCancha().getNombre(),

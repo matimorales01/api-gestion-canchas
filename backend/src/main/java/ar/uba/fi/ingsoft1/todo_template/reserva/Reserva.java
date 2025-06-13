@@ -3,50 +3,52 @@ package ar.uba.fi.ingsoft1.todo_template.reserva;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
-import ar.uba.fi.ingsoft1.todo_template.user.User;
+import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
 
 @Entity
 @Table(name = "reservas")
 public class Reserva {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "cancha_id")
-    private Cancha cancha;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "usuario_id")
-    private User usuario;
+    @EmbeddedId
+    private ReservaId id;
 
     @Column(nullable = false)
-    private LocalDate fecha;
+    private String state;
 
-    @Column(nullable = false)
-    private LocalTime horaInicio;
+    @Column(nullable = true)
+    private String partido;
 
-    @Column(nullable = false)
-    private LocalTime horaFin;
+    public Reserva() {}
 
+    public Reserva(ReservaId id, String state, String partido) {
+        this.id = id;
+        this.state = state;
+        this.partido = partido;
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Cancha getCancha() { return id.getCanchaId(); }
 
-    public Cancha getCancha() { return cancha; }
-    public void setCancha(Cancha cancha) { this.cancha = cancha; }
+    public String getState() { return state; }
+    public void setState(String state) { this.state = state; }
 
-    public User getUsuario() { return usuario; }
-    public void setUsuario(User usuario) { this.usuario = usuario; }
+    public String getPartido() { return partido; }
+    public void setPartido(String partido) { this.partido = partido; }
 
-    public LocalDate getFecha() { return fecha; }
-    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
+    public LocalDate getFecha() { return id.getFecha(); }
 
-    public LocalTime getHoraInicio() { return horaInicio; }
-    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
+    public LocalTime getHoraInicio() { return id.getHoraInicio(); }
 
-    public LocalTime getHoraFin() { return horaFin; }
-    public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin; }
+    public LocalTime getHoraFin() { return id.getHoraFin(); }
+
+    public ReservaDTO toDTO() {
+        return new ReservaDTO(
+            this.id.getCanchaId().getNombre(),
+            this.id.getFecha(),
+            this.id.getHoraInicio(),
+            this.id.getHoraFin(),
+            this.state,
+            this.partido
+        );
+    }
 }

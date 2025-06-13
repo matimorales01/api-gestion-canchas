@@ -1,15 +1,14 @@
 package ar.uba.fi.ingsoft1.todo_template.reserva;
 
-import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
-import org.springframework.http.HttpStatus;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaCreateDTO;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.ReservacionHorarioCanchaCoincideException;
-import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
-import org.springframework.security.core.Authentication;
+import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
+import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaIdDTO;
 
 
 @RestController
@@ -23,17 +22,17 @@ public class ReservaRestController {
     }
 
     @PostMapping
-    public ResponseEntity<String> crearReserva(@Valid @RequestBody ReservaCreateDTO dto, Authentication authentication) {
-        try {
-            JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-            Long userId = userDetails.id().longValue();
-            reservaService.crearReserva(userId, dto);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } catch (ReservacionHorarioCanchaCoincideException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+    public ResponseEntity<String> crearReserva(@Valid @RequestBody ReservaCreateDTO dto) {
+        return ResponseEntity.ok(reservaService.crearReservas(dto));
     }
 
+    @PatchMapping()
+    public ResponseEntity<ReservaDTO> actualizarReserva(@Valid @RequestBody ReservaIdDTO dto) {
+        return ResponseEntity.ok(reservaService.actualizarReserva(dto));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservaDTO>> obtenerReserva() {
+        return ResponseEntity.ok(reservaService.obtenerReserva());
+    }
 }
