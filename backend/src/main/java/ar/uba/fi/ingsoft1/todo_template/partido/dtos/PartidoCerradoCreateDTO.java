@@ -3,6 +3,7 @@ package ar.uba.fi.ingsoft1.todo_template.partido.dtos;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import ar.uba.fi.ingsoft1.todo_template.partido.TipoPartido;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,4 +13,11 @@ public record PartidoCerradoCreateDTO(
     @NotNull LocalTime horaPartido,
     @NotBlank String equipo1,
     @NotBlank String equipo2
-){}
+) implements PartidoCreateDTO {
+
+    @Override
+    public TipoPartido tipoPartido() {
+        return TipoPartido.CERRADO;
+    }
+
+}

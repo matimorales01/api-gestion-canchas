@@ -4,14 +4,17 @@ import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.canchas.CanchaRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
-import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoAbiertoCreateDTO;
-import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCerradoCreateDTO;
+
+import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCreateDTO;
+import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaId;
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
 import ar.uba.fi.ingsoft1.todo_template.user.verificacion.EmailService;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 
 import jakarta.transaction.Transactional;
+
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -27,19 +30,22 @@ public class PartidoService {
     private final UserRepository userRepository;
     private final ReservaRepository reservaRepository;
     private final CanchaRepository canchaRepository;
+    private final PartidoFactory partidoFactory;
 
     public PartidoService(
             PartidoRepository partidoRepository,
             EmailService emailService,
             UserRepository userRepository,
             ReservaRepository reservaRepository,
-            CanchaRepository canchaRepository
+            CanchaRepository canchaRepository,
+            PartidoFactory partidoFactory
     ) {
         this.partidoRepository = partidoRepository;
         this.emailService = emailService;
         this.userRepository = userRepository;
         this.reservaRepository = reservaRepository;
         this.canchaRepository = canchaRepository;
+        this.partidoFactory = partidoFactory;
     }
 
     private User autentificarUser() {
@@ -58,87 +64,50 @@ public class PartidoService {
 
     private boolean reservaExiste(Long canchaId, LocalDate fecha, LocalTime horaInicio) {
         LocalTime horaFin = horaInicio.plusHours(1);
-        return false;
+        Cancha cancha = canchaRepository.findById(canchaId)
+                .orElseThrow(() -> new NotFoundException("Cancha no encontrada"));
+        ReservaId reservaId = new ReservaId(cancha, fecha, horaInicio, horaFin);
+        return (reservaRepository.existsById(reservaId));
     }
 
-    private void envioDeEmailPorCreacion(String email, Partido partido, String tipo) {
+    private void envioDeEmailPorCreacion(String email, Partido partido) {
         emailService.sendCreationPartido(
                 email,
                 partido.getCancha().getNombre(),
                 partido.getFechaPartido().toString(),
                 partido.getHoraPartido().toString(),
-                tipo
+                partido.getTipoPartido().name()
         );
     }
 
     @Transactional
-    public PartidoAbierto crearPartidoAbierto(PartidoAbiertoCreateDTO abiertoDto) {
+    public Partido crearPartido(PartidoCreateDTO partidoDto) {
         User organizador = autentificarUser();
 
-        if (!reservaExiste(abiertoDto.canchaId(),
-                abiertoDto.fechaPartido(),
-                abiertoDto.horaPartido())) {
+        if (!reservaExiste(partidoDto.canchaId(),
+                partidoDto.fechaPartido(),
+                partidoDto.horaPartido())) {
             throw new IllegalStateException("No se encuentra reserva para la cancha y franja horaria");
         }
 
-        Cancha cancha = canchaRepository.findById(abiertoDto.canchaId())
+        Cancha cancha = canchaRepository.findById(partidoDto.canchaId())
                 .orElseThrow(() -> new NotFoundException("Cancha no encontrada"));
 
-        PartidoAbierto partidoAbierto = new PartidoAbierto(
-                cancha,
-                abiertoDto.fechaPartido(),
-                abiertoDto.horaPartido(),
-                abiertoDto.minJugadores(),
-                abiertoDto.maxJugadores(),
-                abiertoDto.cuposDisponibles()
-        );
+        Partido partido = partidoFactory.crearPartido(partidoDto, cancha, organizador);
 
-        partidoAbierto.setOrganizador(organizador);
-        partidoAbierto.setEmailOrganizador(organizador.getEmail());
-
-        PartidoAbierto partidoGuardadoA = partidoRepository.save(partidoAbierto);
-
-        envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardadoA, "Abierto");
-        return partidoGuardadoA;
+        Partido partidoGuardado = partidoRepository.save(partido);
+        envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardado);
+        return partidoGuardado;
     }
-
-    @Transactional
-    public PartidoCerrado crearPartidoCerrado(PartidoCerradoCreateDTO cerradoDto) {
-        User organizador = autentificarUser();
-
-        if (!reservaExiste(cerradoDto.canchaId(),
-                cerradoDto.fechaPartido(),
-                cerradoDto.horaPartido())) {
-            throw new IllegalStateException("No se encuentra reserva para la cancha y franja horaria");
-        }
-
-        Cancha cancha = canchaRepository.findById(cerradoDto.canchaId())
-                .orElseThrow(() -> new NotFoundException("Cancha no encontrada"));
-
-        PartidoCerrado partido = new PartidoCerrado(
-                cancha,
-                cerradoDto.fechaPartido(),
-                cerradoDto.horaPartido(),
-                cerradoDto.equipo1(),
-                cerradoDto.equipo2()
-        );
-        partido.setOrganizador(organizador);
-        partido.setEmailOrganizador(organizador.getEmail());
-
-        PartidoCerrado partidoGuardadoC = partidoRepository.save(partido);
-        envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardadoC, "Cerrado");
-        return partidoGuardadoC;
-    }
-
+   
     public List<Partido> obtenerTodosLosPartidos() {
         return partidoRepository.findAll();
     }
 
-    public List<PartidoAbierto> obtenerPartidosAbiertos() {
+    public List<Partido> obtenerPartidosAbiertos() {
         return partidoRepository.findAll()
                 .stream()
-                .filter(p -> p instanceof PartidoAbierto)
-                .map(p -> (PartidoAbierto) p)
+                .filter(p -> p.getTipoPartido() == TipoPartido.ABIERTO)
                 .toList();
     }
 
@@ -149,51 +118,60 @@ public class PartidoService {
                 .toList();
     }
 
-    public List<PartidoCerrado> obtenerPartidoCerrados() {
+    public List<Partido> obtenerPartidoCerrados() {
         return partidoRepository.findAll()
                 .stream()
-                .filter(p -> p instanceof PartidoCerrado)
-                .map(p -> (PartidoCerrado) p)
+                .filter(p -> p.getTipoPartido() == TipoPartido.CERRADO)
                 .toList();
     }
 
     @Transactional
-    public List<PartidoAbierto> historialPartidosAbiertosPorUsuario(Long userId) {
-        List<PartidoAbierto> partidos = partidoRepository.findPartidosAbiertosByOrganizadorId(userId);
-        for (PartidoAbierto partido : partidos) {
+    public List<Partido> historialPartidosAbiertosPorUsuario(Long userId) {
+        List<Partido> partidos = partidoRepository.findByTipoPartidoAndOrganizadorId(TipoPartido.ABIERTO, userId);
+        for (Partido partido : partidos) {
             partido.getJugadores().size();
         }
         return partidos;
     }
 
     @Transactional
-    public List<PartidoCerrado> historialPartidosCerradosPorUsuario(Long userId) {
-        return partidoRepository.findPartidosCerradosByOrganizadorId(userId);
+    public List<Partido> historialPartidosCerradosPorUsuario(Long userId) {
+        return partidoRepository.findByTipoPartidoAndOrganizadorId(TipoPartido.CERRADO, userId);
     }
 
-    public Optional<Partido> obtenerPartidoPorIdpartido(Long idpartido) {
+    /*public Optional<Partido> obtenerPartidoPorIdpartido(Long idpartido) {
         return partidoRepository.findById(idpartido);
     }
 
     public void eliminarPartido(Long idpartido) {
         partidoRepository.deleteById(idpartido);
+    }*/
+
+    public Optional<Partido> obtenerPartidoPorIdpartido(PartidoId idpartido) {
+        return partidoRepository.findById(idpartido);
+    }
+
+    public void eliminarPartido(PartidoId idpartido) {
+        partidoRepository.deleteById(idpartido);
     }
 
     @Transactional
-    public void inscribirAAbierto(Long partidoId, Long userId) {
-        PartidoAbierto partido = (PartidoAbierto) partidoRepository.findById(partidoId)
+    public void inscribirAAbierto(PartidoId partidoId, Long userId) {
+        Partido partido =partidoRepository.findById(partidoId)
                 .orElseThrow(() -> new NotFoundException("Partido abierto no encontrado"));
+        
+        
+        if (partido.getTipoPartido() != TipoPartido.ABIERTO) {
+            throw new IllegalStateException("El partido no es de tipo abierto.");
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
-        if (!partido.hayCupos()) {
-            throw new IllegalStateException("No hay cupos disponibles para este partido.");
-        }
-        if (partido.getJugadores().contains(user)) {
-            throw new IllegalStateException("El usuario ya está inscripto en este partido.");
+        if(!partido.inscribirJugador(user)) {
+            throw new IllegalStateException("No hay cupos disponibles o el usuario ya está inscripto.");
         }
 
-        partido.inscribirJugador(user);
 
         if (partido.getJugadores().size() >= partido.getMinJugadores()) {
             partido.setPartidoConfirmado(true);
@@ -210,9 +188,14 @@ public class PartidoService {
     }
 
     @Transactional
-    public void desinscribirDeAbierto(Long partidoId, Long userId) {
-        PartidoAbierto partido = (PartidoAbierto) partidoRepository.findById(partidoId)
+    public void desinscribirDeAbierto(PartidoId partidoId, Long userId) {
+        Partido partido =  partidoRepository.findById(partidoId)
                 .orElseThrow(() -> new NotFoundException("Partido abierto no encontrado"));
+        
+        if (partido.getTipoPartido() != TipoPartido.ABIERTO) {
+            throw new IllegalStateException("El partido no es de tipo abierto.");
+        }        
+        
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
@@ -224,10 +207,14 @@ public class PartidoService {
         if (partido.isPartidoConfirmado() || yaEmpezo) {
             throw new IllegalStateException("No se puede dar de baja, el partido ya está confirmado o comenzó.");
         }
-        if (!partido.getJugadores().contains(user)) {
+        /*if (!partido.getJugadores().contains(user)) {
             throw new IllegalStateException("El usuario no está inscripto en este partido.");
+        }*/
+        if (!partido.desinscribirJugador(user)) {
+            throw new IllegalStateException("El usuario no está inscripto en este partido.");   
+            
         }
-        partido.desinscribirJugador(user);
+        //partido.desinscribirJugador(user);
         partidoRepository.save(partido);
 
         emailService.sendDesinscripcionPartido(
