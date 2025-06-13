@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
-import ar.uba.fi.ingsoft1.todo_template.torneo.dto.InscripcionDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoUpdateDTO;
@@ -17,12 +16,6 @@ public class TorneoRestController {
 
     public TorneoRestController(TorneoService service) {
         this.service = service;
-    }
-
-    @PostMapping("/{id}")
-    public ResponseEntity<String> inscribirEquipo(@PathVariable Long id, @Valid @RequestBody InscripcionDTO equipo) {
-        String msj = service.inscribirEquipo(id, equipo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(msj);
     }
 
     @GetMapping
@@ -37,21 +30,28 @@ public class TorneoRestController {
     }
 
     @PostMapping
-    public ResponseEntity<TorneoDTO> create(@Valid @RequestBody TorneoCreateDTO dtoCreacion) {
-        Torneo creado = service.createTorneo(dtoCreacion);
+    public ResponseEntity<TorneoDTO> create(@Valid @RequestBody TorneoCreateDTO dto) {
+        Torneo creado = service.createTorneo(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(creado.toDTO());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TorneoDTO> edit(@PathVariable Long id, @Valid @RequestBody TorneoUpdateDTO dtoActualizacion) {
-        Torneo actualizado = service.updateTorneo(id, dtoActualizacion);
-        //le pongo ese success message ya que es lo que se espera en el frontend de postman para ver el resultado bien
-        return ResponseEntity.ok().header("X-Success-Message", "Cambios guardados exitosamente").body(actualizado.toDTO());
+    public ResponseEntity<TorneoDTO> edit(
+        @PathVariable Long id,
+        @Valid @RequestBody TorneoUpdateDTO dto
+    ) {
+        Torneo actualizado = service.updateTorneo(id, dto);
+        return ResponseEntity.ok()
+            .header("X-Success-Message", "Cambios guardados exitosamente")
+            .body(actualizado.toDTO());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.deleteTorneo(id);
+    public ResponseEntity<Void> delete(
+        @PathVariable Long id,
+        @RequestParam(name = "confirm", defaultValue = "false") boolean confirm
+    ) {
+        service.deleteTorneo(id, confirm);
         return ResponseEntity.noContent().build();
     }
 }

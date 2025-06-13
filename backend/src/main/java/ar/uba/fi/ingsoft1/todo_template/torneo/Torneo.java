@@ -5,14 +5,10 @@ import java.time.LocalDate;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 
 @Entity
-@Table(
-    name = "torneos",
-    uniqueConstraints = @UniqueConstraint(columnNames = "nombre")
-)
+@Table(name = "torneos", uniqueConstraints = @UniqueConstraint(columnNames = "nombre"))
 public class Torneo {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -50,16 +46,14 @@ public class Torneo {
 
     public Torneo() {}
 
-    public Torneo(
-        String nombre,
-        LocalDate fechaInicio,
-        LocalDate fechaFin,
-        TorneoFormato formato,
-        Integer cantidadMaximaEquipos,
-        String descripcion,
-        String premios,
-        Double costoInscripcion
-    ) {
+    public Torneo(String nombre,
+                  LocalDate fechaInicio,
+                  LocalDate fechaFin,
+                  TorneoFormato formato,
+                  Integer cantidadMaximaEquipos,
+                  String descripcion,
+                  String premios,
+                  Double costoInscripcion) {
         this.nombre = nombre;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
@@ -71,7 +65,6 @@ public class Torneo {
         this.estado = EstadoTorneo.ABIERTO;
     }
 
-    // --- Getters y Setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

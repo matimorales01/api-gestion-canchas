@@ -5,32 +5,32 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import java.time.LocalDate;
+import java.util.List;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
-import ar.uba.fi.ingsoft1.todo_template.equipo.Equipo;
-import ar.uba.fi.ingsoft1.todo_template.equipo.EquipoRepository;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.TorneoAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.TorneoNotEditableException;
-import ar.uba.fi.ingsoft1.todo_template.torneo.dto.InscripcionDTO;
+import ar.uba.fi.ingsoft1.todo_template.partido.PartidoRepository;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoUpdateDTO;
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class TorneoService {
     private final TorneoRepository repo;
     private final UserRepository userRepo;
-    private final EquipoRepository equipoRepo;
-    private final InscripcionService inscripcionService;
+    private final PartidoRepository partidoRepo;
 
-    public TorneoService(TorneoRepository repo, UserRepository userRepo, EquipoRepository equipoRepo, InscripcionService inscripcionService) {
+    public TorneoService(
+        TorneoRepository repo,
+        UserRepository userRepo,
+        PartidoRepository partidoRepo
+    ) {
         this.repo = repo;
         this.userRepo = userRepo;
-        this.equipoRepo = equipoRepo;
-        this.inscripcionService = inscripcionService;
+        this.partidoRepo = partidoRepo;
     }
 
     @Transactional
@@ -38,11 +38,9 @@ public class TorneoService {
         if (repo.existsByNombre(dto.nombre())) {
             throw new TorneoAlreadyExistsException(dto.nombre());
         }
-        JwtUserDetails userInfo = (JwtUserDetails) SecurityContextHolder
-            .getContext()
-            .getAuthentication()
-            .getPrincipal();
-        User organizador = userRepo.findByEmail(userInfo.email())
+        JwtUserDetails ud = (JwtUserDetails) SecurityContextHolder
+            .getContext().getAuthentication().getPrincipal();
+        User organizador = userRepo.findByEmail(ud.email())
             .orElseThrow(() -> new NotFoundException("Usuario no encontrado."));
         Torneo t = dto.asTorneo();
         t.setOrganizador(organizador);
@@ -62,55 +60,59 @@ public class TorneoService {
 
     @Transactional
     public Torneo updateTorneo(Long id, TorneoUpdateDTO dto) {
-        Torneo torneo_a_actualizar = getTorneo(id);
-        JwtUserDetails userInfo = (JwtUserDetails) SecurityContextHolder
-            .getContext()
-            .getAuthentication()
-            .getPrincipal();
-        if (!torneo_a_actualizar.getOrganizador().getEmail().equals(userInfo.email())) {
+        Torneo t = getTorneo(id);
+        JwtUserDetails ud = (JwtUserDetails) SecurityContextHolder
+            .getContext().getAuthentication().getPrincipal();
+        if (!t.getOrganizador().getEmail().equals(ud.email())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo el organizador puede editar este torneo.");
         }
-        LocalDate inicio = dto.getFechaInicio() != null ? dto.getFechaInicio() : torneo_a_actualizar.getFechaInicio();
-        LocalDate fin    = dto.getFechaFin()    != null ? dto.getFechaFin()    : torneo_a_actualizar.getFechaFin();
+        LocalDate inicio = dto.getFechaInicio() != null ? dto.getFechaInicio() : t.getFechaInicio();
+        LocalDate fin    = dto.getFechaFin()    != null ? dto.getFechaFin()    : t.getFechaFin();
         if (fin != null && fin.isBefore(inicio)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de fin debe ser posterior a la fecha de inicio.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La fecha de fin debe ser posterior a la de inicio.");
         }
-        if (dto.getNombre() != null && !dto.getNombre().equals(torneo_a_actualizar.getNombre())) {
+        if (dto.getNombre() != null && !dto.getNombre().equals(t.getNombre())) {
             if (repo.existsByNombre(dto.getNombre())) {
                 throw new TorneoAlreadyExistsException(dto.getNombre());
             }
-            torneo_a_actualizar.setNombre(dto.getNombre());
+            t.setNombre(dto.getNombre());
         }
-        if (dto.getFormato() != null && dto.getFormato() != torneo_a_actualizar.getFormato()) {
-            if (torneo_a_actualizar.getEstado() != EstadoTorneo.ABIERTO) {
+        if (dto.getFormato() != null && dto.getFormato() != t.getFormato()) {
+            if (t.getEstado() != EstadoTorneo.ABIERTO) {
                 throw new TorneoNotEditableException(id);
             }
-            torneo_a_actualizar.setFormato(dto.getFormato());
+            t.setFormato(dto.getFormato());
         }
-        if (dto.getFechaInicio() != null)           torneo_a_actualizar.setFechaInicio(dto.getFechaInicio());
-        if (dto.getFechaFin() != null)              torneo_a_actualizar.setFechaFin(dto.getFechaFin());
-        if (dto.getCantidadMaximaEquipos() != null) torneo_a_actualizar.setCantidadMaximaEquipos(dto.getCantidadMaximaEquipos());
-        if (dto.getDescripcion() != null)           torneo_a_actualizar.setDescripcion(dto.getDescripcion());
-        if (dto.getPremios() != null)               torneo_a_actualizar.setPremios(dto.getPremios());
-        if (dto.getCostoInscripcion() != null)      torneo_a_actualizar.setCostoInscripcion(dto.getCostoInscripcion());
-        if (dto.getEstado() != null)                torneo_a_actualizar.setEstado(dto.getEstado());
-        return repo.save(torneo_a_actualizar);
-    }
-
-    public String inscribirEquipo(Long idTorneo, InscripcionDTO dto) {
-        Torneo torneo = getTorneo(idTorneo);
-        Equipo equipo = equipoRepo.findById(dto.teamName())
-            .orElseThrow(() -> new NotFoundException("Equipo con ID " + dto.teamName() + " no encontrado."));
-
-        return inscripcionService.inscribirEquipo(torneo, equipo);
+        if (dto.getFechaInicio() != null)           t.setFechaInicio(dto.getFechaInicio());
+        if (dto.getFechaFin() != null)              t.setFechaFin(dto.getFechaFin());
+        if (dto.getCantidadMaximaEquipos() != null) t.setCantidadMaximaEquipos(dto.getCantidadMaximaEquipos());
+        if (dto.getDescripcion() != null)           t.setDescripcion(dto.getDescripcion());
+        if (dto.getPremios() != null)               t.setPremios(dto.getPremios());
+        if (dto.getCostoInscripcion() != null)      t.setCostoInscripcion(dto.getCostoInscripcion());
+        if (dto.getEstado() != null)                t.setEstado(dto.getEstado());
+        return repo.save(t);
     }
 
     @Transactional
-    public void deleteTorneo(Long id) {
-        Torneo torneo_a_eliminar = getTorneo(id);
-        if (torneo_a_eliminar.getEstado() != EstadoTorneo.ABIERTO) {
+    public void deleteTorneo(Long id, boolean confirm) {
+        if (!confirm) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe confirmar la eliminación del torneo.");
+        }
+        Torneo t = getTorneo(id);
+        JwtUserDetails ud = (JwtUserDetails) SecurityContextHolder
+            .getContext().getAuthentication().getPrincipal();
+        if (!t.getOrganizador().getEmail().equals(ud.email())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo el organizador puede eliminar este torneo.");
+        }
+        if (t.getEstado() != EstadoTorneo.ABIERTO) {
             throw new TorneoNotEditableException(id);
         }
-        repo.delete(torneo_a_eliminar);
+        if (partidoRepo.existsByTorneoAndResultadoIsNotNull(t)) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "No se puede eliminar un torneo con partidos con resultados registrados."
+            );
+        }
+        repo.delete(t);
     }
 }
