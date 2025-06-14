@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useGetTorneosDisponibles } from "@/services/TorneoService";
 import type { TorneoDisponible } from "@/models/Torneo";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
+import { Link } from "wouter";
 
 type EstadoTorneo = 'ABIERTO' | 'EN_CURSO' | 'FINALIZADO' | '';
 
@@ -107,6 +108,11 @@ export const UserListaTorneo: React.FC = () => {
             >
               Aceptar
             </button>
+            <Link href={`/admin/torneos/${modalTorneo.id}`}>
+                <button className="btn btn-primary btn-sm me-2">
+                    Editar
+                </button>
+            </Link>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { useToken } from "@/services/TokenContext";
 import { CanchaScreen } from "@/screens/CrearCancha";
 import { HistorialScreen } from "@/screens/HistorialScreen";
 import { UserListaTorneo } from "@/screens/UserListaTorneo";
+import UserEditarTorneoScreen from "./screens/UserEditarTorneoScreen";
 import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
 import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
@@ -55,6 +56,9 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/listar-torneos">
                       <UserListaTorneo />
+                    </Route>
+                    <Route path="/admin/torneos/:id">
+                      <UserEditarTorneoScreen />
                     </Route>
                     <Route>
                         <Redirect href="/" />
