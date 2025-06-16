@@ -1,38 +1,44 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
-import { PartidoRequest, Partido, PartidoCerradoRequest } from "@/models/Partido";
+import {
+    Partido,
+    PartidoRequest,
+    PartidoCerradoRequest,
+} from "@/models/Partido";
 
 export function useCrearPartidoAbierto(options?: {
     onSuccess?: (data: Partido) => void;
     onError?: (error: unknown) => void;
 }) {
     const [tokenState] = useToken();
+    const qc = useQueryClient();
 
     return useMutation({
-        mutationFn: async (data: PartidoRequest) => {
+        mutationFn: async (dto: PartidoRequest) => {
             if (tokenState.state !== "LOGGED_IN") {
                 throw new Error("No estás logueado. No se puede crear un partido.");
             }
-
-            const response = await fetch(BASE_API_URL + "/partidos/abierto", {
+            const res = await fetch(`${BASE_API_URL}/partidos/abierto`, {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${tokenState.accessToken}`,
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(dto),
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Error al crear el partido abierto: ${errorText}`);
-            }
-
-            return (await response.json()) as Partido;
+            if (!res.ok) throw new Error(await res.text());
+            return (await res.json()) as unknown as Partido;
         },
-        onSuccess: options?.onSuccess,
+        onSuccess: (data) => {
+            void qc.invalidateQueries({ queryKey: ["reservasDisponibles"] });
+            options?.onSuccess?.(data);
+        },
         onError: options?.onError,
     });
 }
@@ -42,108 +48,111 @@ export function useCrearPartidoCerrado(options?: {
     onError?: (error: unknown) => void;
 }) {
     const [tokenState] = useToken();
+    const qc = useQueryClient();
 
     return useMutation({
-        mutationFn: async (data: PartidoCerradoRequest) => {
+        mutationFn: async (dto: PartidoCerradoRequest) => {
             if (tokenState.state !== "LOGGED_IN") {
                 throw new Error("No estás logueado. No se puede crear un partido.");
             }
-
-            const response = await fetch(BASE_API_URL + "/partidos/cerrado", {
+            const res = await fetch(`${BASE_API_URL}/partidos/cerrado`, {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${tokenState.accessToken}`,
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(dto),
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Error al crear el partido cerrado: ${errorText}`);
-            }
-
-            return (await response.json()) as Partido;
+            if (!res.ok) throw new Error(await res.text());
+            return (await res.json()) as unknown as Partido;
         },
-        onSuccess: options?.onSuccess,
+        onSuccess: (data) => {
+            void qc.invalidateQueries({ queryKey: ["reservasDisponibles"] });
+            options?.onSuccess?.(data);
+        },
         onError: options?.onError,
     });
 }
-
 
 export function usePartidosAbiertos() {
     const [tokenState] = useToken();
 
     return useQuery<Partido[]>({
         queryKey: ["partidosAbiertos"],
+        enabled: tokenState.state === "LOGGED_IN",
         queryFn: async () => {
             if (tokenState.state !== "LOGGED_IN") {
                 throw new Error("No estás logueado.");
             }
-            const response = await fetch(`${BASE_API_URL}/partidos/abiertos`, {
+            const res = await fetch(`${BASE_API_URL}/partidos/abiertos`, {
                 headers: {
                     Accept: "application/json",
                     Authorization: `Bearer ${tokenState.accessToken}`,
                 },
             });
-            if (!response.ok) {
-                throw new Error("Error al obtener partidos abiertos");
-            }
-            return (await response.json()) as Partido[];
+            if (!res.ok) throw new Error(await res.text());
+            return (await res.json()) as unknown as Partido[];
         },
-        enabled: tokenState.state === "LOGGED_IN",
     });
 }
 
 export function useInscribirPartido() {
     const [tokenState] = useToken();
-    const queryClient = useQueryClient();
+    const qc = useQueryClient();
 
     return useMutation({
         mutationFn: async (partidoId: number) => {
             if (tokenState.state !== "LOGGED_IN") {
                 throw new Error("No estás logueado.");
             }
-            const url = `${BASE_API_URL}/partidos/abierto/${partidoId}/inscribir`;
-            const res = await fetch(url, {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${tokenState.accessToken}`,
-                },
-            });
-            if (!res.ok) throw new Error("Error al inscribirse");
+            const res = await fetch(
+                `${BASE_API_URL}/partidos/abierto/${partidoId}/inscribir`,
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${tokenState.accessToken}`,
+                    },
+                }
+            );
+            if (!res.ok) throw new Error(await res.text());
             return res.json();
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["partidosAbiertos"] }),
+        onSuccess: () => {
+            void qc.invalidateQueries({ queryKey: ["partidosAbiertos"] });
+            void qc.invalidateQueries({ queryKey: ["reservasDisponibles"] });
+        },
     });
 }
-
 
 export function useDesinscribirPartido() {
     const [tokenState] = useToken();
-    const queryClient = useQueryClient();
+    const qc = useQueryClient();
 
     return useMutation({
         mutationFn: async (partidoId: number) => {
             if (tokenState.state !== "LOGGED_IN") {
                 throw new Error("No estás logueado.");
             }
-            const url = `${BASE_API_URL}/partidos/abierto/${partidoId}/desinscribir`;
-            const res = await fetch(url, {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${tokenState.accessToken}`,
-                },
-            });
-            if (!res.ok) throw new Error("Error al desinscribirse");
+            const res = await fetch(
+                `${BASE_API_URL}/partidos/abierto/${partidoId}/desinscribir`,
+                {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${tokenState.accessToken}`,
+                    },
+                }
+            );
+            if (!res.ok) throw new Error(await res.text());
             return res.json();
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["partidosAbiertos"] }),
+        onSuccess: () => {
+            void qc.invalidateQueries({ queryKey: ["partidosAbiertos"] });
+            void qc.invalidateQueries({ queryKey: ["reservasDisponibles"] });
+        },
     });
 }
-

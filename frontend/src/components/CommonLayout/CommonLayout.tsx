@@ -5,40 +5,52 @@ import { useToken } from "@/services/TokenContext";
 
 import styles from "./CommonLayout.module.css";
 
+
 export const CommonLayout = ({ children }: React.PropsWithChildren) => {
     const [tokenState] = useToken();
 
     return (
         <div className={styles.mainLayout}>
-            <ul className={styles.topBar}>
-                {tokenState.state === "LOGGED_OUT" ? <LoggedOutLinks /> : <LoggedInLinks />}
-            </ul>
-            <div className={styles.mainContent} >
-                {children}
-            </div>
+            <aside className={styles.sidebar}>
+                <ProfileBox />
+
+                <ul className={styles.menu}>
+                    {tokenState.state === "LOGGED_OUT" ? <LoggedOutLinks /> : <LoggedInLinks />}
+                </ul>
+            </aside>
+
+            <main className={styles.mainContent}>{children}</main>
         </div>
     );
 };
 
-const LoggedOutLinks = () => {
-    return (
-        <>
-            <li>
-                <Link href="/login">Log in</Link>
-            </li>
-            <li>
-                <Link href="/signup">Sign Up</Link>
-            </li>
-        </>
-    );
-};
+const ProfileBox = () => (
+    <div className={styles.profile}>
+        <img
+            src="https://randomuser.me/api/portraits/men/75.jpg"
+            alt="Foto de perfil"
+            className={styles.avatar}
+        />
+        <div className={styles.name}>Matias Morales</div>
+        <div className={styles.email}>matias@gmail.com</div>
+    </div>
+);
+
+const LoggedOutLinks = () => (
+    <>
+        <li>
+            <Link href="/login">Log in</Link>
+        </li>
+        <li>
+            <Link href="/signup">Sign Up</Link>
+        </li>
+    </>
+);
 
 const LoggedInLinks = () => {
     const [, setTokenState] = useToken();
 
-    const logOut = () => {
-        setTokenState({ state: "LOGGED_OUT" });
-    };
+    const logOut = () => setTokenState({ state: "LOGGED_OUT" });
 
     return (
         <>
@@ -73,7 +85,9 @@ const LoggedInLinks = () => {
                 <Link href="/ver-historial">Historial</Link>
             </li>
             <li>
-                <button onClick={logOut}>Log out</button>
+                <button className={styles.logoutButton} onClick={logOut}>
+                    Log out
+                </button>
             </li>
         </>
     );

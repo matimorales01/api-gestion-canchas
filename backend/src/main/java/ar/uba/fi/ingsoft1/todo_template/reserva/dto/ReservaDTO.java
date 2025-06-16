@@ -4,10 +4,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record ReservaDTO(
-    String canchaName,
-    LocalDate fecha,
-    LocalTime inicioTurno,
-    LocalTime finTurno,
-    String state,
-    String tipoPartido
-) {}
+        Long canchaId,
+        String canchaName,
+        String zona,
+        String direccion,
+        LocalDate fecha,
+        LocalTime inicioTurno,
+        LocalTime finTurno,
+        String state,
+        String tipoPartido
+)  {}
