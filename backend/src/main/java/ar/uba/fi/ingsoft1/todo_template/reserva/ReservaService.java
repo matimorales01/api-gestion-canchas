@@ -84,5 +84,22 @@ public class ReservaService {
 
         return reservas.stream().map(Reserva::toDTO).toList();
     }
+
+    public List<ReservaDTO> obtenerDisponibles(LocalDate fecha, String zona) {
+        return reservaRepo.findDisponibles(fecha, zona)
+                .stream()
+                .map(Reserva::toDTO)
+                .toList();
+    }
+
+    public void ocuparReserva(Cancha cancha, LocalDate fecha,
+                              LocalTime inicio, LocalTime fin) {
+        ReservaId rid = new ReservaId(cancha, fecha, inicio, fin);
+        Reserva res  = reservaRepo.findById(rid)
+                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
+        res.setState("OCUPADA");
+        reservaRepo.save(res);
+    }
+
 }
 

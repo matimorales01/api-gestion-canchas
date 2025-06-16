@@ -42,13 +42,18 @@ public class Reserva {
     public LocalTime getHoraFin() { return id.getHoraFin(); }
 
     public ReservaDTO toDTO() {
+        Cancha c = this.id.getCanchaId();
+
         return new ReservaDTO(
-            this.id.getCanchaId().getNombre(),
-            this.id.getFecha(),
-            this.id.getHoraInicio(),
-            this.id.getHoraFin(),
-            this.state,
-            this.partido
+                c.getId(),
+                c.getNombre(),
+                c.getZona(),
+                c.getDireccion(),
+                this.id.getFecha(),
+                this.id.getHoraInicio(),
+                this.id.getHoraFin(),
+                this.state,
+                this.partido
         );
     }
 }
