@@ -103,3 +103,31 @@
 .cancelarBtn:hover {
   background-color: #e04848;
 }
+.filtersBox {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 2px 18px 0 rgba(60, 100, 180, 0.07);
+  padding: 20px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 18px;
+  margin-bottom: 32px;
+  align-items: center;
+}
+
+.filterInput {
+  border: 1.5px solid #dde4f3;
+  border-radius: 8px;
+  padding: 10px 13px;
+  font-size: 1rem;
+  background: #f8fafc;
+  color: #23345e;
+  transition: border 0.18s;
+  width: 240px;
+  max-width: 100vw;
+}
+
+.filterInput:focus {
+  border-color: #2ecc71;
+  outline: none;
+}
