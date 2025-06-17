@@ -4,8 +4,8 @@ import { useAppForm } from "@/config/use-app-form";
 import { CanchaRequestSchema } from "@/models/Cancha";
 import { useCrearCancha, usePoblarFranjas } from "@/services/CanchaService";
 import { useLocation } from "wouter";
-import ToggleSwitch from "./ToggleSwitch";
-import styles from "./CanchasScreen.module.css";
+import ToggleSwitch from "../components/form-components/Switch/ToggleSwitch.tsx";
+import styles from "../styles/CanchasScreen.module.css";
 
 export const CanchaScreen: React.FC = () => {
   const [, navigate] = useLocation();

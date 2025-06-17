@@ -3,7 +3,7 @@ import { useAppForm } from "@/config/use-app-form";
 import { EquipoRequestSchema } from "@/models/Equipo";
 import { useLocation } from "wouter";
 import { crearEquipo } from "@/services/EquipoService";
-import styles from "./CrearEquipo.module.css";
+import styles from "../styles/CrearEquipo.module.css";
 
 export const CrearEquipo = () => {
     const [, navigate] = useLocation();

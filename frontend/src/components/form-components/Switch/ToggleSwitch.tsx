@@ -1,7 +1,12 @@
-import React from "react";
 import styles from "./ToggleSwitch.module.css";
 
-export default function ToggleSwitch({ checked, onChange, label }) {
+interface ToggleSwitchProps {
+    checked: boolean;
+    onChange: (checked: boolean) => void;
+    label: string;
+}
+
+export default function ToggleSwitch({ checked, onChange, label }: ToggleSwitchProps) {
     return (
         <label className={styles.switchWrapper}>
             <input

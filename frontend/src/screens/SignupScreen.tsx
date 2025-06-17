@@ -2,7 +2,7 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { SignupSchema } from "@/models/Login";
 import { useSignup } from "@/services/UserServices";
-import styles from "./SignupScreen.module.css";
+import styles from "../styles/SignupScreen.module.css";
 
 export const SignupScreen = () => {
   const { mutate, error } = useSignup();
@@ -34,42 +34,42 @@ export const SignupScreen = () => {
               <div className={styles.fieldsGrid}>
                 <div className={styles.inputGroup}>
                   <formData.AppField name="username">
-                    {(field) => <field.TextField label="Usuario" className={styles.input} />}
+                    {(field) => <field.TextField label="Usuario" />}
                   </formData.AppField>
                 </div>
                 <div className={styles.inputGroup}>
                   <formData.AppField name="password">
-                    {(field) => <field.PasswordField label="Contraseña" className={styles.input} />}
+                    {(field) => <field.PasswordField label="Contraseña" />}
                   </formData.AppField>
                 </div>
                 <div className={styles.inputGroup}>
                   <formData.AppField name="email">
-                    {(field) => <field.TextField label="Email" className={styles.input} />}
+                    {(field) => <field.TextField label="Email" />}
                   </formData.AppField>
                 </div>
                 <div className={styles.inputGroup}>
                   <formData.AppField name="firstName">
-                    {(field) => <field.TextField label="Nombre" className={styles.input} />}
+                    {(field) => <field.TextField label="Nombre" />}
                   </formData.AppField>
                 </div>
                 <div className={styles.inputGroup}>
                   <formData.AppField name="lastName">
-                    {(field) => <field.TextField label="Apellido" className={styles.input} />}
+                    {(field) => <field.TextField label="Apellido" />}
                   </formData.AppField>
                 </div>
                 <div className={styles.inputGroup}>
                   <formData.AppField name="genre">
-                    {(field) => <field.TextField label="Género" className={styles.input} />}
+                    {(field) => <field.TextField label="Género" />}
                   </formData.AppField>
                 </div>
                 <div className={styles.inputGroup}>
                   <formData.AppField name="age">
-                    {(field) => <field.TextField label="Edad" className={styles.input} />}
+                    {(field) => <field.TextField label="Edad" />}
                   </formData.AppField>
                 </div>
                 <div className={styles.inputGroup}>
                   <formData.AppField name="zone">
-                    {(field) => <field.TextField label="Zona" className={styles.input} />}
+                    {(field) => <field.TextField label="Zona" />}
                   </formData.AppField>
                 </div>
               </div>

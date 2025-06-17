@@ -3,7 +3,7 @@ import { useGetTorneosDisponibles } from "@/services/TorneoService";
 import type { TorneoDisponible } from "@/models/Torneo";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { Link } from "wouter";
-import styles from "./UserListaTorneo.module.css";
+import styles from "../styles/UserListaTorneo.module.css";
 
 type EstadoTorneo = 'ABIERTO' | 'EN_CURSO' | 'FINALIZADO' | '';
 

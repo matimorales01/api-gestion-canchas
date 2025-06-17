@@ -3,7 +3,7 @@ import { useAppForm } from "@/config/use-app-form";
 import { TorneoRequestSchema } from "@/models/Torneo";
 import { useLocation } from "wouter";
 import { crearTorneo } from "@/services/TorneoService";
-import styles from "./CrearTorneo.module.css";
+import styles from "../styles/CrearTorneo.module.css";
 
 export const CrearTorneo = () => {
   const [, navigate] = useLocation();
@@ -52,7 +52,7 @@ export const CrearTorneo = () => {
               <div>
                 <h1 className={styles.title}>Crear Torneo</h1>
                 <div className={styles.subtitle}>
-                  Completá los datos principales y opcionales de tu torneo.
+                  Completa los datos de tu torneo.
                 </div>
               </div>
             </div>
@@ -184,7 +184,7 @@ export const CrearTorneo = () => {
             <div className={styles.tipBox}>
               <span className={styles.tipIcon}>ℹ️</span>
               <span className={styles.tipText}>
-              Podés editar la información del torneo más adelante desde el panel de administración.
+              No todos los campos son obligatorios.
             </span>
             </div>
           </div>
