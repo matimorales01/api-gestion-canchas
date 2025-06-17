@@ -2,13 +2,10 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { SignupSchema } from "@/models/Login";
 import { useSignup } from "@/services/UserServices";
-import { useState } from "react";
+import styles from "../styles/SignupScreen.module.css";
 
 export const SignupScreen = () => {
   const { mutate, error } = useSignup();
-  const [] = useState<File | null>(null);
-
-
 
   const formData = useAppForm({
     defaultValues: {
@@ -20,36 +17,72 @@ export const SignupScreen = () => {
       age: "",
       genre: "",
       zone: "",
-
     },
     validators: { onChange: SignupSchema },
-
-  onSubmit: async ({ value }) => {
-    mutate(value);
-  },
-
+    onSubmit: async ({ value }) => {
+      mutate(value);
+    },
   });
 
-
   return (
-    <CommonLayout>
-    
-      <h1>Sign Up</h1>
-      <formData.AppForm>
-        <formData.FormContainer extraError={error}>
-          
-          <formData.AppField name="username" children={(field) => <field.TextField label="Username" />} />
-          <formData.AppField name="password" children={(field) => <field.PasswordField label="Password" />} />
-          <formData.AppField name="email" children={(field) => <field.TextField label="Email" />} />
-          <formData.AppField name="firstName" children={(field) => <field.TextField label="Firstname" />} />
-          <formData.AppField name="lastName" children={(field) => <field.TextField label="Lastname" />} />
-          <formData.AppField name="genre" children={(field) => <field.TextField label="Genre" />} />
-          <formData.AppField name="age" children={(field) => <field.TextField label="Age" />} />
-          <formData.AppField name="zone" children={(field) => <field.TextField label="Zone" />} />
-        </formData.FormContainer>
-      </formData.AppForm>
-    </CommonLayout>
+      <CommonLayout>
+        <div className={styles.signupBox}>
+          <h1 className={styles.title}>Crear cuenta</h1>
+          <p className={styles.subtitle}>Completá los datos para registrarte.</p>
+          <formData.AppForm>
+            <formData.FormContainer extraError={error}>
+              <div className={styles.fieldsGrid}>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="username">
+                    {(field) => <field.TextField label="Usuario" />}
+                  </formData.AppField>
+                </div>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="password">
+                    {(field) => <field.PasswordField label="Contraseña" />}
+                  </formData.AppField>
+                </div>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="email">
+                    {(field) => <field.TextField label="Email" />}
+                  </formData.AppField>
+                </div>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="firstName">
+                    {(field) => <field.TextField label="Nombre" />}
+                  </formData.AppField>
+                </div>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="lastName">
+                    {(field) => <field.TextField label="Apellido" />}
+                  </formData.AppField>
+                </div>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="genre">
+                    {(field) => <field.TextField label="Género" />}
+                  </formData.AppField>
+                </div>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="age">
+                    {(field) => <field.TextField label="Edad" />}
+                  </formData.AppField>
+                </div>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="zone">
+                    {(field) => <field.TextField label="Zona" />}
+                  </formData.AppField>
+                </div>
+              </div>
+              <div className={styles.buttonRow}>
+                <formData.SubmitButton className={styles.submitButton}>
+                  Registrarme
+                </formData.SubmitButton>
+              </div>
+            </formData.FormContainer>
+          </formData.AppForm>
+        </div>
+      </CommonLayout>
   );
 };
 
-
+export default SignupScreen;

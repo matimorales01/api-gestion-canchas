@@ -2,18 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { useGetTorneosDisponibles, userEditarTorneo } from "@/services/TorneoService";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
+import { Torneo } from "@/models/Torneo.ts";
+
+type FormatoTorneo = "ELIMINACION_DIRECTA" | "FASE_GRUPOS_ELIMINACION" | "LIGA";
 
 const UserEditarTorneoScreen = () => {
     const params = useParams();
     const id = Number(params.id);
     const { data: torneos } = useGetTorneosDisponibles();
-    const torneo: Torneo | undefined = (torneos as Torneo[] | undefined)?.find((t) => t.id == id);
+    const torneo: Torneo | undefined = (torneos as Torneo[] | undefined)?.find((t) => t.id === id);
 
     const [nombre, setNombre] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFin, setFechaFin] = useState("");
-    const [formato, setFormato] = useState("ELIMINACION_DIRECTA");
+    const [formato, setFormato] = useState<FormatoTorneo>("ELIMINACION_DIRECTA");
     const [maxEquipos, setMaxEquipos] = useState(2);
     const [costoInscripcion, setCostoInscripcion] = useState(0);
     const [premios, setPremios] = useState("");
@@ -21,13 +24,17 @@ const UserEditarTorneoScreen = () => {
     const [, navigate] = useLocation();
 
     useEffect(() => {
-      console.log("Torneos disponibles:", torneos);
         if (torneo) {
             setNombre(torneo.nombre || "");
             setDescripcion(torneo.descripcion || "");
             setFechaInicio(torneo.fechaInicio || "");
-            setFormato(torneo.formato || "ELIMINACION_DIRECTA");
-            setMaxEquipos(torneo.cantidadMaximaEquipos || 2);
+            setFechaFin(torneo.fechaFin || "");
+            setFormato(
+                torneo.formato && ["ELIMINACION_DIRECTA", "FASE_GRUPOS_ELIMINACION", "LIGA"].includes(torneo.formato)
+                    ? (torneo.formato as FormatoTorneo)
+                    : "ELIMINACION_DIRECTA"
+            );
+            setMaxEquipos(torneo.maxEquipos || 2);
             setCostoInscripcion(torneo.costoInscripcion || 0);
             setPremios(torneo.premios || "");
         }
@@ -57,18 +64,19 @@ const UserEditarTorneoScreen = () => {
                 fechaInicio,
                 fechaFin,
                 formato,
-                cantidadMaximaEquipos: maxEquipos,
+                maxEquipos: maxEquipos,
                 costoInscripcion,
                 premios,
             },
         });
     };
 
-    if (!torneo) return (
-        <div>
-            <h1>Cargando datos del torneo...</h1>
-        </div>
-    );
+    if (!torneo)
+        return (
+            <div>
+                <h1>Cargando datos del torneo...</h1>
+            </div>
+        );
 
     return (
         <CommonLayout>
@@ -80,7 +88,7 @@ const UserEditarTorneoScreen = () => {
                         <input
                             className="form-control"
                             value={nombre}
-                            onChange={e => setNombre(e.target.value)}
+                            onChange={(e) => setNombre(e.target.value)}
                             required
                         />
                     </div>
@@ -89,7 +97,7 @@ const UserEditarTorneoScreen = () => {
                         <input
                             className="form-control"
                             value={descripcion}
-                            onChange={e => setDescripcion(e.target.value)}
+                            onChange={(e) => setDescripcion(e.target.value)}
                         />
                     </div>
                     <div className="mb-3">
@@ -98,7 +106,7 @@ const UserEditarTorneoScreen = () => {
                             type="date"
                             className="form-control"
                             value={fechaInicio}
-                            onChange={e => setFechaInicio(e.target.value)}
+                            onChange={(e) => setFechaInicio(e.target.value)}
                             required
                         />
                     </div>
@@ -108,7 +116,7 @@ const UserEditarTorneoScreen = () => {
                             type="date"
                             className="form-control"
                             value={fechaFin}
-                            onChange={e => setFechaFin(e.target.value)}
+                            onChange={(e) => setFechaFin(e.target.value)}
                         />
                     </div>
                     <div className="mb-3">
@@ -116,11 +124,11 @@ const UserEditarTorneoScreen = () => {
                         <select
                             className="form-control"
                             value={formato}
-                            onChange={e => setFormato(e.target.value)}
+                            onChange={(e) => setFormato(e.target.value as FormatoTorneo)}
                         >
                             <option value="ELIMINACION_DIRECTA">Eliminación Directa</option>
+                            <option value="FASE_GRUPOS_ELIMINACION">Fase de Grupos y Eliminación</option>
                             <option value="LIGA">Liga</option>
-                            <option value="GRUPOS">Grupos</option>
                         </select>
                     </div>
                     <div className="mb-3">
@@ -130,7 +138,7 @@ const UserEditarTorneoScreen = () => {
                             min={2}
                             className="form-control"
                             value={maxEquipos}
-                            onChange={e => setMaxEquipos(Number(e.target.value))}
+                            onChange={(e) => setMaxEquipos(Number(e.target.value))}
                             required
                         />
                     </div>
@@ -142,7 +150,7 @@ const UserEditarTorneoScreen = () => {
                             step={0.01}
                             className="form-control"
                             value={costoInscripcion}
-                            onChange={e => setCostoInscripcion(Number(e.target.value))}
+                            onChange={(e) => setCostoInscripcion(Number(e.target.value))}
                             required
                         />
                     </div>
@@ -151,14 +159,16 @@ const UserEditarTorneoScreen = () => {
                         <input
                             className="form-control"
                             value={premios}
-                            onChange={e => setPremios(e.target.value)}
+                            onChange={(e) => setPremios(e.target.value)}
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary">Guardar Cambios</button>
+                    <button type="submit" className="btn btn-primary">
+                        Guardar Cambios
+                    </button>
                 </form>
             </div>
         </CommonLayout>
     );
-}
+};
 
 export default UserEditarTorneoScreen;

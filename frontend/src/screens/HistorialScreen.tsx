@@ -5,6 +5,8 @@ import { PartidoAbiertoCard, PartidoAbiertoHeader } from "@/components/PartidoCa
 import { useObtenerHistorialPartidos } from "@/services/HistorialService";
 import type { PartidoAbiertoResponseDTO, PartidoCerradoResponseDTO } from "@/models/Historial";
 
+import styles from "../styles/HistorialScreen.module.css";
+
 export const HistorialScreen = () => {
   const { getHistorial } = useObtenerHistorialPartidos();
 
@@ -29,20 +31,20 @@ export const HistorialScreen = () => {
 
   return (
       <CommonLayout>
-        <div style={{ width: "100%", height: "100%" }}>
-          <h1>Historial de Partidos</h1>
+        <div className={styles.container}>
+          <h1 className={styles.title}>Historial de Partidos</h1>
 
-          <section>
-            <h2>Partidos Cerrados</h2>
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Partidos Cerrados</h2>
             {loading ? (
-                <p>Cargando...</p>
+                <p className={styles.loadingText}>Cargando...</p>
             ) : cerrados.length === 0 ? (
-                <p>No hay partidos cerrados.</p>
+                <p className={styles.emptyText}>No hay partidos cerrados.</p>
             ) : (
-                <ul>
+                <ul className={styles.list}>
                   <PartidoCerradoHeader />
                   {cerrados.map((pc) => (
-                      <li key={pc.idPartido}>
+                      <li key={pc.idPartido} className={styles.listItem}>
                         <PartidoCerradoCard
                             canchaNombre={pc.canchaNombre}
                             canchaDireccion={pc.canchaDireccion}
@@ -57,17 +59,17 @@ export const HistorialScreen = () => {
             )}
           </section>
 
-          <section>
-            <h2>Partidos Abiertos</h2>
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Partidos Abiertos</h2>
             {loading ? (
-                <p>Cargando...</p>
+                <p className={styles.loadingText}>Cargando...</p>
             ) : abiertos.length === 0 ? (
-                <p>No hay partidos abiertos.</p>
+                <p className={styles.emptyText}>No hay partidos abiertos.</p>
             ) : (
-                <ul>
+                <ul className={styles.list}>
                   <PartidoAbiertoHeader />
                   {abiertos.map((pa) => (
-                      <li key={pa.idPartido}>
+                      <li key={pa.idPartido} className={styles.listItem}>
                         <PartidoAbiertoCard
                             canchaNombre={pa.canchaNombre}
                             canchaDireccion={pa.canchaDireccion}
@@ -77,18 +79,18 @@ export const HistorialScreen = () => {
                             maxJugadores={pa.maxJugador}
                             organizadorMail={pa.emailOrganizador}
                         />
-                        <div>
+                        <div className={styles.players}>
                           <strong>Jugadores:</strong>
                           {pa.jugadores && pa.jugadores.length > 0 ? (
-                              <ul>
-                                {pa.jugadores.map(j => (
-                                    <li key={j.id}>
+                              <ul className={styles.playersList}>
+                                {pa.jugadores.map((j) => (
+                                    <li key={j.id} className={styles.playerItem}>
                                       {j.nombre} ({j.email})
                                     </li>
                                 ))}
                               </ul>
                           ) : (
-                              <span>Sin jugadores inscriptos.</span>
+                              <span className={styles.noPlayers}>Sin jugadores inscriptos.</span>
                           )}
                         </div>
                       </li>

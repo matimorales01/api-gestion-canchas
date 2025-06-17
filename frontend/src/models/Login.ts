@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const LoginRequestSchema = z.object({
-  password: z.string().min(1, "Password must not be empty"),
-  email: z.string().min(1, "email must not be empty").email("El email no es válido"),
+  password: z.string().min(1, "La contraseña no puede estar vacia"),
+  email: z.string().min(1, "El email no puede estar vacio").email("El email no es válido"),
 });
 
 

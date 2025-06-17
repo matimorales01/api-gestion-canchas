@@ -3,7 +3,7 @@ import { useAppForm } from "@/config/use-app-form";
 import { LoginRequestSchema } from "@/models/Login";
 import { useLogin } from "@/services/UserServices";
 import { useToken } from "@/services/TokenContext";
-
+import styles from "../styles/LoginScreen.module.css";
 
 export const LoginScreen = () => {
   const { mutate, error } = useLogin();
@@ -18,25 +18,54 @@ export const LoginScreen = () => {
       onChange: LoginRequestSchema,
     },
     onSubmit: async ({ value }) => {
-    mutate(value, {
-      onSuccess: (data) => {
-        if (data?.token) {
-          setToken(data.token);
-        }
-      },
-    });
-  },
+      mutate(value, {
+        onSuccess: (data) => {
+          if (data?.token) {
+            setToken(data.token);
+          }
+        },
+      });
+    },
   });
 
   return (
-    <CommonLayout>
-      <h1>Log In</h1>
-      <formData.AppForm>
-        <formData.FormContainer extraError={error}>
-          <formData.AppField name="email" children={(field) => <field.TextField label="email" />} />
-          <formData.AppField name="password" children={(field) => <field.PasswordField label="Password" />} />
-        </formData.FormContainer>
-      </formData.AppForm>
-    </CommonLayout>
+      <CommonLayout>
+        <div className={styles.loginBox}>
+          <h1 className={styles.title}>Iniciar sesión</h1>
+          <p className={styles.subtitle}>
+            Ingresá tus datos para acceder al sistema.
+          </p>
+          <formData.AppForm>
+            <formData.FormContainer extraError={error}>
+              <div className={styles.fieldsGrid}>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="email">
+                    {(field) => (
+                        <field.TextField label="Email" className={styles.input} />
+                    )}
+                  </formData.AppField>
+                </div>
+                <div className={styles.inputGroup}>
+                  <formData.AppField name="password">
+                    {(field) => (
+                        <field.PasswordField
+                            label="Contraseña"
+                            className={styles.input}
+                        />
+                    )}
+                  </formData.AppField>
+                </div>
+              </div>
+              <div className={styles.buttonRow}>
+                <formData.SubmitButton className={styles.submitButton}>
+                  Ingresar
+                </formData.SubmitButton>
+              </div>
+            </formData.FormContainer>
+          </formData.AppForm>
+        </div>
+      </CommonLayout>
   );
 };
+
+export default LoginScreen;
