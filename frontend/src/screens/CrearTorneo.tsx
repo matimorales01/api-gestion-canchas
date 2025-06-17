@@ -3,6 +3,7 @@ import { useAppForm } from "@/config/use-app-form";
 import { TorneoRequestSchema } from "@/models/Torneo";
 import { useLocation } from "wouter";
 import { crearTorneo } from "@/services/TorneoService";
+import styles from "./CrearTorneo.module.css";
 
 export const CrearTorneo = () => {
   const [, navigate] = useLocation();
@@ -43,123 +44,151 @@ export const CrearTorneo = () => {
   });
 
   return (
-    <CommonLayout>
-      <h1 className="text-xl font-bold mb-4">Crear Torneo</h1>
-      <formData.AppForm>
-        <formData.FormContainer extraError={error}>
-
-          <formData.AppField name="nombre">
-            {(field) => <field.TextField label="Nombre del Torneo" />}
-          </formData.AppField>
-
-          <formData.AppField name="fechaInicio">
-            {(field) => (
-              <div className="mb-2">
-                <label>Fecha de inicio</label>
-                <input
-                  type="date"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  className="input input-bordered w-full"
-                />
+      <CommonLayout>
+        <div className={styles.pageBg}>
+          <div className={styles.formWrapper}>
+            <div className={styles.header}>
+              <div className={styles.iconCircle}>🏆</div>
+              <div>
+                <h1 className={styles.title}>Crear Torneo</h1>
+                <div className={styles.subtitle}>
+                  Completá los datos principales y opcionales de tu torneo.
+                </div>
               </div>
-            )}
-          </formData.AppField>
+            </div>
+            <formData.AppForm>
+              <formData.FormContainer extraError={error}>
+                <div className={styles.gridSection}>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Nombre del Torneo</label>
+                    <formData.AppField name="nombre">
+                      {(field) => (
+                          <field.TextField className={styles.input} />
+                      )}
+                    </formData.AppField>
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Fecha de inicio</label>
+                    <formData.AppField name="fechaInicio">
+                      {(field) => (
+                          <input
+                              type="date"
+                              value={field.state.value}
+                              onChange={(e) => field.handleChange(e.target.value)}
+                              className={styles.input}
+                          />
+                      )}
+                    </formData.AppField>
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Fecha de fin (opcional)</label>
+                    <formData.AppField name="fechaFin">
+                      {(field) => (
+                          <input
+                              type="date"
+                              value={field.state.value}
+                              onChange={(e) => field.handleChange(e.target.value)}
+                              className={styles.input}
+                          />
+                      )}
+                    </formData.AppField>
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Formato del torneo</label>
+                    <formData.AppField name="formato">
+                      {(field) => (
+                          <select
+                              value={field.state.value}
+                              onChange={(e) => field.handleChange(e.target.value)}
+                              className={styles.input}
+                          >
+                            <option value="ELIMINACION_DIRECTA">Eliminación Directa</option>
+                            <option value="FASE_GRUPOS_ELIMINACION">Fase de Grupos y Eliminación</option>
+                            <option value="LIGA">Liga</option>
+                          </select>
+                      )}
+                    </formData.AppField>
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>Máximo de Equipos</label>
+                    <formData.AppField name="maxEquipos">
+                      {(field) => (
+                          <input
+                              type="number"
+                              min={2}
+                              step={1}
+                              value={field.state.value}
+                              onChange={(e) =>
+                                  field.handleChange(Number(e.target.value))
+                              }
+                              className={styles.input}
+                          />
+                      )}
+                    </formData.AppField>
+                  </div>
+                </div>
 
-          <formData.AppField name="fechaFin">
-            {(field) => (
-              <div className="mb-2">
-                <label>Fecha de fin (opcional)</label>
-                <input
-                  type="date"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  className="input input-bordered w-full"
-                />
-              </div>
-            )}
-          </formData.AppField>
+                <div className={styles.sectionDivider}></div>
+                <div className={styles.optionalSection}>
+                  <div className={styles.inputGroupFull}>
+                    <label className={styles.label}>Descripción (opcional)</label>
+                    <formData.AppField name="descripcion">
+                      {(field) => (
+                          <textarea
+                              value={field.state.value}
+                              onChange={(e) => field.handleChange(e.target.value)}
+                              className={styles.textarea}
+                              rows={2}
+                          />
+                      )}
+                    </formData.AppField>
+                  </div>
+                  <div className={styles.inputGroupFull}>
+                    <label className={styles.label}>Premios (opcional)</label>
+                    <formData.AppField name="premios">
+                      {(field) => (
+                          <input
+                              type="text"
+                              value={field.state.value}
+                              onChange={(e) => field.handleChange(e.target.value)}
+                              className={styles.input}
+                          />
+                      )}
+                    </formData.AppField>
+                  </div>
+                  <div className={styles.inputGroupFull}>
+                    <label className={styles.label}>Costo de Inscripción (opcional)</label>
+                    <formData.AppField name="costoInscripcion">
+                      {(field) => (
+                          <input
+                              type="number"
+                              min={0}
+                              step="any"
+                              value={field.state.value}
+                              onChange={(e) => field.handleChange(Number(e.target.value))}
+                              className={styles.input}
+                          />
+                      )}
+                    </formData.AppField>
+                  </div>
+                </div>
 
-          <formData.AppField name="maxEquipos">
-            {(field) => (
-              <div className="mb-2">
-                <label>Máximo de Equipos</label>
-                <input
-                  type="number"
-                  min={2}
-                  step={1}
-                  value={field.state.value}
-                  onChange={(e) =>
-                    field.handleChange(Number(e.target.value))
-                  }
-                  className="input input-bordered w-full"
-                />
-              </div>
-            )}
-          </formData.AppField>
+                <div className={styles.buttonRow}>
+                  <formData.SubmitButton className={styles.submitButton}>
+                    Crear torneo
+                  </formData.SubmitButton>
+                </div>
+              </formData.FormContainer>
+            </formData.AppForm>
 
-          <formData.AppField name="formato">
-            {(field) => (
-              <div className="mb-2">
-                <label>Formato del torneo</label>
-                <select
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  className="input input-bordered w-full"
-                >
-                  <option value="ELIMINACION_DIRECTA">Eliminacion Directa</option>
-                  <option value="FASE_GRUPOS_ELIMINACION">Fase de Grupos y Eliminacion Directa</option>
-                  <option value="LIGA">Liga</option>
-                </select>
-              </div>
-            )}
-          </formData.AppField>
-
-          <formData.AppField name="descripcion">
-            {(field) => (
-              <div className="mb-2">
-                <label>Descripción (opcional)</label>
-                <textarea
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  className="textarea textarea-bordered w-full"
-                />
-              </div>
-            )}
-          </formData.AppField>
-
-          <formData.AppField name="premios">
-            {(field) => (
-              <div className="mb-2">
-                <label>Premios (opcional)</label>
-                <input
-                  type="text"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  className="input input-bordered w-full"
-                />
-              </div>
-            )}
-          </formData.AppField>
-
-          <formData.AppField name="costoInscripcion">
-            {(field) => (
-              <div className="mb-2">
-                <label>Costo de Inscripción (opcional)</label>
-                <input
-                  type="number"
-                  min={0}
-                  step="any"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(Number(e.target.value))}
-                  className="input input-bordered w-full"
-                />
-              </div>
-            )}
-          </formData.AppField>
-
-        </formData.FormContainer>
-      </formData.AppForm>
-    </CommonLayout>
+            <div className={styles.tipBox}>
+              <span className={styles.tipIcon}>ℹ️</span>
+              <span className={styles.tipText}>
+              Podés editar la información del torneo más adelante desde el panel de administración.
+            </span>
+            </div>
+          </div>
+        </div>
+      </CommonLayout>
   );
 };

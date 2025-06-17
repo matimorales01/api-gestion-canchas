@@ -1,7 +1,13 @@
 import { useFormContext } from "@/config/form-context";
 import styles from "./SubmitButton.module.css";
+import React from "react";
 
-export const SubmitButton = () => {
+type Props = {
+    className?: string;
+    children?: React.ReactNode;
+};
+
+export const SubmitButton = ({ className = "", children }: Props) => {
     const form = useFormContext();
 
     return (
@@ -10,10 +16,10 @@ export const SubmitButton = () => {
             children={([canSubmit, isSubmitting]) => (
                 <button
                     type="submit"
-                    className={styles.button}
+                    className={`${styles.button} ${className}`}
                     disabled={!canSubmit}
                 >
-                    {isSubmitting ? "..." : "Submit"}
+                    {isSubmitting ? "..." : (children || "Submit")}
                 </button>
             )}
         />
