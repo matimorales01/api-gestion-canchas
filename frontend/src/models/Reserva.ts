@@ -16,3 +16,24 @@ export const CrearReservaSchema = z.object({
 });
 
 export type ReservaRequest = z.infer<typeof CrearReservaSchema>;
+
+export interface ReservaResponse {
+  canchaId: number;
+  canchaName: string;
+  zona: string;
+  direccion: string;
+  fecha: string;         // ISO format
+  inicioTurno: string;   // "HH:mm:ss"
+  finTurno: string;      // "HH:mm:ss"
+  state: string;         // Ej: "OCUPADA"
+  tipoPartido: string | null;
+}
+
+
+export interface ReservaIdDTO {
+  canchaName: string;
+  fecha: string;
+  horaInicio: string;
+  horaFin: string;
+  state: string;
+}

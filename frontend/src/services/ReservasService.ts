@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
 
-import { Reserva } from "@/models/Reserva";
+import { Reserva, ReservaResponse, ReservaIdDTO} from "@/models/Reserva";
 
 export interface ReservaDisponibleDTO {
     canchaId:     number;
@@ -118,5 +118,60 @@ export function useTomarReserva() {
 
         onSuccess: () =>
             queryClient.invalidateQueries({ queryKey: ["reservasDisponibles"] }),
+    });
+}
+
+export function useGetMisReservas() {
+    const [tokenState] = useToken();
+
+    return useQuery<ReservaResponse[]>({
+        queryKey: ["misReservas"],
+        queryFn: async () => {
+            if (tokenState.state !== "LOGGED_IN") {
+                throw new Error("No estás logueado.");
+            }
+            const response = await fetch(BASE_API_URL + "/reservas", {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${tokenState.accessToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error al obtener reservas:`);
+            }
+            return (await response.json()) as ReservaResponse[];
+        },
+    });
+}
+
+export function useCancelarReserva() {
+    const [tokenState] = useToken();
+    const queryClient  = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (reserva: ReservaIdDTO) => {
+            if (tokenState.state !== "LOGGED_IN") {
+                throw new Error("No estás logueado.");
+            }
+
+            const response = await fetch(BASE_API_URL + "/reservas", {
+                method: "PATCH",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${tokenState.accessToken}`,
+                },
+                body: JSON.stringify(reserva),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error al liberar reserva`);
+            }
+
+            return (await response.json()) as Reserva;
+        },
+        onSuccess: () =>
+            queryClient.invalidateQueries({ queryKey: ["misReservas"] }),
     });
 }

@@ -1,0 +1,105 @@
+.pageWrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 44px 18px 0 18px;
+}
+.titleRow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+.title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #192341;
+    letter-spacing: -1px;
+}
+.trophyIcon {
+    font-size: 2.3rem;
+    color: #ffb100;
+}
+/* ReservaCards */
+.gridReservas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.reservaCard {
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 2px 14px 0 rgba(80, 100, 160, 0.09);
+    padding: 20px;
+    transition: box-shadow 0.13s, transform 0.12s;
+    border: 1.2px solid #ebedf1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+}
+
+.reservaCard:hover {
+    box-shadow: 0 8px 30px 0 rgba(55, 135, 208, 0.11);
+    transform: translateY(-3px) scale(1.01);
+    border-color: #b6f6c4;
+}
+
+.reservaHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.reservaNombre {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #184167;
+}
+
+.reservaEstado {
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 9px;
+    background: #d4f7e7;
+    color: #1ca968;
+    display: inline-block;
+}
+
+.reservaDetalle {
+    font-size: 0.97rem;
+    color: #384e72;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reservaIcon {
+    width: 16px;
+    height: 16px;
+    color: #1ca968;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    .gridReservas {
+        grid-template-columns: 1fr;
+    }
+}
+.cancelarBtn {
+  background-color: #ff5f5f;
+  color: white;
+  border: none;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.cancelarBtn:hover {
+  background-color: #e04848;
+}
