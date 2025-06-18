@@ -19,9 +19,9 @@ public class Reserva {
 
     @ManyToOne
     @JoinColumns({
-        @JoinColumn(name = "cancha_id", referencedColumnName = "canchaId", nullable = true),
-        @JoinColumn(name = "fecha_partido", referencedColumnName = "fecha", nullable = true),
-        @JoinColumn(name = "hora_partido", referencedColumnName = "hora", nullable = true)
+        @JoinColumn(name = "cancha_id", referencedColumnName = "cancha_id", nullable = true),
+        @JoinColumn(name = "fecha_partido", referencedColumnName = "fecha_partido", nullable = true),
+        @JoinColumn(name = "hora_partido", referencedColumnName = "hora_partido", nullable = true)
     })
     private Partido partido;
 
