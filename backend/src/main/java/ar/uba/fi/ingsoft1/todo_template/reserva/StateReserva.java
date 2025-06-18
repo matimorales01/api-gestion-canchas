@@ -18,7 +18,16 @@ public class StateReserva {
     
     @Column(nullable = true)
     private String emailOrganizador = null;
+
+    public StateReserva() {
+        // Constructor por defecto para JPA
+    }
     
+    public StateReserva(TipoPartido tipo, String email) {
+        this.state = "OCUPADA";
+        this.tipoPartido = tipo;
+        this.emailOrganizador = email;
+    }
 
     public String getState() {
         return state;
@@ -35,20 +44,13 @@ public class StateReserva {
 
     public StateReserva changeState(Partido partido) {
         if (partido == null) {
-            this.state = "DISPONIBLE";
-            this.tipoPartido = null;
-            this.emailOrganizador = null;
-
-            return this;
+            return new StateReserva();
         }
 
-        TipoPartido tipo = tipoPartido != null ? tipoPartido : null;
+
+        TipoPartido tipo = partido.getTipoPartido();
         String email = partido.getOrganizador().getEmail();
 
-        this.tipoPartido = tipo;
-        this.emailOrganizador = email;
-        this.state = "OCUPADA";
-
-        return this;
+        return new StateReserva(tipo, email);
     }
 }
