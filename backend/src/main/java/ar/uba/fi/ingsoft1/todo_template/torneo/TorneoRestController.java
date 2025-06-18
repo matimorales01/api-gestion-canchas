@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.equipo.dtos.EquipoDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoUpdateDTO;
@@ -14,17 +15,28 @@ import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoUpdateDTO;
 @RestController
 @RequestMapping("/torneos")
 public class TorneoRestController {
-    private final TorneoService service;
+    private final TorneoService torneoService;
+    private final InscripcionService inscripcionService;
 
-    public TorneoRestController(TorneoService service) {
-        this.service = service;
+    public TorneoRestController(TorneoService torneoService, InscripcionService inscripcionService) {
+        this.torneoService = torneoService;
+        this.inscripcionService = inscripcionService;
+    }
+
+    @PutMapping("/inscribir/{nombreTorneo}")
+    public ResponseEntity<String> inscribirTorneo(
+        @PathVariable String nombreTorneo,
+        @Valid @RequestBody EquipoDTO equipoDTO
+    ) {
+        inscripcionService.inscribirEquipo(nombreTorneo, equipoDTO);
+        return ResponseEntity.ok("Equipo inscrito exitosamente al torneo");
     }
 
     @PatchMapping("/iniciar/{nombreTorneo}")
     public ResponseEntity<String> iniciarTorneo(
         @PathVariable String nombreTorneo
     ) {
-        service.iniciarTorneo(nombreTorneo);
+        torneoService.iniciarTorneo(nombreTorneo);
         return ResponseEntity.ok("Torneo iniciado exitosamente");
     }
 
@@ -32,13 +44,13 @@ public class TorneoRestController {
     public ResponseEntity<String> finalizarTorneo(
         @PathVariable String nombreTorneo
     ) {
-        service.finalizarTorneo(nombreTorneo);
+        torneoService.finalizarTorneo(nombreTorneo);
         return ResponseEntity.ok("Torneo finalizado exitosamente");
     }
 
     @GetMapping
     public ResponseEntity<List<TorneoDTO>> all() {
-        List<TorneoDTO> lista = service.listTorneos().stream().map(Torneo::toDTO).toList();
+        List<TorneoDTO> lista = torneoService.listTorneos().stream().map(Torneo::toDTO).toList();
         return ResponseEntity.ok(lista);
     }
 
@@ -47,8 +59,8 @@ public class TorneoRestController {
         
         JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder
             .getContext().getAuthentication().getPrincipal();
-        
-        List<TorneoDTO> lista = service.listTorneosPorOrganizador(userDetails.email());
+
+        List<TorneoDTO> lista = torneoService.listTorneosPorOrganizador(userDetails.email());
         return ResponseEntity.ok(lista);
     }
 
@@ -57,7 +69,7 @@ public class TorneoRestController {
         JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder
             .getContext().getAuthentication().getPrincipal();
 
-        Torneo creado = service.createTorneo(dto, userDetails.email());
+        Torneo creado = torneoService.createTorneo(dto, userDetails.email());
         return ResponseEntity.status(HttpStatus.CREATED).body(creado.toDTO());
     }
 
@@ -69,7 +81,7 @@ public class TorneoRestController {
         JwtUserDetails user = (JwtUserDetails) SecurityContextHolder
             .getContext().getAuthentication().getPrincipal();
 
-        Torneo actualizado = service.updateTorneo(nombreTorneo, dto, user.email());
+        Torneo actualizado = torneoService.updateTorneo(nombreTorneo, dto, user.email());
 
         return ResponseEntity.ok()
             .header("X-Success-Message", "Cambios guardados exitosamente")
@@ -80,7 +92,7 @@ public class TorneoRestController {
     public ResponseEntity<Void> delete(
         @PathVariable String nombreTorneo
     ) {
-        service.deleteTorneo(nombreTorneo);
+        torneoService.deleteTorneo(nombreTorneo);
 
         return ResponseEntity.noContent().build();
     }
