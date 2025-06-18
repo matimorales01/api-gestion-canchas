@@ -13,7 +13,6 @@ public record ReservaDTO(
         LocalDate fecha,
         LocalTime inicioTurno,
         LocalTime finTurno,
-        String state,
         TipoPartido tipoPartido,
         String emailOrganizador
 )  {}

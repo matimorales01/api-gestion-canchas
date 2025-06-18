@@ -44,7 +44,7 @@ public class ReservaService {
         for (LocalDate fecha = dto.fechaInicial(); !fecha.isAfter(dto.fechaFinal()); fecha = fecha.plusDays(1)) {
             for (LocalTime hr = dto.horarioInicio(); !hr.isAfter(dto.horarioFin()); hr = hr.plusMinutes(dto.minutos())) {
                 ReservaId reservaId = new ReservaId(cancha, fecha, hr, hr.plusMinutes(dto.minutos()));
-                reservas.add(new Reserva(reservaId, "DISPONIBLE", null));
+                reservas.add(new Reserva(reservaId, new Disponible()));
             }
         }
 
@@ -62,7 +62,7 @@ public class ReservaService {
         Reserva reserva = reservaRepo.findById(reservaId)
             .orElseThrow(() -> new NotFoundException("Reserva con ID: '" + reservaId + "' no encontrada."));
     
-        reserva.setState(dto.state());
+        reserva.setStateReserva(null);
 
         reservaRepo.save(reserva);
 
@@ -99,8 +99,7 @@ public class ReservaService {
         Reserva reserva  = reservaRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
         
-        reserva.setPartido(partido);
-        reserva.setState("OCUPADA");
+        reserva.setStateReserva(partido);
         
         reservaRepo.save(reserva);
     }

@@ -14,32 +14,20 @@ public class Reserva {
     @EmbeddedId
     private ReservaId id;
 
-    @Column(nullable = false)
-    private String state;
-
-    @ManyToOne
-    @JoinColumns({
-        @JoinColumn(name = "cancha_id_partido", referencedColumnName = "cancha_id", nullable = true),
-        @JoinColumn(name = "fecha_partido", referencedColumnName = "fecha_partido", nullable = true),
-        @JoinColumn(name = "hora_partido", referencedColumnName = "hora_partido", nullable = true)
-    })
-    private Partido partido;
+    @Embedded
+    private StateReserva stateReserva;
 
     public Reserva() {}
 
-    public Reserva(ReservaId id, String state, Partido partido) {
+    public Reserva(ReservaId id, StateReserva stateReserva) {
         this.id = id;
-        this.state = state;
-        this.partido = partido;
+        this.stateReserva = stateReserva;
     }
 
     public Cancha getCancha() { return id.getCanchaId(); }
 
-    public String getState() { return state; }
-    public void setState(String state) { this.state = state; }
-
-    public Partido getPartido() { return partido; }
-    public void setPartido(Partido partido) { this.partido = partido; }
+    public StateReserva getStateReserva() { return stateReserva; }
+    public void setStateReserva(Partido partido) { this.stateReserva = this.stateReserva.changeState(partido); }
 
     public LocalDate getFecha() { return id.getFecha(); }
 
@@ -58,9 +46,8 @@ public class Reserva {
                 this.id.getFecha(),
                 this.id.getHoraInicio(),
                 this.id.getHoraFin(),
-                this.state,
-                this.partido.getTipoPartido(),
-                this.partido.getOrganizador().getEmail()
+                this.stateReserva.getTipoPartido(),
+                this.stateReserva.getOrganizadorEmail()
         );
     }
 }
