@@ -7,12 +7,19 @@ import ar.uba.fi.ingsoft1.todo_template.partido.Partido;
 
 @Embeddable
 public class Disponible implements StateReserva {
+    @Column(nullable = false)
+    private final String state = "DISPONIBLE";
+
     @Column(nullable = true)
     private TipoPartido tipoPartido = null;
     
     @Column(nullable = true)
     private String emailOrganizador = null;
     
+    @Override
+    public String getState() {
+        return state;
+    }   
     
     @Override
     public TipoPartido getTipoPartido() {

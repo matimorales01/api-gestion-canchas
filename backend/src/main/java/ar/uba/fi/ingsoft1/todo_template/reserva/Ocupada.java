@@ -8,6 +8,9 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class Ocupada implements StateReserva {
 
+    @Column(nullable = false)
+    private final String state = "OCUPADA";
+
     @Column(nullable = true)
     private TipoPartido tipoPartido;
 
@@ -17,6 +20,11 @@ public class Ocupada implements StateReserva {
     public Ocupada(TipoPartido tipoPartido, String emailOrganizador) {
         this.tipoPartido = tipoPartido;
         this.emailOrganizador = emailOrganizador;
+    }
+
+    @Override
+    public String getState() {
+        return state;
     }
 
     @Override

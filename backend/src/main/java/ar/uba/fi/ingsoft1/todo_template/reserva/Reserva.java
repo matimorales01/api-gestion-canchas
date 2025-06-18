@@ -46,6 +46,7 @@ public class Reserva {
                 this.id.getFecha(),
                 this.id.getHoraInicio(),
                 this.id.getHoraFin(),
+                this.stateReserva.getState(),
                 this.stateReserva.getTipoPartido(),
                 this.stateReserva.getOrganizadorEmail()
         );

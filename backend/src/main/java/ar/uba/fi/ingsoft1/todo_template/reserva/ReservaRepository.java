@@ -31,7 +31,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, ReservaId> {
     SELECT r
     FROM   Reserva r
     WHERE  r.id.fecha = :fecha
-       AND r.state    = 'DISPONIBLE'
+       AND r.stateReserva.state    = 'DISPONIBLE'
        AND r.id.cancha.activa = TRUE
        AND (:zona IS NULL OR r.id.cancha.zona = :zona)
 """)

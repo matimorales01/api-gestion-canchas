@@ -5,6 +5,7 @@ import ar.uba.fi.ingsoft1.todo_template.partido.TipoPartido;
 
 
 public interface StateReserva {
+    String getState();
     TipoPartido getTipoPartido();
     String getOrganizadorEmail();
     StateReserva changeState(Partido partido);
