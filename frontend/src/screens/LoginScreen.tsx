@@ -33,7 +33,7 @@ export const LoginScreen = () => {
                 <div className={styles.inputGroup}>
                   <formData.AppField name="email">
                     {(field) => (
-                        <field.TextField label="Email" className={styles.input} />
+                        <field.TextField label="Email"/>
                     )}
                   </formData.AppField>
                 </div>
@@ -42,7 +42,6 @@ export const LoginScreen = () => {
                     {(field) => (
                         <field.PasswordField
                             label="Contraseña"
-                            className={styles.input}
                         />
                     )}
                   </formData.AppField>

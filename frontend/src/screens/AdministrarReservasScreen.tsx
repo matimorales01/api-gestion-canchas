@@ -1,7 +1,7 @@
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import styles from "../styles/AdminReservas.module.css";
 import { useGetMisReservas, useCancelarReserva} from "@/services/ReservasService";
-import React, { useState } from "react";
+import { useState } from "react";
 
 export const AdministrarReservasScreen = () => {
   const [filtroFecha, setFiltroFecha] = useState<string>('');
