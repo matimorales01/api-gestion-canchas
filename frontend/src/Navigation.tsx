@@ -22,8 +22,6 @@ export const Navigation = () => {
   if (tokenState.state === "LOGGED_IN") {
     const role = getUserRole(tokenState.accessToken);
 
-//     if (!role) return <Redirect href="/login" />;
-
     if (role === "ADMINISTRADOR") {
       return (
         <Switch>
@@ -103,9 +101,6 @@ export const Navigation = () => {
           </Route>
           <Route path="/crear-reserva">
             <ReservasScreen />
-          </Route>
-          <Route path="/ver-historial">
-            <HistorialScreen />
           </Route>
           <Route path="/listar-torneos">
             <UserListaTorneo />
