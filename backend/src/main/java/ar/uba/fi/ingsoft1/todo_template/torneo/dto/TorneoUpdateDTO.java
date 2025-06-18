@@ -3,10 +3,8 @@ package ar.uba.fi.ingsoft1.todo_template.torneo.dto;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import ar.uba.fi.ingsoft1.todo_template.torneo.EstadoTorneo;
 import ar.uba.fi.ingsoft1.todo_template.torneo.Torneo;
 import ar.uba.fi.ingsoft1.todo_template.torneo.TorneoFormato;
-import jakarta.validation.constraints.NotBlank;
 
 public record TorneoUpdateDTO(
     Optional<String> nombre,

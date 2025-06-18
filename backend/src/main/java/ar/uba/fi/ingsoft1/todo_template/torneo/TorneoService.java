@@ -2,18 +2,15 @@ package ar.uba.fi.ingsoft1.todo_template.torneo;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import java.time.LocalDate;
 import java.util.List;
-import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.TorneoAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.TorneoNotEditableException;
-import ar.uba.fi.ingsoft1.todo_template.partido.PartidoRepository;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO;
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoUpdateDTO;

@@ -4,8 +4,6 @@ import java.util.List;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.apache.catalina.connector.Response;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.http.HttpStatus;
 import jakarta.validation.Valid;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;

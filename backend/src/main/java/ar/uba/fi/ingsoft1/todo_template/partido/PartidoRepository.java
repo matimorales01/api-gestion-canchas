@@ -4,11 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.data.jpa.repository.Query;
-//import org.springframework.data.repository.query.Param;
-
-import ar.uba.fi.ingsoft1.todo_template.torneo.Torneo;
-
 public interface PartidoRepository extends JpaRepository<Partido, PartidoId> {
     //obetener partidos abiertos o cerrados por organizador
     List<Partido> findByTipoPartidoAndOrganizadorId(TipoPartido tipoPartido, Long organizadorId);
@@ -19,5 +14,4 @@ public interface PartidoRepository extends JpaRepository<Partido, PartidoId> {
             Long canchaId,
             LocalDate fechaPartido
     );
-    boolean existsByTorneoAndResultadoIsNotNull(Torneo torneo);
 }
