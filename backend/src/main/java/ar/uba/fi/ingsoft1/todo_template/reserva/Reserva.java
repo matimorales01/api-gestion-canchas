@@ -18,7 +18,11 @@ public class Reserva {
     private String state;
 
     @ManyToOne
-    @JoinColumn(name = "partido_id", nullable = true)
+    @JoinColumns({
+        @JoinColumn(name = "cancha_id", referencedColumnName = "canchaId", nullable = true),
+        @JoinColumn(name = "fecha_partido", referencedColumnName = "fecha", nullable = true),
+        @JoinColumn(name = "hora_partido", referencedColumnName = "hora", nullable = true)
+    })
     private Partido partido;
 
     public Reserva() {}
