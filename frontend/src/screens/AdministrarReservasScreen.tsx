@@ -55,13 +55,27 @@ export const AdministrarReservasScreen = () => {
           {reservasFiltradas.map((reserva, idx) => (
             <div key={idx} className={styles.reservaCard}>
               <div className={styles.reservaHeader}>
+                  <span className={styles.reservaNombre}>{reserva.canchaName}</span>
+                  <span className={`${styles.reservaEstado} ${styles["estado" + reserva.state]}`}>
+                    {reserva.state}
+                  </span>
+              </div>
+              {/*<div className={styles.reservaHeader}>
                 <span className={styles.reservaNombre}>{reserva.canchaName}</span>
                 <span className={styles.reservaEstado}>{reserva.state}</span>
-              </div>
+              </div>*/}
               
               <p className={styles.reservaDetalle}>📅 {reserva.fecha}</p>
               <p className={styles.reservaDetalle}>⏰ {reserva.inicioTurno} - {reserva.finTurno}</p>
               <p className={styles.reservaDetalle}>📍 {reserva.direccion}, {reserva.zona}</p>
+              
+              {reserva.tipoPartido && (
+                  <p className={styles.reservaDetalle}>👥 Tipo de partido: {reserva.tipoPartido}</p>
+                )}
+                {reserva.emailOrganizador && (
+                  <p className={styles.reservaDetalle}>📧 Organizador: {reserva.emailOrganizador}</p>
+                )}
+                
               {reserva.state === "OCUPADA" && (
                 <button className={styles.cancelButton} onClick={() => handleCancelarReserva(reserva)}>
                   Cancelar

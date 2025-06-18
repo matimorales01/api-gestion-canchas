@@ -63,7 +63,7 @@ export function useReservasDisponibles(params: {
             const qs = new URLSearchParams();
             qs.append("fecha", params.fecha);
             if (params.zona) qs.append("zona", params.zona);
-
+            if (tokenState.state !== "LOGGED_IN") throw new Error("No estás logueado.");
             const res = await fetch(
                 `${BASE_API_URL}/reservas/disponibles?${qs.toString()}`,
                 {

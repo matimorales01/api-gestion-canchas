@@ -25,10 +25,10 @@ export interface ReservaResponse {
   fecha: string;
   inicioTurno: string;
   finTurno: string;
-  state: string;
-  tipoPartido: string | null;
+  state: "OCUPADA" | "DISPONIBLE";
+  tipoPartido: "CERRADO" | "ABIERTO" | null;
+  emailOrganizador: string | null;
 }
-
 
 export interface ReservaIdDTO {
   canchaName: string;
