@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "wouter";
 import { useToken } from "@/services/TokenContext";
+import { getUserRole } from "@/services/getUserRole";
 import { useCurrentUser } from "@/services/UserServices";
 import styles from "./CommonLayout.module.css";
 
@@ -60,7 +61,8 @@ const LoggedOutLinks = () => (
 );
 
 const LoggedInLinks = () => {
-    const [, setTokenState] = useToken();
+    const [tokenState, setTokenState] = useToken();
+    const role = tokenState.state === "LOGGED_IN" ? getUserRole(tokenState.accessToken) : null;
 
     const logOut = () => setTokenState({ state: "LOGGED_OUT" });
 
@@ -69,30 +71,45 @@ const LoggedInLinks = () => {
             <li>
                 <Link href="/under-construction">Main Page</Link>
             </li>
-            <li>
-                <Link href="/crear-cancha">Mis canchas</Link>
-            </li>
-            <li>
-                <Link href="/crear-equipo">Crear Equipo</Link>
-            </li>
-            <li>
-                <Link href="/crear-torneo">Crear Torneo</Link>
-            </li>
+
             <li>
                 <Link href="/listar-torneos">Torneos Disponibles</Link>
             </li>
-            <li>
-                <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
-            </li>
-            <li>
-                <Link href="/crear-reserva">Crear reserva</Link>
-            </li>
-            <li>
-                <Link href="/administrar-reservas">Administrar reserva</Link>
-            </li>
-            <li>
-                <Link href="/ver-historial">Historial</Link>
-            </li>
+
+            {(role === "ORGANIZADOR" || role === "ADMINISTRADOR") && (
+                <>
+                    <li>
+                        <Link href="/ver-historial">Historial</Link>
+                    </li>
+                    <li>
+                        <Link href="/crear-torneo">Crear Torneo</Link>
+                    </li>
+                    <li>
+                        <Link href="/crear-equipo">Crear Equipo</Link>
+                    </li>
+                </>
+            )}
+
+            {(role === "JUGADOR" || role === "ORGANIZADOR") && (
+                <li>
+                    <Link href="/crear-reserva">Crear reserva</Link>
+                </li>
+            )}
+
+            {role === "ADMINISTRADOR" && (
+                <>
+                    <li>
+                        <Link href="/crear-cancha">Mis canchas</Link>
+                    </li>
+                    <li>
+                        <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
+                    </li>
+                    <li>
+                        <Link href="/administrar-reservas">Administrar reserva</Link>
+                    </li>
+                </>
+            )}
+
             <li>
                 <button className={styles.logoutButton} onClick={logOut}>
                     Log out
