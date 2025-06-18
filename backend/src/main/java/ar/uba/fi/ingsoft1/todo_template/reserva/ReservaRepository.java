@@ -19,10 +19,10 @@ public interface ReservaRepository extends JpaRepository<Reserva, ReservaId> {
     );
 
     @Query("SELECT r FROM Reserva r WHERE r.id.cancha.id = :canchaId")
-    List<Reserva> findByCanchaId(Long id);
+    List<Reserva> findByCanchaId(@Param("canchaId") Long canchaId);
 
     @Query("SELECT COUNT(r) > 0 FROM Reserva r WHERE r.id.cancha.id = :canchaId")
-    boolean existsByCanchaId(Long id);
+    boolean existsByCanchaId(@Param("canchaId") Long canchaId);
 
 
     @Query("""
