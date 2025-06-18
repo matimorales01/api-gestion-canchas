@@ -19,17 +19,19 @@ public interface ReservaRepository extends JpaRepository<Reserva, ReservaId> {
     );
 
     @Query("SELECT r FROM Reserva r WHERE r.id.cancha.id = :canchaId")
-    List<Reserva> findByCanchaId(Long id);
+    List<Reserva> findByCanchaId(@Param("canchaId") Long canchaId);
 
     @Query("SELECT COUNT(r) > 0 FROM Reserva r WHERE r.id.cancha.id = :canchaId")
-    boolean existsByCanchaId(Long id);
+    boolean existsByCanchaId(@Param("canchaId") Long canchaId);
 
+    @Query("DELETE FROM Reserva r WHERE r.id.cancha.id = :canchaId")
+    void deleteAllByCanchaId(@Param("canchaId") Long canchaId);
 
     @Query("""
     SELECT r
     FROM   Reserva r
     WHERE  r.id.fecha = :fecha
-       AND r.state    = 'DISPONIBLE'
+       AND r.stateReserva.state    = 'DISPONIBLE'
        AND r.id.cancha.activa = TRUE
        AND (:zona IS NULL OR r.id.cancha.zona = :zona)
 """)

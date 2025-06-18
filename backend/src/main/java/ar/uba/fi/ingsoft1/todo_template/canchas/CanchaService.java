@@ -21,25 +21,21 @@ import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
-import ar.uba.fi.ingsoft1.todo_template.reserva.FranjaDisponibleRepository;
 
 @Service
 public class CanchaService {
     private final CanchaRepository canchaRepo;
     private final UserRepository userRepo;
     private final ReservaRepository reservaRepo;
-    private final FranjaDisponibleRepository franjaRepo;
 
     public CanchaService(
         CanchaRepository canchaRepo,
         UserRepository userRepo,
-        ReservaRepository reservaRepo,
-        FranjaDisponibleRepository franjaRepo
+        ReservaRepository reservaRepo
     ) {
         this.canchaRepo = canchaRepo;
         this.userRepo   = userRepo;
         this.reservaRepo = reservaRepo;
-        this.franjaRepo = franjaRepo;
     }
 
     public CanchaDTO crearCancha(CanchaCreateDTO dto) {
@@ -110,7 +106,7 @@ public class CanchaService {
             throw new CanchaConReservasFuturasException(id);
         }
 
-        franjaRepo.deleteAllByCanchaId(id);
+        reservaRepo.deleteAllByCanchaId(id);
         canchaRepo.delete(cancha);
     }
 }
