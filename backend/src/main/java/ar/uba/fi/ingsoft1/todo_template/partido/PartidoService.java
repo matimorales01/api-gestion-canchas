@@ -101,7 +101,8 @@ public class PartidoService {
                 cancha,
                 dto.fechaPartido(),
                 dto.horaPartido(),
-                dto.horaPartido().plusHours(1)
+                dto.horaPartido().plusHours(1),
+                partidoGuardado
         );
 
         envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardado);

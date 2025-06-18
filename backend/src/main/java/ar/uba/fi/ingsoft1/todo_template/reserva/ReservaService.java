@@ -16,6 +16,7 @@ import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.canchas.CanchaRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.partido.Partido;
 
 @Service
 public class ReservaService {
@@ -93,12 +94,15 @@ public class ReservaService {
     }
 
     public void ocuparReserva(Cancha cancha, LocalDate fecha,
-                              LocalTime inicio, LocalTime fin) {
-        ReservaId rid = new ReservaId(cancha, fecha, inicio, fin);
-        Reserva res  = reservaRepo.findById(rid)
+                              LocalTime inicio, LocalTime fin, Partido partido) {
+        ReservaId id = new ReservaId(cancha, fecha, inicio, fin);
+        Reserva reserva  = reservaRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
-        res.setState("OCUPADA");
-        reservaRepo.save(res);
+        
+        reserva.setPartido(partido);
+        reserva.setState("OCUPADA");
+        
+        reservaRepo.save(reserva);
     }
 
 }

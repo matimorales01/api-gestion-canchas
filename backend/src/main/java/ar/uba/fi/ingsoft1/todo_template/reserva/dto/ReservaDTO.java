@@ -3,6 +3,8 @@ package ar.uba.fi.ingsoft1.todo_template.reserva.dto;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import ar.uba.fi.ingsoft1.todo_template.partido.TipoPartido;
+
 public record ReservaDTO(
         Long canchaId,
         String canchaName,
@@ -12,5 +14,6 @@ public record ReservaDTO(
         LocalTime inicioTurno,
         LocalTime finTurno,
         String state,
-        String tipoPartido
+        TipoPartido tipoPartido,
+        String emailOrganizador
 )  {}
