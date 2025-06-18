@@ -70,7 +70,7 @@ const LoggedInLinks = () => {
                 <Link href="/under-construction">Main Page</Link>
             </li>
             <li>
-                <Link href="/crear-cancha">Crear Cancha</Link>
+                <Link href="/crear-cancha">Mis canchas</Link>
             </li>
             <li>
                 <Link href="/crear-equipo">Crear Equipo</Link>
@@ -83,9 +83,6 @@ const LoggedInLinks = () => {
             </li>
             <li>
                 <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
-            </li>
-            <li>
-                <Link href="/admin/canchas">Panel de Administración</Link>
             </li>
             <li>
                 <Link href="/crear-reserva">Crear reserva</Link>
