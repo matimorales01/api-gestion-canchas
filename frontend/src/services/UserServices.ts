@@ -1,22 +1,30 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-
-import { BASE_API_URL } from "@/config/app-query-client";
-import { LoginRequest, LoginResponseSchema } from "@/models/Login";
-import { useToken } from "@/services/TokenContext";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {BASE_API_URL} from "@/config/app-query-client";
+import {LoginRequest, LoginResponseSchema} from "@/models/Login";
+import {useToken} from "@/services/TokenContext";
 
 export function useLogin() {
-  const [token, setToken] = useToken();
+  const [, setToken] = useToken();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (req: LoginRequest) => {
       const tokenData = await auth("/sessions", req);
       setToken({ state: "LOGGED_IN", ...tokenData });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+        queryClient.refetchQueries({ queryKey: ["currentUser"] });
+      }, 150);
+
+      return tokenData;
     },
   });
 }
 
 export function useSignup() {
   const [, setToken] = useToken();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: Record<string, any>) => {
@@ -24,11 +32,10 @@ export function useSignup() {
         method: "POST",
         headers: {
           Accept: "application/json",
-          "Content-Type": "application/json", // Importante para JSON
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -37,6 +44,12 @@ export function useSignup() {
 
       const tokenData = await response.json();
       setToken({ state: "LOGGED_IN", ...tokenData });
+
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+        queryClient.refetchQueries({ queryKey: ["currentUser"] });
+      }, 150);
+
       return tokenData;
     },
   });
@@ -55,47 +68,44 @@ async function auth(endpoint: string, data: LoginRequest) {
   if (response.ok) {
     return LoginResponseSchema.parse(await response.json());
   } else {
-    throw new Error(`Failed with status ${response.status}: ${await response.text()}`);
+    throw new Error(
+        `Failed with status ${response.status}: ${await response.text()}`
+    );
   }
 }
 
-export function useGetCanchas() {
-  return useQuery({
-    queryKey: ["canchas"],
-    queryFn: async () => {
-      const response = await fetch(BASE_API_URL + "/canchas", {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
-      });
+export type UserData = {
+  nombre: string;
+  email: string;
+};
 
-      if (!response.ok) {
-        throw new Error("Error al obtener las canchas");
+export async function fetchCurrentUser(): Promise<UserData | null> {
+  const tokenData = JSON.parse(localStorage.getItem("token") ?? "{}");
+
+
+  if (!tokenData?.accessToken) return null;
+
+  try {
+    const res = await fetch(BASE_API_URL + "/users/me", {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${tokenData.accessToken}`,
       }
-      return response.json();
-    },
-  });
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data as UserData;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
 
-export function useCrearPartido() {
-  return useMutation({
-    mutationFn: async (data: Record<string, any>) => {
-      const response = await fetch(BASE_API_URL + "/partidos", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Error al crear partido: ${errorText}`);
-      }
-
-      return response.json();
+export function useCurrentUser() {
+  return useQuery<UserData | null>({
+    queryKey: ["currentUser"],
+    queryFn: async () => {
+      return await fetchCurrentUser();
     },
   });
 }

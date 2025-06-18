@@ -1,17 +1,21 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation} from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
-import { Equipo } from "@/models/Equipo";
+import { EquipoRequestSchema } from "@/models/Equipo";
 
 export function crearEquipo(options?: {
-  onSuccess?: (data: typeof Equipo) => void;
+  onSuccess?: (data: typeof EquipoRequestSchema) => void;
   onError?: (error: unknown) => void;
 }) {
 
     const [tokenState] = useToken();
 
     return useMutation({
-        mutationFn: async (data: typeof Equipo) => {
+        mutationFn: async (data: typeof EquipoRequestSchema) => {
+            if (tokenState.state !== "LOGGED_IN") {
+                throw new Error("No estás logueado.");
+            }
+
             const response = await fetch(`${BASE_API_URL}/equipos`, {
                 method: "POST",
                 headers: {

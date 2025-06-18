@@ -16,6 +16,7 @@ import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.canchas.CanchaRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.partido.Partido;
 
 @Service
 public class ReservaService {
@@ -43,7 +44,7 @@ public class ReservaService {
         for (LocalDate fecha = dto.fechaInicial(); !fecha.isAfter(dto.fechaFinal()); fecha = fecha.plusDays(1)) {
             for (LocalTime hr = dto.horarioInicio(); !hr.isAfter(dto.horarioFin()); hr = hr.plusMinutes(dto.minutos())) {
                 ReservaId reservaId = new ReservaId(cancha, fecha, hr, hr.plusMinutes(dto.minutos()));
-                reservas.add(new Reserva(reservaId, "DISPONIBLE", null));
+                reservas.add(new Reserva(reservaId, new StateReserva()));
             }
         }
 
@@ -61,7 +62,7 @@ public class ReservaService {
         Reserva reserva = reservaRepo.findById(reservaId)
             .orElseThrow(() -> new NotFoundException("Reserva con ID: '" + reservaId + "' no encontrada."));
     
-        reserva.setState(dto.state());
+        reserva.setStateReserva(null);
 
         reservaRepo.save(reserva);
 
@@ -77,12 +78,31 @@ public class ReservaService {
             
         List<Cancha> canchas = canchaRepo.findByPropietarioId(user.getId());
         List<Reserva> reservas = new ArrayList<Reserva>();
-
+        
         canchas.forEach(cancha -> {
-            reservas.addAll(reservaRepo.findAll());
+            reservas.addAll(reservaRepo.findByCanchaId(cancha.getId()));
         });
 
         return reservas.stream().map(Reserva::toDTO).toList();
     }
+
+    public List<ReservaDTO> obtenerDisponibles(LocalDate fecha, String zona) {
+        return reservaRepo.findDisponibles(fecha, zona)
+                .stream()
+                .map(Reserva::toDTO)
+                .toList();
+    }
+
+    public void ocuparReserva(Cancha cancha, LocalDate fecha,
+                              LocalTime inicio, LocalTime fin, Partido partido) {
+        ReservaId id = new ReservaId(cancha, fecha, inicio, fin);
+        Reserva reserva  = reservaRepo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Reserva no encontrada"));
+        
+        reserva.setStateReserva(partido);
+        
+        reservaRepo.save(reserva);
+    }
+
 }
 

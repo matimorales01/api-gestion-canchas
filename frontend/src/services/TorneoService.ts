@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
 import { TorneoRequest, Torneo, TorneoDisponible } from "@/models/Torneo";
@@ -11,6 +11,10 @@ export function crearTorneo(options?: {
 
   return useMutation({
     mutationFn: async (data: TorneoRequest) => {
+      if (tokenState.state !== "LOGGED_IN") {
+        throw new Error("No estás logueado. No se puede crear el torneo.");
+      }
+
       const response = await fetch(`${BASE_API_URL}/torneos`, {
         method: "POST",
         headers: {
@@ -55,5 +59,43 @@ export function useGetTorneosDisponibles() {
       return (await response.json()) as TorneoDisponible[];
     },
     enabled: tokenState.state === "LOGGED_IN",
+  });
+}
+
+export function userEditarTorneo(options?: {
+  onSuccess?: (data: Torneo) => void;
+  onError?: (error: unknown) => void;
+}) {
+  const [tokenState] = useToken();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<TorneoRequest> }) => {
+      if (tokenState.state !== "LOGGED_IN") {
+        throw new Error("No estás logueado. No se puede editar un torneo.");
+      }
+
+      const response = await fetch(`${BASE_API_URL}/torneos/${id}`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenState.accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al editar el torneo: ${errorText}`);
+      }
+
+      return (await response.json()) as Torneo;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["torneos"] });
+      options?.onSuccess?.(data);
+    },
+    onError: options?.onError,
   });
 }

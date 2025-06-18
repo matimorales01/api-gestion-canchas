@@ -1,56 +1,90 @@
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
-import { useCanchas } from "@/services/CanchaService";
-import { useFranjasPorCancha } from "@/services/FranjaService";
-import React, { useState } from "react";
-import {ReservasHeader, InfoReserva} from "@/components/ReservasAdmin/ReservasAdmin";
+import styles from "../styles/AdminReservas.module.css";
+import { useGetMisReservas, useCancelarReserva} from "@/services/ReservasService";
+import { useState } from "react";
+
 export const AdministrarReservasScreen = () => {
-  const reservas = [
-  {
-    id: 1,
-    cancha: "Cancha Norte",
-    estado: "Reservado",
-    tipo: "Abierto",
-    hora: "18:00",
-    usuario: "Juan Pérez",
-  },
-  {
-    id: 2,
-    cancha: "Cancha Sur",
-    estado: "Libre",
-    tipo: "Cerrado",
-    hora: "19:30",
-    usuario: "",
-  },
-  {
-    id: 3,
-    cancha: "Cancha Central",
-    estado: "Reservado",
-    tipo: "Cerrado",
-    hora: "21:00",
-    usuario: "María López",
-  },
-  {
-    id: 4,
-    cancha: "Cancha Este",
-    estado: "Libre",
-    tipo: "Abierto",
-    hora: "17:15",
-    usuario: "",
-  },
-];
+  const [filtroFecha, setFiltroFecha] = useState<string>('');
+  const [filtroHora, setFiltroHora] = useState<string>(''); // formato HH:mm
+
+  const { data: reservas, isLoading, isError } = useGetMisReservas();
+  const { mutate: cancelarReserva } = useCancelarReserva();
+
+  const reservasFiltradas = (reservas || [])
+  .filter((reserva) => {
+    const coincideFecha = filtroFecha ? reserva.fecha === filtroFecha : true;
+    const coincideHora = filtroHora ? reserva.inicioTurno.startsWith(filtroHora) : true;
+    return coincideFecha && coincideHora;
+  })
+  .sort((a, b) => {
+    const fechaHoraA = new Date(`${a.fecha}T${a.inicioTurno}`);
+    const fechaHoraB = new Date(`${b.fecha}T${b.inicioTurno}`);
+    return fechaHoraA.getTime() - fechaHoraB.getTime();
+  });
+
+
+  const handleCancelarReserva = (reserva: any) => {
+  if (confirm("¿Estás seguro de que querés cancelar esta reserva?")) {
+    const reservaCancelada = {
+      canchaName: reserva.canchaName,
+      fecha: reserva.fecha,
+      horaInicio: reserva.inicioTurno,
+      horaFin: reserva.finTurno,
+      state: "DISPONIBLE",
+    };
+    cancelarReserva(reservaCancelada);
+  }
+};
+  
   return (
     <CommonLayout>
-      <h1>Reservas</h1>
-      <div style={{ width: "100%", height: "100%"}}>
-        {reservas.length === 0 ? (<p>No hay partidos cerrados.</p>) : (
-        <ul>
-          <ReservasHeader />
-          {reservas.map(({id, cancha, estado, tipo, hora, usuario}) => (
-              <InfoReserva key={id} nombreCancha={cancha} estado={estado} tipo={tipo} hora={hora} usuario={usuario} />
-            ))}
-        </ul>
-        )}
+      <div className={styles.pageWrapper}>
+        <div className={styles.titleRow}>
+          <span className={styles.trophyIcon}>📋</span>
+          <span className={styles.title}>Administracion de mis Reservas</span>
+        </div>
+      
+        <div className={styles.filtersBox}>
+          <input type="date" className={styles.filterInput} value={filtroFecha} onChange={(e) => setFiltroFecha(e.target.value)}/>
+          <input type="time" className={styles.filterInput} value={filtroHora} onChange={(e) => setFiltroHora(e.target.value)}/>
+        </div>
       </div>
+
+      {!reservas || reservas.length === 0 ? (<p>No tenés reservas aún.</p> ) : (
+        <div className={styles.gridReservas}>
+          {reservasFiltradas.map((reserva, idx) => (
+            <div key={idx} className={styles.reservaCard}>
+              <div className={styles.reservaHeader}>
+                  <span className={styles.reservaNombre}>{reserva.canchaName}</span>
+                  <span className={`${styles.reservaEstado} ${styles["estado" + reserva.state]}`}>
+                    {reserva.state}
+                  </span>
+              </div>
+              {/*<div className={styles.reservaHeader}>
+                <span className={styles.reservaNombre}>{reserva.canchaName}</span>
+                <span className={styles.reservaEstado}>{reserva.state}</span>
+              </div>*/}
+              
+              <p className={styles.reservaDetalle}>📅 {reserva.fecha}</p>
+              <p className={styles.reservaDetalle}>⏰ {reserva.inicioTurno} - {reserva.finTurno}</p>
+              <p className={styles.reservaDetalle}>📍 {reserva.direccion}, {reserva.zona}</p>
+              
+              {reserva.tipoPartido && (
+                  <p className={styles.reservaDetalle}>👥 Tipo de partido: {reserva.tipoPartido}</p>
+                )}
+                {reserva.emailOrganizador && (
+                  <p className={styles.reservaDetalle}>📧 Organizador: {reserva.emailOrganizador}</p>
+                )}
+                
+              {reserva.state === "OCUPADA" && (
+                <button className={styles.cancelButton} onClick={() => handleCancelarReserva(reserva)}>
+                  Cancelar
+                  </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </CommonLayout>
   );
 };

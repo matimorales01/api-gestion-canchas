@@ -1,5 +1,6 @@
 package ar.uba.fi.ingsoft1.todo_template.reserva;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -34,5 +35,12 @@ public class ReservaRestController {
     @GetMapping
     public ResponseEntity<List<ReservaDTO>> obtenerReserva() {
         return ResponseEntity.ok(reservaService.obtenerReserva());
+    }
+    @GetMapping("/disponibles")
+    public List<ReservaDTO> getDisponibles(
+            @RequestParam LocalDate fecha,
+            @RequestParam(required = false) String zona
+    ) {
+        return reservaService.obtenerDisponibles(fecha, zona);
     }
 }

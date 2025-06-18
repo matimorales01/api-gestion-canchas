@@ -1,8 +1,7 @@
 import React from "react";
 import { Link } from "wouter";
-
 import { useToken } from "@/services/TokenContext";
-
+import { useCurrentUser } from "@/services/UserServices";
 import styles from "./CommonLayout.module.css";
 
 export const CommonLayout = ({ children }: React.PropsWithChildren) => {
@@ -10,35 +9,60 @@ export const CommonLayout = ({ children }: React.PropsWithChildren) => {
 
     return (
         <div className={styles.mainLayout}>
-            <ul className={styles.topBar}>
-                {tokenState.state === "LOGGED_OUT" ? <LoggedOutLinks /> : <LoggedInLinks />}
-            </ul>
-            <div className={styles.mainContent} >
-                {children}
-            </div>
+            <aside className={styles.sidebar}>
+                {tokenState.state === "LOGGED_IN" && <ProfileBox />}
+                <ul className={styles.menu}>
+                    {tokenState.state === "LOGGED_OUT" ? <LoggedOutLinks /> : <LoggedInLinks />}
+                </ul>
+            </aside>
+            <main className={styles.mainContent}>{children}</main>
         </div>
     );
 };
 
-const LoggedOutLinks = () => {
+const ProfileBox = () => {
+    const { data: user, isLoading } = useCurrentUser();
+
+    if (isLoading) {
+        return (
+            <div className={styles.profile}>
+                <div>Cargando...</div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return null;
+    }
+
     return (
-        <>
-            <li>
-                <Link href="/login">Log in</Link>
-            </li>
-            <li>
-                <Link href="/signup">Sign Up</Link>
-            </li>
-        </>
+        <div className={styles.profile}>
+            <img
+                src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                alt="Foto de perfil"
+                className={styles.avatar}
+            />
+            <div className={styles.name}>{user.nombre}</div>
+            <div className={styles.email}>{user.email}</div>
+        </div>
     );
 };
+
+const LoggedOutLinks = () => (
+    <>
+        <li>
+            <Link href="/login">Log in</Link>
+        </li>
+        <li>
+            <Link href="/signup">Sign Up</Link>
+        </li>
+    </>
+);
 
 const LoggedInLinks = () => {
     const [, setTokenState] = useToken();
 
-    const logOut = () => {
-        setTokenState({ state: "LOGGED_OUT" });
-    };
+    const logOut = () => setTokenState({ state: "LOGGED_OUT" });
 
     return (
         <>
@@ -46,7 +70,7 @@ const LoggedInLinks = () => {
                 <Link href="/under-construction">Main Page</Link>
             </li>
             <li>
-                <Link href="/crear-cancha">Crear Cancha</Link>
+                <Link href="/crear-cancha">Mis canchas</Link>
             </li>
             <li>
                 <Link href="/crear-equipo">Crear Equipo</Link>
@@ -61,9 +85,6 @@ const LoggedInLinks = () => {
                 <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
             </li>
             <li>
-                <Link href="/admin/canchas">Panel de Administración</Link>
-            </li>
-            <li>
                 <Link href="/crear-reserva">Crear reserva</Link>
             </li>
             <li>
@@ -73,7 +94,9 @@ const LoggedInLinks = () => {
                 <Link href="/ver-historial">Historial</Link>
             </li>
             <li>
-                <button onClick={logOut}>Log out</button>
+                <button className={styles.logoutButton} onClick={logOut}>
+                    Log out
+                </button>
             </li>
         </>
     );

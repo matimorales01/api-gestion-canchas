@@ -4,14 +4,14 @@ import { LoginScreen } from "@/screens/LoginScreen";
 import { MainScreen } from "@/screens/MainScreen";
 import { SignupScreen } from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
-import { CanchaScreen } from "@/screens/CrearCancha";
+import  CanchasScreen from "@/screens/CrearCancha";
 import { HistorialScreen } from "@/screens/HistorialScreen";
 import { UserListaTorneo } from "@/screens/UserListaTorneo";
-import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
+import UserEditarTorneoScreen from "./screens/UserEditarTorneoScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
 import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
 import { CrearEquipo } from "./screens/CrearEquipo";
-import { CrearReservaScreen } from "./screens/CrearReservaScreen";
+import { ReservasScreen } from "./screens/CrearReservaScreen";
 import { CrearTorneo } from "./screens/CrearTorneo";
 import { AdministrarReservasScreen } from "./screens/AdministrarReservasScreen";
 
@@ -30,16 +30,13 @@ export const Navigation = () => {
                       <ListaPartidosAbiertos />
                     </Route>
                     <Route path="/crear-cancha">
-                        <CanchaScreen />
-                    </Route>
-                    <Route path="/admin/canchas">
-                        <AdminCanchasScreen />
+                        <CanchasScreen />
                     </Route>
                     <Route path="/admin/canchas/:id">
                         <EditarCanchaScreen />
                     </Route>
                     <Route path="/crear-reserva">
-                        <CrearReservaScreen />
+                        <ReservasScreen />
                     </Route>
                     <Route path="/administrar-reservas">
                       <AdministrarReservasScreen />
@@ -55,6 +52,9 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/listar-torneos">
                       <UserListaTorneo />
+                    </Route>
+                    <Route path="/admin/torneos/:id">
+                      <UserEditarTorneoScreen />
                     </Route>
                     <Route>
                         <Redirect href="/" />
