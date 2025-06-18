@@ -24,6 +24,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, ReservaId> {
     @Query("SELECT COUNT(r) > 0 FROM Reserva r WHERE r.id.cancha.id = :canchaId")
     boolean existsByCanchaId(@Param("canchaId") Long canchaId);
 
+    @Query("DELETE FROM Reserva r WHERE r.id.cancha.id = :canchaId")
+    void deleteAllByCanchaId(@Param("canchaId") Long canchaId);
 
     @Query("""
     SELECT r
