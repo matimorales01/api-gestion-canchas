@@ -47,7 +47,7 @@ public class TorneoService {
         Torneo torneo = torneoRepo.findById(nombreTorneo)
             .orElseThrow(() -> new NotFoundException("Torneo con nombre: '" + nombreTorneo + "' no encontrado."));
 
-        if (!torneo.getFechaFin().isBefore(LocalDate.now())) {
+        if (!torneo.getFechaFin().isEqual(LocalDate.now()) || torneo.getFechaFin().isBefore(LocalDate.now())) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "La fecha de fin del torneo debe ser la fecha actual para poder finalizarlo."

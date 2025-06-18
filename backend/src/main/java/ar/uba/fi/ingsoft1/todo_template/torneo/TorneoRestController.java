@@ -23,7 +23,7 @@ public class TorneoRestController {
         this.inscripcionService = inscripcionService;
     }
 
-    @PutMapping("/inscribir/{nombreTorneo}")
+    @PostMapping("/inscribir/{nombreTorneo}")
     public ResponseEntity<String> inscribirTorneo(
         @PathVariable String nombreTorneo,
         @Valid @RequestBody EquipoDTO equipoDTO
@@ -73,7 +73,7 @@ public class TorneoRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(creado.toDTO());
     }
 
-    @PutMapping("/{nombreTorneo}")
+    @PatchMapping("/{nombreTorneo}")
     public ResponseEntity<TorneoDTO> edit(
         @PathVariable String nombreTorneo,
         @Valid @RequestBody TorneoUpdateDTO dto
