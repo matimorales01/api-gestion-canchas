@@ -77,9 +77,9 @@ public class ReservaService {
             
         List<Cancha> canchas = canchaRepo.findByPropietarioId(user.getId());
         List<Reserva> reservas = new ArrayList<Reserva>();
-
+        
         canchas.forEach(cancha -> {
-            reservas.addAll(reservaRepo.findAll());
+            reservas.addAll(reservaRepo.findByCanchaId(cancha.getId()));
         });
 
         return reservas.stream().map(Reserva::toDTO).toList();
