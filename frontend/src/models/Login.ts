@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const LoginRequestSchema = z.object({
   password: z.string().min(1, "La contraseña no puede estar vacia"),
-  email: z.string().min(1, "El email no puede estar vacio").email("El email no es válido"),
+  email: z.string().min(1, "El email no puede estar vacio"),
 });
 
 
@@ -11,7 +11,7 @@ export const SignupSchema = z.object({
   firstName: z.string().min(1, "El nombre no puede estar vacío"),
   lastName: z.string().min(1, "El apellido no puede estar vacío"),
   password: z.string().min(1, "La contraseña no puede estar vacía"),
-  email: z.string().min(1, "El email no puede estar vacío").email("El email no es válido"),
+  email: z.string().min(1, "El email no puede estar vacío"),
   genre: z.string().min(1, "El género no puede estar vacío"),
   age: z.string().min(1, "La edad no puede estar vacía").refine((val) => !isNaN(Number(val)), { message: "Debe ser un número" }),
   zone: z.string().min(1, "La zona no puede estar vacía"),

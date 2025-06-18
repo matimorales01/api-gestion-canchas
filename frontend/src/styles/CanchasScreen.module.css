@@ -154,3 +154,117 @@ select:focus {
     background: linear-gradient(90deg, #2563eb 0%, #1d4ba0 100%);
 }
 
+
+
+.wrapper {
+    max-width: 950px;
+    margin: 0 auto;
+    padding-top: 36px;
+}
+
+.title {
+    font-size: 2.3rem;
+    font-weight: 700;
+    color: #23272f;
+    margin-bottom: 28px;
+    letter-spacing: -0.5px;
+}
+
+.canchasGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 22px;
+    margin-bottom: 36px;
+}
+
+.canchaCard {
+    background: #fff;
+    border-radius: 13px;
+    box-shadow: 0 2px 8px rgba(16, 26, 40, 0.07);
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 18px;
+}
+.canchaInfo {
+    color: #23272f;
+}
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    height: 100px;
+    box-sizing: border-box;
+}
+
+.inputError {
+    min-height: 20px;
+    font-size: 0.96rem;
+    color: #ea1111;
+    margin-left: 3px;
+    display: flex;
+    align-items: center;
+}
+
+
+.buttonRow {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.button {
+    font-weight: 600;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.editButton {
+    background: #22c55e;
+    color: #fff;
+}
+
+.editButton:hover {
+    background: #16a34a;
+}
+
+.deleteButton {
+    background: #ef4444;
+    color: #fff;
+}
+
+.deleteButton:hover {
+    background: #dc2626;
+}
+
+.agregarButton {
+    background: #fff;
+    color: #23272f;
+    border: 2px solid #23272f;
+}
+
+.agregarButton:hover {
+    background: #f3f4f6;
+    color: #0f172a;
+}
+.wrapper {
+    max-width: 950px;
+    margin: 0 auto;
+    padding-top: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.canchasGrid {
+    width: 100%;
+    margin-bottom: 32px;
+}
+.formBox {
+    margin: 0 auto;
+}

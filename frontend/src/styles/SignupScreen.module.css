@@ -33,8 +33,11 @@
 .inputGroup {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 5px;
+    height: 100px;
+    box-sizing: border-box;
 }
+
 
 .input,
 input[type="text"],

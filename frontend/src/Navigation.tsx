@@ -8,7 +8,6 @@ import  CanchasScreen from "@/screens/CrearCancha";
 import { HistorialScreen } from "@/screens/HistorialScreen";
 import { UserListaTorneo } from "@/screens/UserListaTorneo";
 import UserEditarTorneoScreen from "./screens/UserEditarTorneoScreen";
-import AdminCanchasScreen from "@/screens/AdminCanchasScreen";
 import EditarCanchaScreen from "@/screens/EditarCanchaScreen";
 import ListaPartidosAbiertos from "./screens/ListaPartidosAbiertos";
 import { CrearEquipo } from "./screens/CrearEquipo";
@@ -32,9 +31,6 @@ export const Navigation = () => {
                     </Route>
                     <Route path="/crear-cancha">
                         <CanchasScreen />
-                    </Route>
-                    <Route path="/admin/canchas">
-                        <AdminCanchasScreen />
                     </Route>
                     <Route path="/admin/canchas/:id">
                         <EditarCanchaScreen />
