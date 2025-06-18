@@ -2,15 +2,14 @@ package ar.uba.fi.ingsoft1.todo_template.torneo;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+
+import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 
 @Entity
 @Table(name = "torneos", uniqueConstraints = @UniqueConstraint(columnNames = "nombre"))
 public class Torneo {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @Id
     @Column(nullable = false, unique = true)
     private String nombre;
 
@@ -65,9 +64,6 @@ public class Torneo {
         this.estado = EstadoTorneo.ABIERTO;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
@@ -98,9 +94,12 @@ public class Torneo {
     public User getOrganizador() { return organizador; }
     public void setOrganizador(User organizador) { this.organizador = organizador; }
 
-    public ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO toDTO() {
-        return new ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO(
-            id,
+    public boolean isStarted() {
+        return this.estado == EstadoTorneo.ABIERTO;
+    }
+
+    public TorneoDTO toDTO() {
+        return new TorneoDTO(
             nombre,
             fechaInicio,
             fechaFin,

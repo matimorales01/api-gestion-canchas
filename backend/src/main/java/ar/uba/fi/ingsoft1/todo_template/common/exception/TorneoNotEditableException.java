@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class TorneoNotEditableException extends RuntimeException {
-    public TorneoNotEditableException(Long id) {
-        super("El torneo con id " + id + " no se puede editar/eliminar en su estado actual.");
+    public TorneoNotEditableException(String nombre) {
+        super("El torneo con nombre " + nombre + " no se puede editar/eliminar en su estado actual.");
     }
 }

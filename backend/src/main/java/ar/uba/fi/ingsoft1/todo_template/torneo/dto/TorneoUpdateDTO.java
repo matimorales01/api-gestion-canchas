@@ -1,44 +1,41 @@
 package ar.uba.fi.ingsoft1.todo_template.torneo.dto;
 
 import java.time.LocalDate;
+import java.util.Optional;
+
 import ar.uba.fi.ingsoft1.todo_template.torneo.EstadoTorneo;
+import ar.uba.fi.ingsoft1.todo_template.torneo.Torneo;
 import ar.uba.fi.ingsoft1.todo_template.torneo.TorneoFormato;
+import jakarta.validation.constraints.NotBlank;
 
-public class TorneoUpdateDTO {
-    private String nombre;
-    private LocalDate fechaInicio;
-    private LocalDate fechaFin;
-    private TorneoFormato formato;
-    private Integer cantidadMaximaEquipos;
-    private String descripcion;
-    private String premios;
-    private Double costoInscripcion;
-    private EstadoTorneo estado;
+public record TorneoUpdateDTO(
+    Optional<String> nombre,
+    Optional<LocalDate> fechaInicio,
+    Optional<LocalDate> fechaFin,
+    Optional<TorneoFormato> formato,
+    Optional<Integer> cantidadMaximaEquipos
+) {
+    public boolean isDateValid(LocalDate fechaInicio, LocalDate fechaFin) {
+        if (this.fechaInicio.isEmpty() && this.fechaFin.isEmpty()) {
+            return true;
+        }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+        else if (this.fechaInicio.isEmpty() && this.fechaFin.isPresent()) {
+            return !fechaInicio.isAfter(this.fechaFin.get());
+        }
 
-    public LocalDate getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+        else if (this.fechaFin.isEmpty() && this.fechaInicio.isPresent()) {
+            return !this.fechaInicio.get().isAfter(fechaFin);
+        }
 
-    public LocalDate getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+        return !this.fechaInicio.get().isAfter(this.fechaFin.get());
+    }
 
-    public TorneoFormato getFormato() { return formato; }
-    public void setFormato(TorneoFormato formato) { this.formato = formato; }
-
-    public Integer getCantidadMaximaEquipos() { return cantidadMaximaEquipos; }
-    public void setCantidadMaximaEquipos(Integer cantidadMaximaEquipos) { this.cantidadMaximaEquipos = cantidadMaximaEquipos; }
-
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-
-    public String getPremios() { return premios; }
-    public void setPremios(String premios) { this.premios = premios; }
-
-    public Double getCostoInscripcion() { return costoInscripcion; }
-    public void setCostoInscripcion(Double costoInscripcion) { this.costoInscripcion = costoInscripcion; }
-
-    public EstadoTorneo getEstado() { return estado; }
-    public void setEstado(EstadoTorneo estado) { this.estado = estado; }
+    public void update(Torneo torneo) {
+        nombre.ifPresent(torneo::setNombre);
+        fechaInicio.ifPresent(torneo::setFechaInicio);
+        fechaFin.ifPresent(torneo::setFechaFin);
+        formato.ifPresent(torneo::setFormato);
+        cantidadMaximaEquipos.ifPresent(torneo::setCantidadMaximaEquipos);
+    }
 }
