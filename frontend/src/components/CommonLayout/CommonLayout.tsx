@@ -1,10 +1,8 @@
 import React from "react";
 import { Link } from "wouter";
-
 import { useToken } from "@/services/TokenContext";
-
+import { useCurrentUser } from "@/services/UserServices";
 import styles from "./CommonLayout.module.css";
-
 
 export const CommonLayout = ({ children }: React.PropsWithChildren) => {
     const [tokenState] = useToken();
@@ -12,29 +10,43 @@ export const CommonLayout = ({ children }: React.PropsWithChildren) => {
     return (
         <div className={styles.mainLayout}>
             <aside className={styles.sidebar}>
-                <ProfileBox />
-
+                {tokenState.state === "LOGGED_IN" && <ProfileBox />}
                 <ul className={styles.menu}>
                     {tokenState.state === "LOGGED_OUT" ? <LoggedOutLinks /> : <LoggedInLinks />}
                 </ul>
             </aside>
-
             <main className={styles.mainContent}>{children}</main>
         </div>
     );
 };
 
-const ProfileBox = () => (
-    <div className={styles.profile}>
-        <img
-            src="https://randomuser.me/api/portraits/men/75.jpg"
-            alt="Foto de perfil"
-            className={styles.avatar}
-        />
-        <div className={styles.name}>Matias Morales</div>
-        <div className={styles.email}>matias@gmail.com</div>
-    </div>
-);
+const ProfileBox = () => {
+    const { data: user, isLoading } = useCurrentUser();
+
+    if (isLoading) {
+        return (
+            <div className={styles.profile}>
+                <div>Cargando...</div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return null;
+    }
+
+    return (
+        <div className={styles.profile}>
+            <img
+                src="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
+                alt="Foto de perfil"
+                className={styles.avatar}
+            />
+            <div className={styles.name}>{user.nombre}</div>
+            <div className={styles.email}>{user.email}</div>
+        </div>
+    );
+};
 
 const LoggedOutLinks = () => (
     <>

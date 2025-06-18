@@ -2,12 +2,10 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { LoginRequestSchema } from "@/models/Login";
 import { useLogin } from "@/services/UserServices";
-import { useToken } from "@/services/TokenContext";
 import styles from "../styles/LoginScreen.module.css";
 
 export const LoginScreen = () => {
   const { mutate, error } = useLogin();
-  const { setToken } = useToken();
 
   const formData = useAppForm({
     defaultValues: {
@@ -18,13 +16,7 @@ export const LoginScreen = () => {
       onChange: LoginRequestSchema,
     },
     onSubmit: async ({ value }) => {
-      mutate(value, {
-        onSuccess: (data) => {
-          if (data?.token) {
-            setToken(data.token);
-          }
-        },
-      });
+      mutate(value);
     },
   });
 

@@ -22,10 +22,10 @@ export interface ReservaResponse {
   canchaName: string;
   zona: string;
   direccion: string;
-  fecha: string;         // ISO format
-  inicioTurno: string;   // "HH:mm:ss"
-  finTurno: string;      // "HH:mm:ss"
-  state: string;         // Ej: "OCUPADA"
+  fecha: string;
+  inicioTurno: string;
+  finTurno: string;
+  state: string;
   tipoPartido: string | null;
 }
 

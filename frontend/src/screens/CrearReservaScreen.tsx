@@ -11,7 +11,7 @@ import styles from "../components/Reservas/ReservasScreen.module.css";
 export const ReservasScreen: React.FC = () => {
     const todayIso = new Date().toISOString().slice(0, 10);
     const [fecha, setFecha] = useState(todayIso);
-    const [zona,  setZona]  = useState<string | null>(null);
+    const [zona, setZona] = useState<string | null>(null);
     const [search, setSearch] = useState("");
 
     const [selectedCanchaId, setSelectedCanchaId] = useState<number | null>(null);
@@ -95,13 +95,13 @@ export const ReservasScreen: React.FC = () => {
 
             <FiltersBar
                 fecha={fecha} onFecha={setFecha}
-                zona={zona}   onZona={setZona}
+                zona={zona} onZona={setZona}
                 zonasDisponibles={zonasDisponibles}
                 search={search} onSearch={setSearch}
             />
 
             {isLoading && <p>Cargando reservas…</p>}
-            {isError    && <p>Error al obtener las reservas.</p>}
+            {isError && <p>Error al obtener las reservas.</p>}
             {!isLoading && canchas.length === 0 && <p>No se encontraron reservas.</p>}
 
             <ul className={styles.cardList}>
