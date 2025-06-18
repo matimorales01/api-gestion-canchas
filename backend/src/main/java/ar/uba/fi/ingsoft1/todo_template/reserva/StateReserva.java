@@ -4,12 +4,15 @@ import ar.uba.fi.ingsoft1.todo_template.partido.Partido;
 import ar.uba.fi.ingsoft1.todo_template.partido.TipoPartido;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @Embeddable
 public class StateReserva {
     @Column(nullable = false)
     private String state = "DISPONIBLE";
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = true)
     private TipoPartido tipoPartido = null;
     
@@ -35,7 +38,7 @@ public class StateReserva {
             this.state = "DISPONIBLE";
             this.tipoPartido = null;
             this.emailOrganizador = null;
-            
+
             return this;
         }
 
