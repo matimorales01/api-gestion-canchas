@@ -68,8 +68,8 @@ public class CanchaService {
                 .collect(Collectors.toList());
     }
 
-    public List<CanchaDTO> listarTodasLasCanchas(long userId) {
-        return canchaRepo.findByPropietarioId(userId).stream()
+    public List<CanchaDTO> listarTodasLasCanchas(String userId) {
+        return canchaRepo.findByPropietarioUsername(userId).stream()
                 .map(Cancha::toDTO)
                 .collect(Collectors.toList());
     }

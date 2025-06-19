@@ -76,7 +76,7 @@ public class ReservaService {
         User user = userRepo.findByEmail(userInfo.email())
             .orElseThrow(() -> new NotFoundException("Usuario con email: '" + userInfo.email() + "' no encontrado."));
             
-        List<Cancha> canchas = canchaRepo.findByPropietarioId(user.getId());
+        List<Cancha> canchas = canchaRepo.findByPropietarioUsername(user.getUsername());
         List<Reserva> reservas = new ArrayList<Reserva>();
         
         canchas.forEach(cancha -> {

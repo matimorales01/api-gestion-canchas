@@ -15,7 +15,7 @@ export const SignupScreen = () => {
       firstName: "",
       lastName: "",
       age: "",
-      genre: "",
+      gender: "",
       zone: "",
       rol: "JUGADOR",
     },
@@ -59,7 +59,7 @@ export const SignupScreen = () => {
                   </formData.AppField>
                 </div>
                 <div className={styles.inputGroup}>
-                  <formData.AppField name="genre">
+                  <formData.AppField name="gender">
                     {(field) => <field.TextField label="Género" />}
                   </formData.AppField>
                 </div>

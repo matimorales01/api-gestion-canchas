@@ -122,7 +122,7 @@ public class PartidoService {
     }
 
     @Transactional
-    public List<PartidoAbiertoResponseDTO> obtenerPartidosAbiertosIncluyendoInscripcion(Long userId) {
+    public List<PartidoAbiertoResponseDTO> obtenerPartidosAbiertosIncluyendoInscripcion(String userId) {
         return obtenerPartidosAbiertos().stream()
                 .peek(pa -> pa.setEstadoPartido(pa.calcularEstadoPartido()))
                 .filter(pa -> pa.getEstadoPartido() != EstadoPartido.TERMINADO)
@@ -138,17 +138,17 @@ public class PartidoService {
     }
 
     @Transactional
-    public List<Partido> historialPartidosAbiertosPorUsuario(Long userId) {
+    public List<Partido> historialPartidosAbiertosPorUsuario(String userId) {
         List<Partido> partidos = partidoRepository
-                .findByTipoPartidoAndOrganizadorId(TipoPartido.ABIERTO, userId);
+                .findByTipoPartidoAndOrganizadorUsername(TipoPartido.ABIERTO, userId);
         partidos.forEach(p -> p.getJugadores().size());
         return partidos;
     }
 
     @Transactional
-    public List<Partido> historialPartidosCerradosPorUsuario(Long userId) {
+    public List<Partido> historialPartidosCerradosPorUsuario(String userId) {
         return partidoRepository
-                .findByTipoPartidoAndOrganizadorId(TipoPartido.CERRADO, userId);
+                .findByTipoPartidoAndOrganizadorUsername(TipoPartido.CERRADO, userId);
     }
 
 
@@ -162,7 +162,7 @@ public class PartidoService {
 
 
     @Transactional
-    public void inscribirAAbierto(PartidoId partidoId, Long userId) {
+    public void inscribirAAbierto(PartidoId partidoId, String userId) {
         Partido partido = partidoRepository.findById(partidoId)
                 .orElseThrow(() -> new NotFoundException("Partido abierto no encontrado"));
 
@@ -189,7 +189,7 @@ public class PartidoService {
     }
 
     @Transactional
-    public void desinscribirDeAbierto(PartidoId partidoId, Long userId) {
+    public void desinscribirDeAbierto(PartidoId partidoId, String userId) {
         Partido partido = partidoRepository.findById(partidoId)
                 .orElseThrow(() -> new NotFoundException("Partido abierto no encontrado"));
 

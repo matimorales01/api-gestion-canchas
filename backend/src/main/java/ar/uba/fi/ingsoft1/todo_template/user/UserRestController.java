@@ -49,8 +49,7 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Long userId = Long.valueOf(jwtUser.id());
-        User user = userService.obtenerUsuarioPorId(userId);
+        User user = userService.obtenerUsuarioPorId(jwtUser.username());
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

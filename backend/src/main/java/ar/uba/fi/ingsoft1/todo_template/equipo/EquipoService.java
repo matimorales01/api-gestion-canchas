@@ -57,7 +57,7 @@ public class EquipoService {
     public List<EquipoDTO> obtenerEquipos() {
         JwtUserDetails userDetails = (JwtUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        List<Equipo> equipos = equipoRepo.findByCaptainId(userDetails.id())
+        List<Equipo> equipos = equipoRepo.findByCaptainUsername(userDetails.username())
                 .orElseThrow(() -> new UserNotFoundException("No se encontraron equipos para el usuario"));
     
         return equipos.stream().map(Equipo::asEquipoDTO).toList();

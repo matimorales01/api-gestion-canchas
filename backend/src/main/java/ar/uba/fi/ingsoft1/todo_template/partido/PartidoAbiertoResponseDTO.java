@@ -16,15 +16,15 @@ public record PartidoAbiertoResponseDTO(
         Integer minJugador,
         Integer maxJugador,
         Integer cuposDisponibles,
-        Long organizadorId,
+        String organizadorId,
         String emailOrganizador,
         boolean inscripto,
         boolean partidoConfirmado,
         List<JugadorDTO> jugadores
 ) {
-    public static PartidoAbiertoResponseDTO fromEntity(Partido partido, Long usuarioLogueadoId){
+    public static PartidoAbiertoResponseDTO fromEntity(Partido partido, String usuarioLogueadoId){
         boolean inscripto = partido.getJugadores().stream()
-                .anyMatch(j -> j.getId().equals(usuarioLogueadoId));
+                .anyMatch(j -> j.getUsername().equals(usuarioLogueadoId));
 
         List<JugadorDTO> jugadoresDTO = partido.getJugadores().stream()
                 .map(JugadorDTO::fromEntity)
@@ -40,7 +40,7 @@ public record PartidoAbiertoResponseDTO(
                 partido.getMinJugadores(),
                 partido.getMaxJugadores(),
                 partido.getCuposDisponibles(),
-                partido.getOrganizador().getId(),
+                partido.getOrganizador().getUsername(),
                 partido.getOrganizador().getEmail(),
                 inscripto,
                 partido.isPartidoConfirmado(),

@@ -10,7 +10,7 @@ public record EquipoDTO(
     String category,
     String mainColors,
     String secondaryColors,
-    Long captainId
+    String captainId
 ){
     public Equipo asEquipo(User captain) {
         return new Equipo(teamName, captain, category, mainColors, secondaryColors);

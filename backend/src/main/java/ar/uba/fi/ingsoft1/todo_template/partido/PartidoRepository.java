@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 public interface PartidoRepository extends JpaRepository<Partido, PartidoId> {
     //obetener partidos abiertos o cerrados por organizador
-    List<Partido> findByTipoPartidoAndOrganizadorId(TipoPartido tipoPartido, Long organizadorId);
+    List<Partido> findByTipoPartidoAndOrganizadorUsername(TipoPartido tipoPartido, String organizadorId);
     
     //verificar si existen partidos abiertos o cerrados futuros por cancha
     boolean existsByTipoPartidoAndCanchaIdAndIdPartido_FechaPartidoGreaterThanEqual(

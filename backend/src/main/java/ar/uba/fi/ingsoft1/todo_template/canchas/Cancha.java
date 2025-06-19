@@ -83,7 +83,7 @@ public class Cancha {
             this.iluminacion,
             this.zona,
             this.direccion,
-            this.propietario.getId(),
+            this.propietario.getUsername(),
             this.activa
         );
     }

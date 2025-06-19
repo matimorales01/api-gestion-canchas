@@ -10,7 +10,7 @@ public record PartidoResponseDTO(
         String canchaDireccion,
         LocalDate fechaPartido,
         LocalTime horaPartido,
-        Long organizadorId,
+        String organizadorId,
         String emailOrganizador
 ) {
     public static PartidoResponseDTO fromEntity(Partido partido){
@@ -21,7 +21,7 @@ public record PartidoResponseDTO(
                 partido.getCancha().getDireccion(),
                 partido.getFechaPartido(),
                 partido.getHoraPartido(),
-                partido.getOrganizador().getId(),
+                partido.getOrganizador().getUsername(),
                 partido.getOrganizador().getEmail()
         );
     }

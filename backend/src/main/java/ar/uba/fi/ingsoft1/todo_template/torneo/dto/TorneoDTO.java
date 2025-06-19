@@ -14,5 +14,5 @@ public record TorneoDTO(
     String premios,
     Double costoInscripcion,
     EstadoTorneo estado,
-    Long organizadorId
+    String organizadorId
 ) {}

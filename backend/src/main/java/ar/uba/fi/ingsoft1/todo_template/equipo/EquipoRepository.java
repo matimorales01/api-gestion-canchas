@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EquipoRepository extends JpaRepository<Equipo, String>  {
-    Optional<List<Equipo>> findByCaptainId(Integer id);
+    Optional<List<Equipo>> findByCaptainUsername(String id);
 }

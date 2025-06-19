@@ -80,7 +80,7 @@ public class UserService implements UserDetailsService {
 
             verificationTokenRepository.save(verificationToken);
 
-            String verificationLink = "http://localhost:8080/verify?token=" + token;
+            String verificationLink = "http://localhost:5173/verify?token=" + token;
 
             emailService.sendVerificationEmail(
                     user.getEmail(),
@@ -110,7 +110,6 @@ public class UserService implements UserDetailsService {
 
     private TokenDTO generateTokens(User user) {
         String accessToken = jwtService.createToken(new JwtUserDetails(
-                user.getId().intValue(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getRole()
@@ -120,15 +119,15 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public String obtenerEmailPorId(Long idUser){
-        return userRepository.findById(idUser)
+    public String obtenerEmailPorId(String username){
+        return userRepository.findById(username)
                 .orElseThrow(()->new RuntimeException("Usuario no encontrado"))
                 .getEmail();
     }
 
-    public User obtenerUsuarioPorId(Long id){
-        return userRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Usuario no encontrado con id: "+ id));
+    public User obtenerUsuarioPorId(String username){
+        return userRepository.findById(username)
+                .orElseThrow(()-> new RuntimeException("Usuario no encontrado con id: "+ username));
                 
     }
 }

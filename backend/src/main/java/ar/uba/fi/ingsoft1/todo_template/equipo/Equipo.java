@@ -49,7 +49,7 @@ public class Equipo {
     }
 
     public EquipoDTO asEquipoDTO() {
-        return new EquipoDTO(id, category, mainColors, secondaryColors, captain.getId());
+        return new EquipoDTO(id, category, mainColors, secondaryColors, captain.getUsername());
     }
 
     public void update(String id,

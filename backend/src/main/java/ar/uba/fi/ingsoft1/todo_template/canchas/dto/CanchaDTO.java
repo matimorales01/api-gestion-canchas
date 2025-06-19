@@ -7,6 +7,6 @@ public record CanchaDTO(
     Boolean iluminacion,
     String zona,
     String direccion,
-    Long propietarioId,
+    String propietarioId,
     Boolean activa
 ) {}

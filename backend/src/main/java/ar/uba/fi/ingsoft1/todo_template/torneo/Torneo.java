@@ -161,7 +161,7 @@ public class Torneo {
                 premios,
                 costoInscripcion,
                 estado,
-                organizador.getId()
+                organizador.getUsername()
         );
     }
 }
