@@ -2,13 +2,13 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { RecuperacionRequestSchema } from "@/models/Login";
 import { useCambiarContrasenia } from "@/services/UserServices";
-import { useParams } from "react-router-dom"; // usás react-router-dom, no wouter
+import { useParams } from "wouter";
 import styles from "../styles/LoginScreen.module.css";
 
 export const RecuperarScreen = () => {
 
   const { mutate, error } = useCambiarContrasenia();
-  const { token } = useParams();
+  const { token } = useParams<{ token: string }>();
 	console.log("Token:", token);
 	
   const formData = useAppForm({

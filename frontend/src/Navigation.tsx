@@ -66,13 +66,12 @@ export const Navigation = () => {
         case "LOGGED_OUT":
             return (
                 <Switch>
-                    
                     <Route path="/reset-password">
                         <EnviaremailScreen />
-                    </Route> 
+                    </Route>
                     <Route path="/change-password/:token">
                         <RecuperarScreen />
-                    </Route> 
+                    </Route>
                     <Route path="/login">
                         <LoginScreen />
                     </Route>
@@ -81,7 +80,7 @@ export const Navigation = () => {
                     </Route>
                     <Route>
                         <Redirect href="/signup" />
-                </Route>
+                    </Route>
                 </Switch>
             );
         default:
