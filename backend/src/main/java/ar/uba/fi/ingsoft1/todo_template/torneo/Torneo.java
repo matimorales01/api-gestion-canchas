@@ -1,20 +1,16 @@
 package ar.uba.fi.ingsoft1.todo_template.torneo;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
+
+import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 
 @Entity
-@Table(
-    name = "torneos",
-    uniqueConstraints = @UniqueConstraint(columnNames = "nombre")
-)
+@Table(name = "torneos", uniqueConstraints = @UniqueConstraint(columnNames = "nombre"))
 public class Torneo {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(nullable = false, unique = true)
     private String nombre;
 
@@ -48,18 +44,17 @@ public class Torneo {
     @JoinColumn(name = "organizador_id")
     private User organizador;
 
-    public Torneo() {}
+    public Torneo() {
+    }
 
-    public Torneo(
-        String nombre,
-        LocalDate fechaInicio,
-        LocalDate fechaFin,
-        TorneoFormato formato,
-        Integer cantidadMaximaEquipos,
-        String descripcion,
-        String premios,
-        Double costoInscripcion
-    ) {
+    public Torneo(String nombre,
+                  LocalDate fechaInicio,
+                  LocalDate fechaFin,
+                  TorneoFormato formato,
+                  Integer cantidadMaximaEquipos,
+                  String descripcion,
+                  String premios,
+                  Double costoInscripcion) {
         this.nombre = nombre;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
@@ -71,53 +66,102 @@ public class Torneo {
         this.estado = EstadoTorneo.ABIERTO;
     }
 
-    // --- Getters y Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public LocalDate getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
 
-    public LocalDate getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
 
-    public TorneoFormato getFormato() { return formato; }
-    public void setFormato(TorneoFormato formato) { this.formato = formato; }
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
 
-    public Integer getCantidadMaximaEquipos() { return cantidadMaximaEquipos; }
-    public void setCantidadMaximaEquipos(Integer cantidadMaximaEquipos) { this.cantidadMaximaEquipos = cantidadMaximaEquipos; }
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public TorneoFormato getFormato() {
+        return formato;
+    }
 
-    public String getPremios() { return premios; }
-    public void setPremios(String premios) { this.premios = premios; }
+    public void setFormato(TorneoFormato formato) {
+        this.formato = formato;
+    }
 
-    public Double getCostoInscripcion() { return costoInscripcion; }
-    public void setCostoInscripcion(Double costoInscripcion) { this.costoInscripcion = costoInscripcion; }
+    public Integer getCantidadMaximaEquipos() {
+        return cantidadMaximaEquipos;
+    }
 
-    public EstadoTorneo getEstado() { return estado; }
-    public void setEstado(EstadoTorneo estado) { this.estado = estado; }
+    public void setCantidadMaximaEquipos(Integer cantidadMaximaEquipos) {
+        this.cantidadMaximaEquipos = cantidadMaximaEquipos;
+    }
 
-    public User getOrganizador() { return organizador; }
-    public void setOrganizador(User organizador) { this.organizador = organizador; }
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-    public ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO toDTO() {
-        return new ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO(
-            id,
-            nombre,
-            fechaInicio,
-            fechaFin,
-            formato,
-            cantidadMaximaEquipos,
-            descripcion,
-            premios,
-            costoInscripcion,
-            estado,
-            organizador.getId()
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getPremios() {
+        return premios;
+    }
+
+    public void setPremios(String premios) {
+        this.premios = premios;
+    }
+
+    public Double getCostoInscripcion() {
+        return costoInscripcion;
+    }
+
+    public void setCostoInscripcion(Double costoInscripcion) {
+        this.costoInscripcion = costoInscripcion;
+    }
+
+    public EstadoTorneo getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoTorneo estado) {
+        this.estado = estado;
+    }
+
+    public User getOrganizador() {
+        return organizador;
+    }
+
+    public void setOrganizador(User organizador) {
+        this.organizador = organizador;
+    }
+
+    public boolean isStarted() {
+        return this.estado == EstadoTorneo.EN_CURSO;
+    }
+
+    public TorneoDTO toDTO() {
+        return new TorneoDTO(
+                nombre,
+                fechaInicio,
+                fechaFin,
+                formato,
+                cantidadMaximaEquipos,
+                descripcion,
+                premios,
+                costoInscripcion,
+                estado,
+                organizador.getId()
         );
     }
 }

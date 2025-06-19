@@ -3,8 +3,10 @@ package ar.uba.fi.ingsoft1.todo_template.equipo.dtos;
 import ar.uba.fi.ingsoft1.todo_template.equipo.Equipo;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record EquipoDTO(
-    String teamName,
+    @NotBlank String teamName,
     String category,
     String mainColors,
     String secondaryColors,
