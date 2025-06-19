@@ -39,7 +39,8 @@ export function usePedirTokenRecuperacion() {
         throw new Error(`Error al solicitar recuperación: ${errorText}`);
       }
 
-      const result = await response.json();
+      const result = await response.text();
+      console.log(result);
       return result;
     },
   });
@@ -64,7 +65,7 @@ export function useCambiarContrasenia() {
         throw new Error(`Error al cambiar contraseña: ${errorText}`);
       }
 
-      return await response.json();
+      return await response.text();
     },
   });
 }
