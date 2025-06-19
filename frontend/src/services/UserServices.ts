@@ -22,12 +22,10 @@ export function useLogin() {
   });
 }
 
-
-
-export function useRecuperacion() {
+export function usePedirTokenRecuperacion() {
   return useMutation({
-    mutationFn: async (data: Record<string, unknown>) => {
-      const response = await fetch(BASE_API_URL + "/change-password", {
+    mutationFn: async (data: { email: string }) => {
+      const response = await fetch(`${BASE_API_URL}/change-password`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -38,15 +36,38 @@ export function useRecuperacion() {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Error al registrar usuario: ${errorText}`);
+        throw new Error(`Error al solicitar recuperación: ${errorText}`);
       }
 
-      const tokenData = await response.json();
-      return tokenData;
+      const result = await response.json();
+      return result;
     },
   });
 }
 
+export function useCambiarContrasenia() {
+  
+  
+  return useMutation({
+    mutationFn: async ({ token, newPassword }: { token: string ; newPassword: string }) => {
+      const response = await fetch(`${BASE_API_URL}/change-password/${token}`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ newPassword }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al cambiar contraseña: ${errorText}`);
+      }
+
+      return await response.json();
+    },
+  });
+}
 
   
 export function useSignup() {

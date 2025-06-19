@@ -54,6 +54,7 @@ export const LoginScreen = () => {
                 <formData.SubmitButton className={styles.submitButton}>
                   Ingresar
                 </formData.SubmitButton>
+    
               </div>
             </formData.FormContainer>
           </formData.AppForm>

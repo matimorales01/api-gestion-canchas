@@ -15,6 +15,7 @@ import { ReservasScreen } from "./screens/CrearReservaScreen";
 import { CrearTorneo } from "./screens/CrearTorneo";
 import { AdministrarReservasScreen } from "./screens/AdministrarReservasScreen";
 import RecuperarScreen from "./screens/RecuperarScreen";
+import EnviaremailScreen from "./screens/EnviaremailScreen";
 
 
 export const Navigation = () => {
@@ -65,7 +66,11 @@ export const Navigation = () => {
         case "LOGGED_OUT":
             return (
                 <Switch>
-                    <Route path="/recuperar">
+                    
+                    <Route path="/reset-password">
+                        <EnviaremailScreen />
+                    </Route> 
+                    <Route path="/change-password/:token">
                         <RecuperarScreen />
                     </Route> 
                     <Route path="/login">

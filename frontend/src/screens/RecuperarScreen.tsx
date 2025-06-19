@@ -1,26 +1,31 @@
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { RecuperacionRequestSchema } from "@/models/Login";
-import { useRecuperacion } from "@/services/UserServices";
-
+import { useCambiarContrasenia } from "@/services/UserServices";
+import { useParams } from "react-router-dom"; // usás react-router-dom, no wouter
 import styles from "../styles/LoginScreen.module.css";
 
 export const RecuperarScreen = () => {
 
-	const { mutate, error } = useRecuperacion();
-
-	const formData = useAppForm({
-		defaultValues: { 
-			email:"",
-			newPassword:"",
-		},
-	validators: { onChange: RecuperacionRequestSchema },
-	onSubmit: async ({ value }) => {
+  const { mutate, error } = useCambiarContrasenia();
+  const { token } = useParams();
+	console.log("Token:", token);
 	
-		mutate(value);
-		console.log("Enviar email para recuperar:", value.email);
-	},
-	});
+  const formData = useAppForm({
+    defaultValues: {
+      newPassword: "",
+    },
+    validators: { onChange: RecuperacionRequestSchema },
+
+    onSubmit: async ({ value }) => {
+      if (!token) {
+        alert("Token no encontrado en la URL.");
+        return;
+      }
+      console.log("Enviar nueva contraseña con token:", token);
+      mutate({ token, newPassword: value.newPassword });
+    },
+  });
 
 	return (
 		<CommonLayout>
@@ -31,10 +36,8 @@ export const RecuperarScreen = () => {
 			</p>
 			<formData.AppForm>
 				<formData.FormContainer extraError={error}>
-					<div className={styles.fieldsGrid}>
 					<div className={styles.inputGroup}>
-					<formData.AppField name="email">{(field) => (<field.TextField label=" Ingrese su Email"/>)}
-					</formData.AppField></div>
+			
 					<div className={styles.inputGroup}>
 					<formData.AppField name="newPassword">
 						{(field) => (<field.PasswordField label="Nueva Contraseña"/>)}
