@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export interface Partido {
   idPartido: number;
+  canchaId: number;
   canchaNombre: string;
   canchaDireccion: string;
   fechaPartido: string;

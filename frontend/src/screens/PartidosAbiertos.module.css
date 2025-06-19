@@ -1,0 +1,139 @@
+.wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 8px;
+    background: #ffffff;
+    min-height: 100vh;
+}
+.title {
+    color: #000000;
+    text-align: center;
+    font-size: 2.1rem;
+    font-weight: 800;
+    margin-bottom: 38px;
+    letter-spacing: -1px;
+}
+.msg, .msgError {
+    color: #eee;
+    text-align: center;
+    margin-top: 18px;
+}
+.msgError {
+    color: #e94f4f;
+}
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 28px;
+    margin-top: 10px;
+}
+.card {
+    background: #23272f;
+    border-radius: 18px;
+    box-shadow: 0 3px 14px 0 rgba(24,26,30,0.17);
+    padding: 32px 28px 22px 28px;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow .2s;
+    border: 1px solid #232a3b;
+}
+.card:hover {
+    box-shadow: 0 7px 26px 0 rgba(16,185,129,0.09), 0 2px 6px 0 rgba(0, 255, 53, 0.11);
+}
+.cardTitle {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #10b981;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.zona {
+    font-size: .98rem;
+    color: #8ad5b7;
+    background: #173d32;
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-left: auto;
+}
+.infoRow {
+    color: #e2e8f0;
+    font-size: 1.08rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 5px;
+}
+.acciones {
+    margin-top: 16px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+}
+.badgeEnCurso {
+    background: #ffc300;
+    color: #2c1c00;
+    font-weight: 700;
+    border-radius: 11px;
+    padding: 6px 18px;
+    font-size: 1rem;
+}
+.badgeLleno {
+    background: #d32f2f;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 11px;
+    padding: 6px 18px;
+    font-size: 1rem;
+}
+.badgeConfirmado {
+    background: #10b981;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 11px;
+    padding: 6px 18px;
+    font-size: 1rem;
+}
+.btnGreen {
+    background: #10b981;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 22px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background .14s;
+}
+.btnGreen:disabled {
+    background: #10b98190;
+    cursor: not-allowed;
+}
+.btnRed {
+    background: #e94f4f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 22px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background .14s;
+}
+.btnRed:disabled {
+    background: #e94f4f90;
+    cursor: not-allowed;
+}
+@media (max-width: 700px) {
+    .cardGrid {
+        grid-template-columns: 1fr;
+    }
+    .card {
+        padding: 22px 12px 16px 12px;
+    }
+    .infoRow {
+        flex-direction: column;
+        gap: 3px;
+    }
+}

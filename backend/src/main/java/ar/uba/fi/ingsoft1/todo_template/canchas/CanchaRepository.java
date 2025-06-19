@@ -10,4 +10,5 @@ public interface CanchaRepository extends JpaRepository<Cancha,Long> {
     boolean existsByNombreAndZonaAndDireccion(String nombre, String zona, String direccion);
     List<Cancha> findByPropietarioId(Long propietarioId);
     Optional<Cancha> findByNombre(String nombre);
+
 }
