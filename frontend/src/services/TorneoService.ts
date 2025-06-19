@@ -70,13 +70,13 @@ export function userEditarTorneo(options?: {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<TorneoRequest> }) => {
+    mutationFn: async ({ nombre, data }: { nombre: string; data: Partial<TorneoRequest> }) => {
       if (tokenState.state !== "LOGGED_IN") {
         throw new Error("No estás logueado. No se puede editar un torneo.");
       }
 
-      const response = await fetch(`${BASE_API_URL}/torneos/${id}`, {
-        method: "PUT",
+      const response = await fetch(`${BASE_API_URL}/torneos/${nombre}`, {
+        method: "PATCH",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -97,5 +97,32 @@ export function userEditarTorneo(options?: {
       options?.onSuccess?.(data);
     },
     onError: options?.onError,
+  });
+}
+
+export function useGetMisTorneos() {
+  const [tokenState] = useToken();
+
+  return useQuery<Torneo[]>({
+    queryKey: ["misTorneos"],
+    queryFn: async () => {
+      if (tokenState.state !== "LOGGED_IN") {
+        throw new Error("No estás logueado.");
+      }
+
+      const response = await fetch(`${BASE_API_URL}/torneos/mis-torneos`, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${tokenState.accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al obtener los torneos del usuario");
+      }
+
+      return (await response.json()) as Torneo[];
+    },
+    enabled: tokenState.state === "LOGGED_IN",
   });
 }

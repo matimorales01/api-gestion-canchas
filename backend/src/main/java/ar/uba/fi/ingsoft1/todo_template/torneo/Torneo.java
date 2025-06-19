@@ -1,6 +1,7 @@
 package ar.uba.fi.ingsoft1.todo_template.torneo;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
 import ar.uba.fi.ingsoft1.todo_template.torneo.dto.TorneoDTO;
@@ -43,7 +44,8 @@ public class Torneo {
     @JoinColumn(name = "organizador_id")
     private User organizador;
 
-    public Torneo() {}
+    public Torneo() {
+    }
 
     public Torneo(String nombre,
                   LocalDate fechaInicio,
@@ -64,52 +66,102 @@ public class Torneo {
         this.estado = EstadoTorneo.ABIERTO;
     }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public LocalDate getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public LocalDate getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
 
-    public TorneoFormato getFormato() { return formato; }
-    public void setFormato(TorneoFormato formato) { this.formato = formato; }
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
 
-    public Integer getCantidadMaximaEquipos() { return cantidadMaximaEquipos; }
-    public void setCantidadMaximaEquipos(Integer cantidadMaximaEquipos) { this.cantidadMaximaEquipos = cantidadMaximaEquipos; }
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
+    }
 
-    public String getPremios() { return premios; }
-    public void setPremios(String premios) { this.premios = premios; }
+    public TorneoFormato getFormato() {
+        return formato;
+    }
 
-    public Double getCostoInscripcion() { return costoInscripcion; }
-    public void setCostoInscripcion(Double costoInscripcion) { this.costoInscripcion = costoInscripcion; }
+    public void setFormato(TorneoFormato formato) {
+        this.formato = formato;
+    }
 
-    public EstadoTorneo getEstado() { return estado; }
-    public void setEstado(EstadoTorneo estado) { this.estado = estado; }
+    public Integer getCantidadMaximaEquipos() {
+        return cantidadMaximaEquipos;
+    }
 
-    public User getOrganizador() { return organizador; }
-    public void setOrganizador(User organizador) { this.organizador = organizador; }
+    public void setCantidadMaximaEquipos(Integer cantidadMaximaEquipos) {
+        this.cantidadMaximaEquipos = cantidadMaximaEquipos;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getPremios() {
+        return premios;
+    }
+
+    public void setPremios(String premios) {
+        this.premios = premios;
+    }
+
+    public Double getCostoInscripcion() {
+        return costoInscripcion;
+    }
+
+    public void setCostoInscripcion(Double costoInscripcion) {
+        this.costoInscripcion = costoInscripcion;
+    }
+
+    public EstadoTorneo getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoTorneo estado) {
+        this.estado = estado;
+    }
+
+    public User getOrganizador() {
+        return organizador;
+    }
+
+    public void setOrganizador(User organizador) {
+        this.organizador = organizador;
+    }
 
     public boolean isStarted() {
-        return this.estado == EstadoTorneo.ABIERTO;
+        return this.estado == EstadoTorneo.EN_CURSO;
     }
 
     public TorneoDTO toDTO() {
         return new TorneoDTO(
-            nombre,
-            fechaInicio,
-            fechaFin,
-            formato,
-            cantidadMaximaEquipos,
-            descripcion,
-            premios,
-            costoInscripcion,
-            estado,
-            organizador.getId()
+                nombre,
+                fechaInicio,
+                fechaFin,
+                formato,
+                cantidadMaximaEquipos,
+                descripcion,
+                premios,
+                costoInscripcion,
+                estado,
+                organizador.getId()
         );
     }
 }

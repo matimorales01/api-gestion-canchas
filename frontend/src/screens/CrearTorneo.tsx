@@ -20,7 +20,7 @@ export const CrearTorneo = () => {
       nombre: "",
       fechaInicio: "",
       formato: "ELIMINACION_DIRECTA",
-      maxEquipos: 2,
+      cantidadMaximaEquipos: 2,
       fechaFin: "",
       descripcion: "",
       premios: "",
@@ -34,7 +34,7 @@ export const CrearTorneo = () => {
         nombre: value.nombre,
         fechaInicio: value.fechaInicio,
         formato: value.formato,
-        cantidadMaximaEquipos: value.maxEquipos,
+        cantidadMaximaEquipos: value.cantidadMaximaEquipos,
         fechaFin: value.fechaFin || null,
         descripcion: value.descripcion || null,
         premios: value.premios || null,
@@ -111,7 +111,7 @@ export const CrearTorneo = () => {
                   </div>
                   <div className={styles.inputGroup}>
                     <label className={styles.label}>Máximo de Equipos</label>
-                    <formData.AppField name="maxEquipos">
+                    <formData.AppField name="cantidadMaximaEquipos">
                       {(field) => (
                           <input
                               type="number"

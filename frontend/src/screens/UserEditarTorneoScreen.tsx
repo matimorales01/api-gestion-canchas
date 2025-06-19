@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "wouter";
-import { useGetTorneosDisponibles, userEditarTorneo } from "@/services/TorneoService";
+import { useGetMisTorneos, userEditarTorneo } from "@/services/TorneoService";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { Torneo } from "@/models/Torneo.ts";
 
 type FormatoTorneo = "ELIMINACION_DIRECTA" | "FASE_GRUPOS_ELIMINACION" | "LIGA";
 
 const UserEditarTorneoScreen = () => {
-    const params = useParams();
-    const id = Number(params.id);
-    const { data: torneos } = useGetTorneosDisponibles();
-    const torneo: Torneo | undefined = (torneos as Torneo[] | undefined)?.find((t) => t.id === id);
+    const { nombreTorneo } = useParams();
+    const { data: torneos } = useGetMisTorneos();
+    const torneo: Torneo | undefined = torneos?.find((t) => t.nombre === nombreTorneo);
 
-    const [nombre, setNombre] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFin, setFechaFin] = useState("");
     const [formato, setFormato] = useState<FormatoTorneo>("ELIMINACION_DIRECTA");
-    const [maxEquipos, setMaxEquipos] = useState(2);
+    const [cantidadMaximaEquipos, setMaxEquipos] = useState(2);
     const [costoInscripcion, setCostoInscripcion] = useState(0);
     const [premios, setPremios] = useState("");
 
@@ -25,7 +23,6 @@ const UserEditarTorneoScreen = () => {
 
     useEffect(() => {
         if (torneo) {
-            setNombre(torneo.nombre || "");
             setDescripcion(torneo.descripcion || "");
             setFechaInicio(torneo.fechaInicio || "");
             setFechaFin(torneo.fechaFin || "");
@@ -34,7 +31,7 @@ const UserEditarTorneoScreen = () => {
                     ? (torneo.formato as FormatoTorneo)
                     : "ELIMINACION_DIRECTA"
             );
-            setMaxEquipos(torneo.maxEquipos || 2);
+            setMaxEquipos(torneo.cantidadMaximaEquipos || 2);
             setCostoInscripcion(torneo.costoInscripcion || 0);
             setPremios(torneo.premios || "");
         }
@@ -57,14 +54,13 @@ const UserEditarTorneoScreen = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         editarTorneo.mutate({
-            id,
+            nombre: nombreTorneo,
             data: {
-                nombre,
                 descripcion,
                 fechaInicio,
                 fechaFin,
                 formato,
-                maxEquipos: maxEquipos,
+                cantidadMaximaEquipos: cantidadMaximaEquipos,
                 costoInscripcion,
                 premios,
             },
@@ -87,9 +83,9 @@ const UserEditarTorneoScreen = () => {
                         <label>Nombre:</label>
                         <input
                             className="form-control"
-                            value={nombre}
+                            value={nombreTorneo}
                             onChange={(e) => setNombre(e.target.value)}
-                            required
+                            disabled
                         />
                     </div>
                     <div className="mb-3">
@@ -137,7 +133,7 @@ const UserEditarTorneoScreen = () => {
                             type="number"
                             min={2}
                             className="form-control"
-                            value={maxEquipos}
+                            value={cantidadMaximaEquipos}
                             onChange={(e) => setMaxEquipos(Number(e.target.value))}
                             required
                         />

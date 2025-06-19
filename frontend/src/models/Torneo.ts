@@ -10,7 +10,7 @@ export const TorneoRequestSchema = z.object({
   nombre: z.string().min(1, "El nombre del torneo es obligatorio"),
   fechaInicio: z.string().min(1, "La fecha de inicio es obligatoria"),
   formato: FormatoTorneoEnum,
-  maxEquipos: z.number().int().positive("Debe ser un número mayor a 0"),
+  cantidadMaximaEquipos: z.number().int().positive("Debe ser un número mayor a 0"),
 
   fechaFin: z.string().optional(),
   descripcion: z.string().optional(),

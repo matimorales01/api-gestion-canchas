@@ -15,6 +15,7 @@ import { CrearEquipo } from "./screens/CrearEquipo";
 import { ReservasScreen } from "./screens/CrearReservaScreen";
 import { CrearTorneo } from "./screens/CrearTorneo";
 import { AdministrarReservasScreen } from "./screens/AdministrarReservasScreen";
+import MisTorneosScreen from "./screens/misTorneos";
 
 export const Navigation = () => {
   const [tokenState] = useToken();
@@ -55,8 +56,11 @@ export const Navigation = () => {
           <Route path="/listar-torneos">
             <UserListaTorneo />
           </Route>
-          <Route path="/admin/torneos/:id">
+          <Route path="/admin/torneos/:nombreTorneo">
             <UserEditarTorneoScreen />
+          </Route>
+          <Route path="/mis-torneos">
+            <MisTorneosScreen />
           </Route>
           <Route>
             <Redirect href="/" />
@@ -85,6 +89,12 @@ export const Navigation = () => {
           </Route>
           <Route path="/listar-torneos">
             <UserListaTorneo />
+          </Route>
+          <Route path="/mis-torneos">
+            <MisTorneosScreen />
+          </Route>
+          <Route path="/admin/torneos/:nombreTorneo">
+            <UserEditarTorneoScreen />
           </Route>
           <Route>
             <Redirect href="/" />

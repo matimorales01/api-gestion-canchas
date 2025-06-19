@@ -139,11 +139,6 @@ export const UserListaTorneo: React.FC = () => {
                             >
                                 Aceptar
                             </button>
-                            <Link href={`/admin/torneos/${modalTorneo.id}`}>
-                                <button className={`${styles.modalBtn} ${styles.editBtn}`}>
-                                    Editar
-                                </button>
-                            </Link>
                         </div>
                     </div>
                 </div>

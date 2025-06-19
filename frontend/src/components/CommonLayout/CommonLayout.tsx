@@ -85,6 +85,9 @@ const LoggedInLinks = () => {
                         <Link href="/crear-torneo">Crear Torneo</Link>
                     </li>
                     <li>
+                        <Link href="/mis-torneos">Mis Torneos</Link>
+                    </li>
+                    <li>
                         <Link href="/crear-equipo">Crear Equipo</Link>
                     </li>
                 </>
