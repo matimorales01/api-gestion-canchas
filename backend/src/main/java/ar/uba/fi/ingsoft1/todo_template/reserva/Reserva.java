@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.partido.Partido;
 import ar.uba.fi.ingsoft1.todo_template.reserva.dto.ReservaDTO;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "reservas")
@@ -17,12 +18,20 @@ public class Reserva {
     @Embedded
     private StateReserva stateReserva;
 
+    @NotNull
+    private Integer duracionMinutos;
+
     public Reserva() {}
 
-    public Reserva(ReservaId id, StateReserva stateReserva) {
+    public Reserva(ReservaId id, StateReserva stateReserva, int minutos) {
         this.id = id;
         this.stateReserva = stateReserva;
+        this.duracionMinutos = minutos;
     }
+    public Integer getDuracionMinutos() {
+        return duracionMinutos;
+    }
+
 
     public Cancha getCancha() { return id.getCanchaId(); }
 
@@ -48,7 +57,8 @@ public class Reserva {
                 this.id.getHoraFin(),
                 this.stateReserva.getState(),
                 this.stateReserva.getTipoPartido(),
-                this.stateReserva.getOrganizadorEmail()
+                this.stateReserva.getOrganizadorEmail(),
+                this.getDuracionMinutos()
         );
     }
 }

@@ -11,6 +11,12 @@ import {
     PartidoCerradoRequest,
 } from "@/models/Partido";
 
+type PartidoKey = {
+    canchaId: number;
+    fechaPartido: string;
+    horaPartido: string;
+};
+
 export function useCrearPartidoAbierto(options?: {
     onSuccess?: (data: Partido) => void;
     onError?: (error: unknown) => void;
@@ -99,30 +105,30 @@ export function usePartidosAbiertos() {
 
 export function useInscribirPartido() {
     const [tokenState] = useToken();
-    const qc = useQueryClient();
 
     return useMutation({
-        mutationFn: async (partidoId: number) => {
+        mutationFn: async ({
+                               canchaId,
+                               fechaPartido,
+                               horaPartido,
+                           }: PartidoKey) => {
             if (tokenState.state !== "LOGGED_IN") {
                 throw new Error("No estás logueado.");
             }
-            const res = await fetch(
-                `${BASE_API_URL}/partidos/abierto/${partidoId}/inscribir`,
+            const response = await fetch(
+                `${BASE_API_URL}/partidos/abierto/inscribir/${canchaId}/${fechaPartido}/${horaPartido}`,
                 {
                     method: "POST",
                     headers: {
                         Accept: "application/json",
-                        "Content-Type": "application/json",
                         Authorization: `Bearer ${tokenState.accessToken}`,
                     },
                 }
             );
-            if (!res.ok) throw new Error(await res.text());
-            return res.json();
-        },
-        onSuccess: () => {
-            void qc.invalidateQueries({ queryKey: ["partidosAbiertos"] });
-            void qc.invalidateQueries({ queryKey: ["reservasDisponibles"] });
+            if (!response.ok) {
+                throw new Error(await response.text());
+            }
+            return await response.json();
         },
     });
 }
@@ -132,12 +138,12 @@ export function useDesinscribirPartido() {
     const qc = useQueryClient();
 
     return useMutation({
-        mutationFn: async (partidoId: number) => {
+        mutationFn: async ({ canchaId, fechaPartido, horaPartido }: PartidoKey) => {
             if (tokenState.state !== "LOGGED_IN") {
                 throw new Error("No estás logueado.");
             }
             const res = await fetch(
-                `${BASE_API_URL}/partidos/abierto/${partidoId}/desinscribir`,
+                `${BASE_API_URL}/partidos/abierto/desinscribir/${canchaId}/${fechaPartido}/${horaPartido}`,
                 {
                     method: "POST",
                     headers: {

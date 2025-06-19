@@ -74,6 +74,7 @@ export const ReservasScreen: React.FC = () => {
             minJugadores: Number(formAbierto.minJugadores),
             maxJugadores: Number(formAbierto.maxJugadores),
             cuposDisponibles: Number(formAbierto.cupos),
+            duracionMinutos: selectedSlot.duracionMinutos,
         } as any);
     };
     const confirmCerrado = () => {
@@ -84,8 +85,10 @@ export const ReservasScreen: React.FC = () => {
             horaPartido: selectedSlot.inicioTurno,
             equipo1: formCerrado.equipo1,
             equipo2: formCerrado.equipo2,
+            duracionMinutos: selectedSlot.duracionMinutos,
         } as any);
     };
+
 
     return (
         <CommonLayout>

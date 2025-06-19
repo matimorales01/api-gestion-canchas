@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public record PartidoAbiertoResponseDTO(
         PartidoId idPartido,
+        Long canchaId,
         String canchaNombre,
         String canchaDireccion,
         LocalDate fechaPartido,
@@ -31,6 +32,7 @@ public record PartidoAbiertoResponseDTO(
 
         return new PartidoAbiertoResponseDTO(
                 partido.getIdPartido(),
+                partido.getCancha().getId(),
                 partido.getCancha().getNombre(),
                 partido.getCancha().getDireccion(),
                 partido.getFechaPartido(),
