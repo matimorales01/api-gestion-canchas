@@ -14,6 +14,7 @@ import { CrearEquipo } from "./screens/CrearEquipo";
 import { ReservasScreen } from "./screens/CrearReservaScreen";
 import { CrearTorneo } from "./screens/CrearTorneo";
 import { AdministrarReservasScreen } from "./screens/AdministrarReservasScreen";
+import RecuperarScreen from "./screens/RecuperarScreen";
 
 
 export const Navigation = () => {
@@ -64,6 +65,9 @@ export const Navigation = () => {
         case "LOGGED_OUT":
             return (
                 <Switch>
+                    <Route path="/recuperar">
+                        <RecuperarScreen />
+                    </Route> 
                     <Route path="/login">
                         <LoginScreen />
                     </Route>
@@ -72,7 +76,7 @@ export const Navigation = () => {
                     </Route>
                     <Route>
                         <Redirect href="/signup" />
-                    </Route>
+                </Route>
                 </Switch>
             );
         default:

@@ -22,6 +22,33 @@ export function useLogin() {
   });
 }
 
+
+
+export function useRecuperacion() {
+  return useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      const response = await fetch(BASE_API_URL + "/change-password", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al registrar usuario: ${errorText}`);
+      }
+
+      const tokenData = await response.json();
+      return tokenData;
+    },
+  });
+}
+
+
+  
 export function useSignup() {
   const [, setToken] = useToken();
   const queryClient = useQueryClient();

@@ -56,6 +56,9 @@ const LoggedOutLinks = () => (
         <li>
             <Link href="/signup">Sign Up</Link>
         </li>
+        <li>
+            <Link href="/recuperar">recuperar contraseña</Link>
+        </li>
     </>
 );
 

@@ -4,6 +4,11 @@ export const LoginRequestSchema = z.object({
   password: z.string().min(1, "La contraseña no puede estar vacia"),
   email: z.string().min(1, "El email no puede estar vacio"),
 });
+export const RecuperacionRequestSchema = z.object({
+  newPassword: z.string().min(1, "La contraseña no puede estar vacia"),
+  email: z.string().min(1, "El email no puede estar vacio"),
+});
+
 
 
 export const SignupSchema = z.object({
