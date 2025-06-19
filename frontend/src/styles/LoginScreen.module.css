@@ -80,7 +80,35 @@ label {
 .buttonRow {
     margin-top: 30px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+}
+
+.recuperarContainer button {
+  background-color: #af5c59;
+  color: rgb(34, 15, 15);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+.recuperarContainer {
+  color: #333333; /* gris oscuro, texto visible sobre fondo claro */
+  background-color: #f9f9f9; /* fondo claro */
+  /* otros estilos */
+}
+
+.recoverButton {
+  background-color: #c23f2d; 
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 .submitButton {

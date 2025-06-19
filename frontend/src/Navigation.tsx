@@ -15,11 +15,14 @@ import { CrearEquipo } from "./screens/CrearEquipo";
 import { ReservasScreen } from "./screens/CrearReservaScreen";
 import { CrearTorneo } from "./screens/CrearTorneo";
 import { AdministrarReservasScreen } from "./screens/AdministrarReservasScreen";
+import RecuperarScreen from "./screens/RecuperarScreen";
+import EnviaremailScreen from "./screens/EnviaremailScreen";
 import MisTorneosScreen from "./screens/misTorneos";
+
 
 export const Navigation = () => {
   const [tokenState] = useToken();
-
+            
   if (tokenState.state === "LOGGED_IN") {
     const role = getUserRole(tokenState.accessToken);
 
@@ -128,6 +131,12 @@ export const Navigation = () => {
 
   return (
     <Switch>
+      <Route path="/reset-password">
+        <EnviaremailScreen />
+      </Route>
+      <Route path="/change-password/:token">
+        <RecuperarScreen />
+      </Route>
       <Route path="/login">
         <LoginScreen />
       </Route>

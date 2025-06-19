@@ -39,7 +39,7 @@ public class ResetService {
 
         resetRepository.save(resetToken);
 
-        String resetLink = "http://localhost:8080/change-password/" + token;
+        String resetLink = "http://localhost:5173/change-password/" + token;
 
         emailService.sendVerificationEmail(
                 user.getEmail(),

@@ -22,6 +22,54 @@ export function useLogin() {
   });
 }
 
+export function usePedirTokenRecuperacion() {
+  return useMutation({
+    mutationFn: async (data: { email: string }) => {
+      const response = await fetch(`${BASE_API_URL}/change-password`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al solicitar recuperación: ${errorText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    },
+  });
+}
+
+export function useCambiarContrasenia() {
+  
+  
+  return useMutation({
+    mutationFn: async ({ token, newPassword }: { token: string ; newPassword: string }) => {
+      const response = await fetch(`${BASE_API_URL}/change-password/${token}`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ newPassword }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al cambiar contraseña: ${errorText}`);
+      }
+
+      return await response.json();
+    },
+  });
+}
+
+  
 export function useSignup() {
   const [, setToken] = useToken();
   const queryClient = useQueryClient();
