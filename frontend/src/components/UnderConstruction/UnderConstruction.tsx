@@ -56,27 +56,6 @@ const datacancha = [
   },
 
 ];
-const dataScatter = [
-  { x: 9, y: 2 },    // 9hs, cancha 2
-  { x: 10, y: 1 },   // 10hs, cancha 1
-  { x: 11, y: 3 },
-  { x: 14, y: 2 },
-  { x: 16, y: 1 },
-  { x: 18, y: 3 },
-];
-const dataMap = [
-  { day: 0, hour: 8, value: 5 },
-  { day: 0, hour: 9, value: 8 },
-  { day: 1, hour: 10, value: 3 },
-  { day: 2, hour: 14, value: 7 },
-    { day: 3, hour: 16, value: 6 },
-    { day: 4, hour: 18, value: 20 },
-    { day: 5, hour: 20, value: 9 },
-    { day: 6, hour: 22, value: 2 },
-  
-];
-
-
 
 return (
     <div className="fondo-negro"style={{ width: "100%", display: "flex", padding: "40px",gap: "40px",    }}>
