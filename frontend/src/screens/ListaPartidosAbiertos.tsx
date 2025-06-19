@@ -5,7 +5,7 @@ import {
     useInscribirPartido,
     useDesinscribirPartido,
 } from "@/services/PartidoService";
-import styles from "./PartidosAbiertos.module.css";
+import styles from "../styles/PartidosAbiertos.module.css";
 
 function partidoYaEmpezo(fecha: string, hora: string): boolean {
     try {
