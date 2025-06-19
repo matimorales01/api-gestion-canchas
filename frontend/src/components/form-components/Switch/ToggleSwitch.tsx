@@ -4,11 +4,17 @@ interface ToggleSwitchProps {
     checked: boolean;
     onChange: (checked: boolean) => void;
     label: string;
+    className?: string;
 }
 
-export default function ToggleSwitch({ checked, onChange, label }: ToggleSwitchProps) {
+export default function ToggleSwitch({
+                                         checked,
+                                         onChange,
+                                         label,
+                                         className
+                                     }: ToggleSwitchProps) {
     return (
-        <label className={styles.switchWrapper}>
+        <label className={`${styles.switchWrapper} ${className ? className : ""}`}>
             <input
                 type="checkbox"
                 checked={checked}

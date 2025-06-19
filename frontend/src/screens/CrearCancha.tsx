@@ -8,13 +8,51 @@ import ToggleSwitch from "../components/form-components/Switch/ToggleSwitch.tsx"
 import styles from "../styles/CanchasScreen.module.css";
 import type { Cancha } from "@/models/Cancha";
 
+type TipoCesped = "Sintetico" | "Natural";
+interface FormValues {
+  nombre: string;
+  tipoCesped: TipoCesped;
+  iluminacion: boolean;
+  zona: string;
+  direccion: string;
+  desde: string;
+  hasta: string;
+  horaInicio: string;
+  horaFin: string;
+  duracionMinutos: number;
+}
+
+function hasMessage(obj: unknown): obj is { message: string } {
+  return (
+      !!obj &&
+      typeof obj === "object" &&
+      "message" in obj &&
+      typeof (obj as { message: unknown }).message === "string"
+  );
+}
+
+function renderFieldErrors(errors: unknown) {
+  if (!errors) return null;
+  if (Array.isArray(errors)) {
+    return errors.map((err, idx) =>
+        typeof err === "string"
+            ? <div key={idx}>{err}</div>
+            : hasMessage(err)
+                ? <div key={idx}>{err.message}</div>
+                : null
+    );
+  }
+  if (typeof errors === "string") return <div>{errors}</div>;
+  return null;
+}
+
 export const CanchaScreen: React.FC = () => {
   const [, navigate] = useLocation();
   const { data: canchas, isLoading, isError, refetch } = useCanchas();
   const eliminarCancha = useEliminarCancha({
     onSuccess: () => {
       alert("Cancha eliminada correctamente");
-      refetch && refetch();
+      refetch();
     },
     onError: (error: unknown) => {
       if (error && typeof error === "object" && "message" in error) {
@@ -25,14 +63,14 @@ export const CanchaScreen: React.FC = () => {
     },
   });
 
-  const { mutateAsync } = useCrearCancha();
+  const { mutateAsync, error } = useCrearCancha();
   const poblarFranjas = usePoblarFranjas();
   const [loadingFranjas, setLoadingFranjas] = React.useState(false);
 
   const formData = useAppForm({
     defaultValues: {
       nombre: "",
-      tipoCesped: "",
+      tipoCesped: "Sintetico",
       iluminacion: false,
       zona: "",
       direccion: "",
@@ -45,7 +83,7 @@ export const CanchaScreen: React.FC = () => {
     validators: {
       onChange: CanchaRequestSchema,
     },
-    onSubmit: async ({ value }: any) => {
+    onSubmit: async ({ value }: { value: FormValues }) => {
       if (value.desde && value.hasta && value.hasta < value.desde) {
         alert("La fecha 'Hasta' no puede ser menor que 'Desde'");
         return;
@@ -81,25 +119,13 @@ export const CanchaScreen: React.FC = () => {
 
         alert("Cancha creada con éxito y franjas generadas!");
 
-        if (formData.reset) formData.reset();
-        else if (formData.setValues) formData.setValues({
-          nombre: "",
-          tipoCesped: "",
-          iluminacion: false,
-          zona: "",
-          direccion: "",
-          desde: "",
-          hasta: "",
-          horaInicio: "",
-          horaFin: "",
-          duracionMinutos: 60,
-        });
+        formData.reset();
 
-        refetch && refetch();
+        if (refetch) await refetch();
 
-      } catch (e: any) {
+      } catch (e: unknown) {
         setLoadingFranjas(false);
-        alert("Error: " + (e instanceof Error ? e.message : e));
+        alert("Error: " + (e instanceof Error ? e.message : String(e)));
       }
     },
   });
@@ -167,27 +193,23 @@ export const CanchaScreen: React.FC = () => {
               Completá los datos de la cancha y generá las franjas horarias.
             </p>
             <formData.AppForm>
-              <formData.FormContainer extraError={formData.error}>
+              <formData.FormContainer extraError={error instanceof Error ? error : null}>
                 <h2 className={styles.sectionTitle}>Datos de la cancha</h2>
                 <div className={styles.fieldsGrid}>
                   <div className={styles.inputGroup}>
-                    <label className={styles.label}>Nombre</label>
                     <formData.AppField name="nombre">
-                      {(field: any) => (
+                      {(field) => (
                           <>
-                            <field.TextField className={styles.input} />
-                            <div className={styles.inputError}>{field.state.meta?.error}</div>
+                            <field.TextField label="Nombre" />
                           </>
                       )}
                     </formData.AppField>
                   </div>
                   <div className={styles.inputGroup}>
-                    <label className={styles.label}>Zona</label>
                     <formData.AppField name="zona">
-                      {(field: any) => (
+                      {(field) => (
                           <>
-                            <field.TextField className={styles.input} />
-                            <div className={styles.inputError}>{field.state.meta?.error}</div>
+                            <field.TextField label="Zona" />
                           </>
                       )}
                     </formData.AppField>
@@ -195,43 +217,46 @@ export const CanchaScreen: React.FC = () => {
                   <div className={styles.inputGroup}>
                     <label className={styles.label}>Tipo de Césped</label>
                     <formData.AppField name="tipoCesped">
-                      {(field: any) => (
+                      {(field) => (
                           <>
                             <select
                                 value={field.state.value}
-                                onChange={(e) => field.handleChange(e.target.value)}
+                                onChange={(e) => field.handleChange(e.target.value as TipoCesped)}
                                 className={styles.input}
                             >
-                              <option value="">Seleccionar</option>
-                              <option value="Natural">Natural</option>
                               <option value="Sintetico">Sintético</option>
+                              <option value="Natural">Natural</option>
                             </select>
-                            <div className={styles.inputError}>{field.state.meta?.error}</div>
+                            <div className={styles.inputError}>
+                              {renderFieldErrors(field.state.meta?.errors)}
+                            </div>
                           </>
                       )}
                     </formData.AppField>
                   </div>
                   <div className={styles.inputGroup}>
-                    <label className={styles.label}>Dirección</label>
                     <formData.AppField name="direccion">
-                      {(field: any) => (
+                      {(field) => (
                           <>
-                            <field.TextField className={styles.input} />
-                            <div className={styles.inputError}>{field.state.meta?.error}</div>
+                            <field.TextField label="Dirección" />
                           </>
                       )}
                     </formData.AppField>
                   </div>
+                  {/* ToggleSwitch con className */}
                   <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
                     <formData.AppField name="iluminacion">
-                      {(field: any) => (
+                      {(field) => (
                           <>
                             <ToggleSwitch
-                                checked={field.state.value}
+                                checked={!!field.state.value}
                                 onChange={field.handleChange}
                                 label="Iluminación"
+                                className={styles.input}
                             />
-                            <div className={styles.inputError}>{field.state.meta?.error}</div>
+                            <div className={styles.inputError}>
+                              {renderFieldErrors(field.state.meta?.errors)}
+                            </div>
                           </>
                       )}
                     </formData.AppField>
@@ -241,7 +266,7 @@ export const CanchaScreen: React.FC = () => {
                 <h2 className={styles.sectionTitle}>Franjas horarias</h2>
                 <div className={styles.franjasGrid}>
                   <formData.AppField name="desde">
-                    {(field: any) => (
+                    {(field) => (
                         <div className={styles.inputGroup}>
                           <label className={styles.label}>Desde (fecha)</label>
                           <input
@@ -250,12 +275,14 @@ export const CanchaScreen: React.FC = () => {
                               onChange={(e) => field.handleChange(e.target.value)}
                               className={styles.input}
                           />
-                          <div className={styles.inputError}>{field.state.meta?.error}</div>
+                          <div className={styles.inputError}>
+                            {renderFieldErrors(field.state.meta?.errors)}
+                          </div>
                         </div>
                     )}
                   </formData.AppField>
                   <formData.AppField name="hasta">
-                    {(field: any) => (
+                    {(field) => (
                         <div className={styles.inputGroup}>
                           <label className={styles.label}>Hasta (fecha)</label>
                           <input
@@ -265,12 +292,14 @@ export const CanchaScreen: React.FC = () => {
                               onChange={(e) => field.handleChange(e.target.value)}
                               className={styles.input}
                           />
-                          <div className={styles.inputError}>{field.state.meta?.error}</div>
+                          <div className={styles.inputError}>
+                            {renderFieldErrors(field.state.meta?.errors)}
+                          </div>
                         </div>
                     )}
                   </formData.AppField>
                   <formData.AppField name="horaInicio">
-                    {(field: any) => (
+                    {(field) => (
                         <div className={styles.inputGroup}>
                           <label className={styles.label}>Hora inicio</label>
                           <input
@@ -279,12 +308,14 @@ export const CanchaScreen: React.FC = () => {
                               onChange={(e) => field.handleChange(e.target.value)}
                               className={styles.input}
                           />
-                          <div className={styles.inputError}>{field.state.meta?.error}</div>
+                          <div className={styles.inputError}>
+                            {renderFieldErrors(field.state.meta?.errors)}
+                          </div>
                         </div>
                     )}
                   </formData.AppField>
                   <formData.AppField name="horaFin">
-                    {(field: any) => (
+                    {(field) => (
                         <div className={styles.inputGroup}>
                           <label className={styles.label}>Hora fin</label>
                           <input
@@ -293,12 +324,14 @@ export const CanchaScreen: React.FC = () => {
                               onChange={(e) => field.handleChange(e.target.value)}
                               className={styles.input}
                           />
-                          <div className={styles.inputError}>{field.state.meta?.error}</div>
+                          <div className={styles.inputError}>
+                            {renderFieldErrors(field.state.meta?.errors)}
+                          </div>
                         </div>
                     )}
                   </formData.AppField>
                   <formData.AppField name="duracionMinutos">
-                    {(field: any) => (
+                    {(field) => (
                         <div className={styles.inputGroup}>
                           <label className={styles.label}>Duración (minutos)</label>
                           <input
@@ -306,12 +339,12 @@ export const CanchaScreen: React.FC = () => {
                               min={15}
                               step={15}
                               value={field.state.value}
-                              onChange={(e) =>
-                                  field.handleChange(Number(e.target.value))
-                              }
+                              onChange={(e) => field.handleChange(Number(e.target.value))}
                               className={styles.input}
                           />
-                          <div className={styles.inputError}>{field.state.meta?.error}</div>
+                          <div className={styles.inputError}>
+                            {renderFieldErrors(field.state.meta?.errors)}
+                          </div>
                         </div>
                     )}
                   </formData.AppField>

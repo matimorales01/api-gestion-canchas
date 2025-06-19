@@ -118,6 +118,9 @@ export const Navigation = () => {
           <Route path="/listar-partidos-abiertos">
             <ListaPartidosAbiertos />
           </Route>
+            <Route path="/ver-historial">
+                <HistorialScreen />
+            </Route>
           <Route>
             <Redirect href="/" />
           </Route>

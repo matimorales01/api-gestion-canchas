@@ -4,7 +4,7 @@ import { useToken } from "@/services/TokenContext";
 import { TorneoRequest, Torneo, TorneoDisponible,} from "@/models/Torneo";
 import { EquipoResponse } from "@/models/Equipo";
 
-export function crearTorneo(options?: {
+export function useCrearTorneo(options?: {
   onSuccess?: (data: Torneo) => void;
   onError?: (error: unknown) => void;
 }) {
@@ -39,6 +39,7 @@ export function crearTorneo(options?: {
   });
 }
 
+
 export function useGetTorneosDisponibles() {
   const [tokenState] = useToken();
 
@@ -63,7 +64,7 @@ export function useGetTorneosDisponibles() {
   });
 }
 
-export function userEditarTorneo(options?: {
+export function useEditarTorneo(options?: {
   onSuccess?: (data: Torneo) => void;
   onError?: (error: unknown) => void;
 }) {
@@ -100,7 +101,6 @@ export function userEditarTorneo(options?: {
     onError: options?.onError,
   });
 }
-
 export function useGetMisTorneos() {
   const [tokenState] = useToken();
 
@@ -154,3 +154,35 @@ export function useInscribirEquipo() {
     }
   })
 }
+export function useEliminarTorneo() {
+  const [tokenState] = useToken();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (nombreTorneo: string) => {
+      if (tokenState.state !== "LOGGED_IN") {
+        throw new Error("No estás logueado. No se puede eliminar el torneo.");
+      }
+
+      const response = await fetch(`${BASE_API_URL}/torneos/${encodeURIComponent(nombreTorneo)}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${tokenState.accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al eliminar el torneo: ${errorText}`);
+      }
+
+      return true;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["misTorneos"] });
+    },
+  });
+}
+
+

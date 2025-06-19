@@ -7,6 +7,26 @@ import {
 } from "@/services/PartidoService";
 import styles from "../styles/PartidosAbiertos.module.css";
 
+interface Jugador {
+    id: string | number;
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
+interface PartidoAbierto {
+    canchaId: number;
+    canchaNombre: string;
+    canchaDireccion: string;
+    fechaPartido: string;
+    horaPartido: string;
+    inscripto: boolean;
+    partidoConfirmado: boolean;
+    cuposDisponibles: number;
+    emailOrganizador: string;
+    jugadores?: Jugador[];
+}
+
 function partidoYaEmpezo(fecha: string, hora: string): boolean {
     try {
         if (!fecha || !hora) return false;
@@ -24,16 +44,20 @@ function formatearFecha(fechaIso: string): string {
 }
 
 const PartidosAbiertos = () => {
-    const { data: partidos = [], isLoading, isError } = usePartidosAbiertos();
+    const { data: partidos = [], isLoading, isError } = usePartidosAbiertos() as {
+        data: PartidoAbierto[],
+        isLoading: boolean,
+        isError: boolean
+    };
     const inscribir = useInscribirPartido();
     const desinscribir = useDesinscribirPartido();
 
-    const [partidosState, setPartidosState] = useState(partidos);
+    const [partidosState, setPartidosState] = useState<PartidoAbierto[]>(partidos);
 
     const [mensaje, setMensaje] = useState<string | null>(null);
 
     const [showModal, setShowModal] = useState(false);
-    const [jugadoresActual, setJugadoresActual] = useState<any[]>([]);
+    const [jugadoresActual, setJugadoresActual] = useState<Jugador[]>([]);
     const [nombrePartidoActual, setNombrePartidoActual] = useState<string>("");
 
     const [loadingInscribirId, setLoadingInscribirId] = useState<string | null>(null);
@@ -43,9 +67,8 @@ const PartidosAbiertos = () => {
         setPartidosState(partidos);
     }, [partidos]);
 
-    const handleInscribir = (partido: any) => {
-        const key =
-            partido.canchaId + partido.fechaPartido + partido.horaPartido;
+    const handleInscribir = (partido: PartidoAbierto) => {
+        const key = partido.canchaId + partido.fechaPartido + partido.horaPartido;
         setLoadingInscribirId(key);
 
         inscribir.mutate(
@@ -65,14 +88,13 @@ const PartidosAbiertos = () => {
                                     ...p,
                                     inscripto: true,
                                     cuposDisponibles: p.cuposDisponibles - 1,
-                                    // jugadores: [...(p.jugadores ?? []), usuarioActual], // si lo tenés de contexto
                                 }
                                 : p
                         )
                     );
                     setMensaje("¡Inscripción exitosa!");
                 },
-                onError: (error) =>
+                onError: (error: unknown) =>
                     alert(
                         "No se pudo inscribir: " +
                         (error instanceof Error ? error.message : "Error desconocido")
@@ -84,9 +106,8 @@ const PartidosAbiertos = () => {
         );
     };
 
-    const handleDesinscribir = (partido: any) => {
-        const key =
-            partido.canchaId + partido.fechaPartido + partido.horaPartido;
+    const handleDesinscribir = (partido: PartidoAbierto) => {
+        const key = partido.canchaId + partido.fechaPartido + partido.horaPartido;
         setLoadingDesinscribirId(key);
 
         desinscribir.mutate(
@@ -106,14 +127,13 @@ const PartidosAbiertos = () => {
                                     ...p,
                                     inscripto: false,
                                     cuposDisponibles: p.cuposDisponibles + 1,
-                                    // jugadores: (p.jugadores ?? []).filter(j => j.email !== usuarioActual.email)
                                 }
                                 : p
                         )
                     );
                     setMensaje("Te diste de baja del partido.");
                 },
-                onError: (error) =>
+                onError: (error: unknown) =>
                     alert(
                         "No se pudo desinscribir: " +
                         (error instanceof Error ? error.message : "Error desconocido")
@@ -125,7 +145,7 @@ const PartidosAbiertos = () => {
         );
     };
 
-    const handleVerJugadores = (partido: any) => {
+    const handleVerJugadores = (partido: PartidoAbierto) => {
         setJugadoresActual(partido.jugadores ?? []);
         setNombrePartidoActual(
             `${partido.canchaNombre} - ${formatearFecha(partido.fechaPartido)} ${partido.horaPartido}`
@@ -210,7 +230,7 @@ const PartidosAbiertos = () => {
                         return (
                             <div className={styles.card} key={key}>
                                 <div className={styles.cardTitle}>
-                                    {partido.canchaNombre}
+                                    {partido.canchaNombre} {badge}
                                 </div>
                                 <div className={styles.infoRow}>
                                     <b>Dirección:</b> {partido.canchaDireccion}
