@@ -36,7 +36,7 @@ public class User implements UserDetails, UserCredentials {
     private String lastName;
 
     @Column(nullable = true)
-    private String genre;
+    private String gender;
 
     @Column(nullable = true)
     private Integer age;
@@ -53,17 +53,17 @@ public class User implements UserDetails, UserCredentials {
 
     public User() {}
 
-    public User(String username, String password, String email, String firstName, String lastName, String genre, Integer age, String zone) {
+    public User(String username, String password, String email, String firstName, String lastName, String gender, Integer age, String zone, String role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.genre = genre;
+        this.gender = gender;
         this.age = age;
         this.zone = zone;
         this.state = false;
-        this.role = "USER";
+        this.role = role;
     }
     
 

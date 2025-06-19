@@ -124,6 +124,8 @@ public class PartidoService {
     @Transactional
     public List<PartidoAbiertoResponseDTO> obtenerPartidosAbiertosIncluyendoInscripcion(Long userId) {
         return obtenerPartidosAbiertos().stream()
+                .peek(pa -> pa.setEstadoPartido(pa.calcularEstadoPartido()))
+                .filter(pa -> pa.getEstadoPartido() != EstadoPartido.TERMINADO)
                 .map(pa -> PartidoAbiertoResponseDTO.fromEntity(pa, userId))
                 .toList();
     }

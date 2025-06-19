@@ -32,13 +32,13 @@ public class UserRestController {
 
     @PostMapping(produces = "application/json")
     @Operation(summary = "Create a new user")
-    public ResponseEntity<Void> signUp(
+    public ResponseEntity<String> signUp(
             @Valid @NonNull @RequestBody UserCreateDTO data
     ) throws MethodArgumentNotValidException {
         userService.createUser(data);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("Message", "Usuario creado exitosamente")
-                .build();
+                .body("Usuario creado exitosamente");
     }
 
 

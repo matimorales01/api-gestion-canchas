@@ -14,11 +14,12 @@ public record UserCreateDTO(
         @NotBlank String email,
         @NotBlank String firstName,
         @NotBlank String lastName,
-        Optional<String> genre,
+        Optional<String> gender,
         Optional<Integer> age,
-        Optional<String> zone
+        Optional<String> zone,
+        @NotBlank String rol
 ) implements UserCredentials {
     public User asUser(Function<String, String> encryptPassword) {
-        return new User(username, encryptPassword.apply(password), email, firstName, lastName, genre.orElse(null), age.orElse(null), zone.orElse(null));
+        return new User(username, encryptPassword.apply(password), email, firstName, lastName, gender.orElse(null), age.orElse(null), zone.orElse(null), rol);
     }
 }

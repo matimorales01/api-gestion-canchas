@@ -18,5 +18,6 @@ public record ReservaDTO(
         String state,
         @JsonFormat(shape = JsonFormat.Shape.STRING)
         TipoPartido tipoPartido,
-        String emailOrganizador
+        String emailOrganizador,
+        Integer duracionMinutos
 )  {}

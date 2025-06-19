@@ -7,7 +7,7 @@ export const AdministrarReservasScreen = () => {
   const [filtroFecha, setFiltroFecha] = useState<string>('');
   const [filtroHora, setFiltroHora] = useState<string>(''); // formato HH:mm
 
-  const { data: reservas, isLoading, isError } = useGetMisReservas();
+  const { data: reservas } = useGetMisReservas();
   const { mutate: cancelarReserva } = useCancelarReserva();
 
   const reservasFiltradas = (reservas || [])

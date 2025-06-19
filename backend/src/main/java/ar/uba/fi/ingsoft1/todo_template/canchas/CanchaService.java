@@ -68,11 +68,12 @@ public class CanchaService {
                 .collect(Collectors.toList());
     }
 
-    public List<CanchaDTO> listarTodasLasCanchas() {
-        return canchaRepo.findAll().stream()
+    public List<CanchaDTO> listarTodasLasCanchas(long userId) {
+        return canchaRepo.findByPropietarioId(userId).stream()
                 .map(Cancha::toDTO)
                 .collect(Collectors.toList());
     }
+
 
     public CanchaDTO obtenerCancha(Long id) {
         Cancha cancha = canchaRepo.findById(id)
@@ -101,7 +102,7 @@ public class CanchaService {
             .orElseThrow(() -> new NotFoundException("Cancha con id " + id + " no encontrada."));
 
         LocalDate hoy = LocalDate.now();
-        boolean tieneReserva = reservaRepo.existsReservaFuturaPorCancha(id, hoy);
+        boolean tieneReserva = reservaRepo.existsReservaFuturaPorCancha(id, hoy, "OCUPADA");
         if (tieneReserva) {
             throw new CanchaConReservasFuturasException(id);
         }

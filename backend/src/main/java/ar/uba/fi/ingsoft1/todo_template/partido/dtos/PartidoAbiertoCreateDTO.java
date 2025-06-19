@@ -12,7 +12,8 @@ public record PartidoAbiertoCreateDTO(
     @NotNull LocalTime horaPartido,
     @NotNull Integer minJugadores,
     @NotNull Integer maxJugadores,
-    @NotNull Integer cuposDisponibles
+    @NotNull Integer cuposDisponibles,
+    @NotNull Integer duracionMinutos
 ) implements PartidoCreateDTO {
 
     @Override

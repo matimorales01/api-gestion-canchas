@@ -2,8 +2,10 @@ package ar.uba.fi.ingsoft1.todo_template.canchas;
 
 import java.util.List;
 
+import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import ar.uba.fi.ingsoft1.todo_template.canchas.dto.CanchaCreateDTO;
@@ -26,8 +28,10 @@ public class CanchaRestController {
     }
 
     @GetMapping("/todas")
-    public ResponseEntity<List<CanchaDTO>> getTodasLasCanchas() {
-        return ResponseEntity.ok(canchaService.listarTodasLasCanchas());
+    public ResponseEntity<List<CanchaDTO>> getMisCanchas(Authentication authentication) {
+        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.id().longValue();
+        return ResponseEntity.ok(canchaService.listarTodasLasCanchas(userId));
     }
 
     @GetMapping("/{id}")

@@ -17,6 +17,7 @@ export const SignupScreen = () => {
       age: "",
       genre: "",
       zone: "",
+      rol: "JUGADOR",
     },
     validators: { onChange: SignupSchema },
     onSubmit: async ({ value }) => {
@@ -72,6 +73,17 @@ export const SignupScreen = () => {
                     {(field) => <field.TextField label="Zona" />}
                   </formData.AppField>
                 </div>
+              </div>
+              <div className={styles.inputGroup}>
+                <formData.AppField name="rol">
+                  {(field) => (
+                    <field.SelectField label="Rol">
+                      <option value="JUGADOR">Jugador</option>
+                      <option value="ORGANIZADOR">Organizador</option>
+                      <option value="ADMINISTRADOR">Administrador</option>
+                    </field.SelectField>
+                  )}
+                </formData.AppField>
               </div>
               <div className={styles.buttonRow}>
                 <formData.SubmitButton className={styles.submitButton}>
