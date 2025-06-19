@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
-import { TorneoRequest, Torneo, TorneoDisponible } from "@/models/Torneo";
+import { TorneoRequest, Torneo, TorneoDisponible,} from "@/models/Torneo";
+import { EquipoResponse } from "@/models/Equipo";
 
 export function crearTorneo(options?: {
   onSuccess?: (data: Torneo) => void;
@@ -125,4 +126,31 @@ export function useGetMisTorneos() {
     },
     enabled: tokenState.state === "LOGGED_IN",
   });
+}
+
+export function useInscribirEquipo() {
+  const [tokenState] = useToken();
+  return useMutation({
+    mutationFn: async ({equipo, nombreTorneo,}: {equipo: EquipoResponse; nombreTorneo: string;})  => {
+      if (tokenState.state !== "LOGGED_IN") {
+        throw new Error("No estás logueado. No se puede editar un torneo.");
+      }
+
+      const response = await fetch(`${BASE_API_URL}/torneos/inscribir/${nombreTorneo}`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenState.accessToken}`,
+        },
+        body: JSON.stringify(equipo),
+      });
+
+      if (!response.ok) {
+        throw new Error(`El equipo ya se encuentra inscripto en el Torneo`);
+      }
+
+      return response.statusText;
+    }
+  })
 }

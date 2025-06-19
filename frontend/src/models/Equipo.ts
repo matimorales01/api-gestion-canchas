@@ -6,3 +6,11 @@ export const EquipoRequestSchema = z.object({
     mainColors: z.string(),
     secondaryColors: z.string(),
 });
+
+export interface EquipoResponse {
+  teamName: string;
+  category: string;
+  mainColors: string;
+  secondaryColors: string;
+  captainId: number;
+}

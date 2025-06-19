@@ -72,9 +72,6 @@ const LoggedInLinks = () => {
                 <Link href="/under-construction">Main Page</Link>
             </li>
 
-            <li>
-                <Link href="/listar-torneos">Torneos Disponibles</Link>
-            </li>
 
             {(role === "ORGANIZADOR" || role === "ADMINISTRADOR") && (
                 <>
@@ -87,9 +84,6 @@ const LoggedInLinks = () => {
                     <li>
                         <Link href="/mis-torneos">Mis Torneos</Link>
                     </li>
-                    <li>
-                        <Link href="/crear-equipo">Crear Equipo</Link>
-                    </li>
                 </>
             )}
 
@@ -97,6 +91,17 @@ const LoggedInLinks = () => {
                 <li>
                     <Link href="/crear-reserva">Crear reserva</Link>
                 </li>
+            )}
+
+            {(role === "JUGADOR") && (
+                <>
+                <li>
+                    <Link href="/crear-equipo">Crear Equipo</Link>
+                </li>
+                <li>
+                    <Link href="/listar-torneos">Torneos Disponibles</Link>
+                </li>
+                </>
             )}
 
             {role === "ADMINISTRADOR" && (

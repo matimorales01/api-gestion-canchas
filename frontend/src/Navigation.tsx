@@ -78,17 +78,11 @@ export const Navigation = () => {
           <Route path="/crear-reserva">
             <ReservasScreen />
           </Route>
-          <Route path="/crear-equipo">
-            <CrearEquipo />
-          </Route>
           <Route path="/crear-torneo">
             <CrearTorneo />
           </Route>
           <Route path="/ver-historial">
             <HistorialScreen />
-          </Route>
-          <Route path="/listar-torneos">
-            <UserListaTorneo />
           </Route>
           <Route path="/mis-torneos">
             <MisTorneosScreen />
@@ -111,6 +105,9 @@ export const Navigation = () => {
           </Route>
           <Route path="/crear-reserva">
             <ReservasScreen />
+          </Route>
+          <Route path="/crear-equipo">
+            <CrearEquipo />
           </Route>
           <Route path="/listar-torneos">
             <UserListaTorneo />
