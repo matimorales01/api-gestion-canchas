@@ -48,7 +48,6 @@ public class JwtService {
                     && claims.get("role") instanceof String role
                     && claims.containsKey("email")
                     && claims.get("email") instanceof String email
-                    && claims.containsKey("id")
             ) {
                 return Optional.of(new JwtUserDetails(claims.getSubject(), email, role));
             }

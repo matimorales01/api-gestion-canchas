@@ -80,7 +80,7 @@ public class UserService implements UserDetailsService {
 
             verificationTokenRepository.save(verificationToken);
 
-            String verificationLink = "http://localhost:5173/verify?token=" + token;
+            String verificationLink = "http://localhost:8080/verify?token=" + token;
 
             emailService.sendVerificationEmail(
                     user.getEmail(),

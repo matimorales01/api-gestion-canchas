@@ -35,11 +35,11 @@ export function usePedirTokenRecuperacion() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
+        const errorText = await response.json();
         throw new Error(`Error al solicitar recuperación: ${errorText}`);
       }
 
-      const result = await response.text();
+      const result = await response.json();
       console.log(result);
       return result;
     },
@@ -61,11 +61,11 @@ export function useCambiarContrasenia() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
+        const errorText = await response.json();
         throw new Error(`Error al cambiar contraseña: ${errorText}`);
       }
 
-      return await response.text();
+      return await response.json();
     },
   });
 }
@@ -87,10 +87,10 @@ export function useSignup() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
+        const errorText = await response.json();
         throw new Error(`Error al registrar usuario: ${errorText}`);
       }
-      const text = await response.text();
+      const text = await response.json();
       console.log(text);
      // const tokenData = await response.text();
       setToken({ state: "LOGGED_IN", accessToken :text });
