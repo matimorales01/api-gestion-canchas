@@ -2,13 +2,13 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { EquipoRequestSchema } from "@/models/Equipo";
 import { useLocation } from "wouter";
-import { crearEquipo } from "@/services/EquipoService";
+import { useCrearEquipo } from "@/services/EquipoService";
 import styles from "../styles/CrearEquipo.module.css";
 
 export const CrearEquipo = () => {
     const [, navigate] = useLocation();
 
-    const { mutate, error } = crearEquipo({
+    const { mutate, error } = useCrearEquipo({
         onSuccess: () => {
             alert("Equipo creado con éxito!");
             navigate("/");

@@ -7,10 +7,17 @@ export const EquipoRequestSchema = z.object({
     secondaryColors: z.string(),
 });
 
+export interface EquipoRequest {
+    teamName: string;
+    category: string;
+    mainColors: string;
+    secondaryColors: string;
+}
+
 export interface EquipoResponse {
-  teamName: string;
-  category: string;
-  mainColors: string;
-  secondaryColors: string;
-  captainId: number;
+    teamName: string;
+    category: string;
+    mainColors: string;
+    secondaryColors: string;
+    captainId: number;
 }
