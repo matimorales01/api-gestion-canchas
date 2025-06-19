@@ -1,6 +1,8 @@
 import { useLocation } from "wouter";
 import { useGetMisTorneos } from "@/services/TorneoService";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
+import { Torneo } from "@/models/Torneo";
+import styles from "../styles/AdminMisTorneos.module.css";
 
 const MisTorneos = () => {
   const [, navigate] = useLocation();
@@ -10,33 +12,39 @@ const MisTorneos = () => {
   if (error) return <div>Error al cargar torneos</div>;
 
   return (
-    <CommonLayout>
-      <div className="container mt-4">
-        <h1 className="text-xl font-bold mb-4" style={{ color: "black" }}>
-          Mis Torneos
-        </h1>
-        <ul className="list-group">
-          {torneos?.map((torneo) => (
-            <li
-              key={torneo.nombre}
-              className="list-group-item d-flex justify-content-between align-items-center"
-              style={{ color: "black" }}
-            >
-              <div>
-                <div><strong>Nombre:</strong> {torneo.nombre}</div>
-                <div><strong>Inicio:</strong> {torneo.fechaInicio}</div>
-                <div><strong>Formato:</strong> {torneo.formato}</div>
-                <div><strong>Máx Equipos:</strong> {torneo.cantidadMaximaEquipos}</div>
+        <CommonLayout>
+      <div className={styles.pageWrapper}>
+        <div className={styles.titleRow}>
+          <span className={styles.trophyIcon}>⚙️</span>
+          <span className={styles.title}>Mis Torneos</span>
+        </div>
+
+        {isLoading && <p>Cargando torneos...</p>}
+        {error && <p style={{ color: "#d34444" }}>Error al cargar torneos.</p>}
+
+        {!isLoading && !torneos?.length && (
+          <p>No tenés torneos creados aún.</p>
+        )}
+
+        <div className={styles.gridCards}>
+          {torneos?.map((t: Torneo) => (
+            <div key={t.nombre} className={styles.torneoCard}>
+              <div className={styles.cardHeader}>
+                <span className={styles.cardIcon}>🏟️</span>
+                <span className={styles.cardName}>{t.nombre}</span>
               </div>
+              <div className={styles.cardDetail}><strong>Inicio:</strong> {t.fechaInicio}</div>
+              <div className={styles.cardDetail}><strong>Formato:</strong> {t.formato}</div>
+              <div className={styles.cardDetail}><strong>Máx equipos:</strong> {t.cantidadMaximaEquipos}</div>
               <button
-                className="btn btn-secondary btn-sm"
-                onClick={() => navigate(`/admin/torneos/${torneo.nombre}`)}
+                className={styles.inscribirseBtn}
+                onClick={() => navigate(`/admin/torneos/${encodeURIComponent(t.nombre)}`)}
               >
-                Editar
+                ✏️ Editar
               </button>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </CommonLayout>
   );

@@ -94,7 +94,7 @@ export function userEditarTorneo(options?: {
       return (await response.json()) as Torneo;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["torneos"] });
+      queryClient.invalidateQueries({ queryKey: ["misTorneos"] });
       options?.onSuccess?.(data);
     },
     onError: options?.onError,

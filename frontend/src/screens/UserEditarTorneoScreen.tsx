@@ -3,6 +3,7 @@ import { useParams, useLocation } from "wouter";
 import { useGetMisTorneos, userEditarTorneo } from "@/services/TorneoService";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { Torneo } from "@/models/Torneo.ts";
+import styles from "../styles/AdminEditTorneos.module.css";
 
 type FormatoTorneo = "ELIMINACION_DIRECTA" | "FASE_GRUPOS_ELIMINACION" | "LIGA";
 
@@ -53,6 +54,10 @@ const UserEditarTorneoScreen = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!nombreTorneo) {
+            alert("Nombre del torneo no disponible.");
+            return;
+        }
         editarTorneo.mutate({
             nombre: nombreTorneo,
             data: {
@@ -67,102 +72,87 @@ const UserEditarTorneoScreen = () => {
         });
     };
 
-    if (!torneo)
+    if (!torneo) {
         return (
-            <div>
-                <h1>Cargando datos del torneo...</h1>
+        <CommonLayout>
+            <div className="container mt-4">
+            <h1>Cargando datos del torneo...</h1>
             </div>
+        </CommonLayout>
         );
+    }
 
     return (
         <CommonLayout>
-            <div className="container mt-4">
-                <h1 className="text-xl font-bold mb-4">Editar Torneo</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
-                        <label>Nombre:</label>
-                        <input
-                            className="form-control"
-                            value={nombreTorneo}
-                            onChange={(e) => setNombre(e.target.value)}
-                            disabled
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label>Descripción:</label>
-                        <input
-                            className="form-control"
-                            value={descripcion}
-                            onChange={(e) => setDescripcion(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label>Fecha de Inicio:</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            value={fechaInicio}
-                            onChange={(e) => setFechaInicio(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label>Fecha de Fin (opcional):</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            value={fechaFin}
-                            onChange={(e) => setFechaFin(e.target.value)}
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label>Formato:</label>
-                        <select
-                            className="form-control"
-                            value={formato}
-                            onChange={(e) => setFormato(e.target.value as FormatoTorneo)}
-                        >
-                            <option value="ELIMINACION_DIRECTA">Eliminación Directa</option>
-                            <option value="FASE_GRUPOS_ELIMINACION">Fase de Grupos y Eliminación</option>
-                            <option value="LIGA">Liga</option>
-                        </select>
-                    </div>
-                    <div className="mb-3">
-                        <label>Máximo de Equipos:</label>
-                        <input
-                            type="number"
-                            min={2}
-                            className="form-control"
-                            value={cantidadMaximaEquipos}
-                            onChange={(e) => setMaxEquipos(Number(e.target.value))}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label>Costo de Inscripción:</label>
-                        <input
-                            type="number"
-                            min={0}
-                            step={0.01}
-                            className="form-control"
-                            value={costoInscripcion}
-                            onChange={(e) => setCostoInscripcion(Number(e.target.value))}
-                            required
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label>Premios:</label>
-                        <input
-                            className="form-control"
-                            value={premios}
-                            onChange={(e) => setPremios(e.target.value)}
-                        />
-                    </div>
-                    <button type="submit" className="btn btn-primary">
-                        Guardar Cambios
-                    </button>
-                </form>
-            </div>
+        <div className={styles.pageWrapper}>
+            <h1 className={styles.title}>Editar Torneo</h1>
+            <form className={styles.form} onSubmit={handleSubmit}>
+            <label className={styles.label}>Nombre:</label>
+            <input className={styles.input} value={nombreTorneo} disabled />
+
+            <label className={styles.label}>Descripción:</label>
+            <input className={styles.input} value={descripcion} disabled />
+
+            <label className={styles.label}>Fecha de Inicio:</label>
+            <input
+                type="date"
+                className={styles.input}
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+                required
+            />
+
+            <label className={styles.label}>Fecha de Fin (opcional):</label>
+            <input
+                type="date"
+                className={styles.input}
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+            />
+
+            <label className={styles.label}>Formato:</label>
+            <select
+                className={styles.input}
+                value={formato}
+                onChange={(e) => setFormato(e.target.value as FormatoTorneo)}
+            >
+                <option value="ELIMINACION_DIRECTA">Eliminación Directa</option>
+                <option value="FASE_GRUPOS_ELIMINACION">Fase de Grupos y Eliminación</option>
+                <option value="LIGA">Liga</option>
+            </select>
+
+            <label className={styles.label}>Máximo de Equipos:</label>
+            <input
+                type="number"
+                min={2}
+                className={styles.input}
+                value={cantidadMaximaEquipos}
+                onChange={(e) => setMaxEquipos(Number(e.target.value))}
+                required
+            />
+
+            <label className={styles.label}>Costo de Inscripción:</label>
+            <input
+                type="number"
+                min={0}
+                step={0.01}
+                className={styles.input}
+                value={costoInscripcion}
+                disabled
+            />
+
+            <label className={styles.label}>Premios:</label>
+            <input
+                className={styles.input}
+                value={premios}
+                disabled
+            />
+
+            <button type="submit" className={styles.submitBtn}>
+                Guardar Cambios
+            </button>
+            </form>
+        </div>
         </CommonLayout>
     );
 };
