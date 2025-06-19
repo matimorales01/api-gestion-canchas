@@ -12,4 +12,5 @@ public interface PartidoCreateDTO{
         LocalDate fechaPartido();
         LocalTime horaPartido();
         TipoPartido tipoPartido();
+        Integer duracionMinutos();
 }
