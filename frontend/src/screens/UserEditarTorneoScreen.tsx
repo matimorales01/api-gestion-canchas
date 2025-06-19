@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation } from "wouter";
-import { useGetMisTorneos, userEditarTorneo } from "@/services/TorneoService";
+import { useGetMisTorneos, useEditarTorneo } from "@/services/TorneoService";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { Torneo } from "@/models/Torneo.ts";
 import styles from "../styles/AdminEditTorneos.module.css";
@@ -38,10 +38,10 @@ const UserEditarTorneoScreen = () => {
         }
     }, [torneo]);
 
-    const editarTorneo = userEditarTorneo({
+    const editarTorneo = useEditarTorneo({
         onSuccess: () => {
             alert("Torneo editado correctamente");
-            navigate("/listar-torneos");
+            navigate("/mis-torneos");
         },
         onError: (error: unknown) => {
             if (error && typeof error === "object" && "message" in error) {

@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export const AdministrarReservasScreen = () => {
   const [filtroFecha, setFiltroFecha] = useState<string>('');
-  const [filtroHora, setFiltroHora] = useState<string>(''); // formato HH:mm
+  const [filtroHora, setFiltroHora] = useState<string>('');
 
   const { data: reservas, isLoading, isError } = useGetMisReservas();
   const { mutate: cancelarReserva } = useCancelarReserva();
@@ -60,10 +60,7 @@ export const AdministrarReservasScreen = () => {
                     {reserva.state}
                   </span>
               </div>
-              {/*<div className={styles.reservaHeader}>
-                <span className={styles.reservaNombre}>{reserva.canchaName}</span>
-                <span className={styles.reservaEstado}>{reserva.state}</span>
-              </div>*/}
+
               
               <p className={styles.reservaDetalle}>📅 {reserva.fecha}</p>
               <p className={styles.reservaDetalle}>⏰ {reserva.inicioTurno} - {reserva.finTurno}</p>

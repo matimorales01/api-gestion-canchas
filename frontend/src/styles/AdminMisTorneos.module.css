@@ -77,3 +77,20 @@
 .inscribirseBtn:hover {
   background-color: #357ab8;
 }
+.eliminarBtn {
+  margin-top: 8px;
+  background-color: #e94f4f;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.eliminarBtn:hover {
+  background-color: #cc3b3b;
+}
+
+

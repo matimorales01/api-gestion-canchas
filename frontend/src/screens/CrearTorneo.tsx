@@ -2,13 +2,13 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { TorneoRequestSchema } from "@/models/Torneo";
 import { useLocation } from "wouter";
-import { crearTorneo } from "@/services/TorneoService";
+import { useCrearTorneo } from "@/services/TorneoService";
 import styles from "../styles/CrearTorneo.module.css";
 
 export const CrearTorneo = () => {
   const [, navigate] = useLocation();
 
-  const { mutate, error } = crearTorneo({
+  const { mutate, error } = useCrearTorneo({
     onSuccess: () => {
       alert("¡Torneo creado con éxito!");
       navigate("/");
@@ -31,16 +31,11 @@ export const CrearTorneo = () => {
     },
     onSubmit: async ({ value }) => {
       mutate({
-        nombre: value.nombre,
-        fechaInicio: value.fechaInicio,
-        formato: value.formato,
-        cantidadMaximaEquipos: value.cantidadMaximaEquipos,
-        fechaFin: value.fechaFin || null,
-        descripcion: value.descripcion || null,
-        premios: value.premios || null,
-        costoInscripcion: value.costoInscripcion || null,
+        ...value,
+        formato: value.formato as "ELIMINACION_DIRECTA" | "FASE_GRUPOS_ELIMINACION" | "LIGA",
       });
     },
+
   });
 
   return (
@@ -63,7 +58,12 @@ export const CrearTorneo = () => {
                     <label className={styles.label}>Nombre del Torneo</label>
                     <formData.AppField name="nombre">
                       {(field) => (
-                          <field.TextField className={styles.input} />
+                          <input
+                              type="text"
+                              value={field.state.value}
+                              onChange={(e) => field.handleChange(e.target.value)}
+                              className={styles.input}
+                          />
                       )}
                     </formData.AppField>
                   </div>
@@ -118,9 +118,7 @@ export const CrearTorneo = () => {
                               min={2}
                               step={1}
                               value={field.state.value}
-                              onChange={(e) =>
-                                  field.handleChange(Number(e.target.value))
-                              }
+                              onChange={(e) => field.handleChange(Number(e.target.value))}
                               className={styles.input}
                           />
                       )}
@@ -129,6 +127,7 @@ export const CrearTorneo = () => {
                 </div>
 
                 <div className={styles.sectionDivider}></div>
+
                 <div className={styles.optionalSection}>
                   <div className={styles.inputGroupFull}>
                     <label className={styles.label}>Descripción (opcional)</label>
@@ -183,9 +182,7 @@ export const CrearTorneo = () => {
 
             <div className={styles.tipBox}>
               <span className={styles.tipIcon}>ℹ️</span>
-              <span className={styles.tipText}>
-              No todos los campos son obligatorios.
-            </span>
+              <span className={styles.tipText}>No todos los campos son obligatorios.</span>
             </div>
           </div>
         </div>

@@ -3,6 +3,13 @@ import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
 import type { Cancha, CanchaRequest } from "@/models/Cancha";
 
+export type CrearCanchaDTO = {
+  nombre: string;
+  tipoCesped: "Sintetico" | "Natural";
+  iluminacion: boolean;
+  zona: string;
+  direccion: string;
+};
 
 type PoblarFranjasParams = {
   canchaId: number;
@@ -52,7 +59,7 @@ export function useCrearCancha(options?: {
   const [tokenState] = useToken();
 
   return useMutation({
-    mutationFn: async (data: CanchaRequest) => {
+    mutationFn: async (data: CrearCanchaDTO) => {
       if (tokenState.state !== "LOGGED_IN") {
         throw new Error("No estás logueado. No se puede crear una cancha.");
       }
@@ -78,6 +85,7 @@ export function useCrearCancha(options?: {
     onError: options?.onError,
   });
 }
+
 
 
 export function useCanchas() {
