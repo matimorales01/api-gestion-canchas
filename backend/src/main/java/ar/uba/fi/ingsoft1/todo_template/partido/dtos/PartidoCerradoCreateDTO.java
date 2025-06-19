@@ -12,7 +12,8 @@ public record PartidoCerradoCreateDTO(
     @NotNull LocalDate fechaPartido,
     @NotNull LocalTime horaPartido,
     @NotBlank String equipo1,
-    @NotBlank String equipo2
+    @NotBlank String equipo2,
+    @NotNull Integer duracionMinutos
 ) implements PartidoCreateDTO {
 
     @Override

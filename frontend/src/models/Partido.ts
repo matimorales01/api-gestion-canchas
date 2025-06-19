@@ -7,6 +7,7 @@ export interface Partido {
   canchaDireccion: string;
   fechaPartido: string;
   horaPartido: string;
+  duracionMinutos: number;
   minJugador?: number;
   maxJugador?: number;
   cuposDisponibles: number;

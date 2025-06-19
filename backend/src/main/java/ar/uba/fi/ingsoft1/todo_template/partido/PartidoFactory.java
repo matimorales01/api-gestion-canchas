@@ -22,6 +22,7 @@ public class PartidoFactory {
         partido.setIdPartido(partidoId);
         partido.setCancha(cancha);
         partido.setTipoPartido(partidoCreateDTO.tipoPartido());
+        partido.setDuracionMinutos(partidoCreateDTO.duracionMinutos());
 
 
         if (partidoCreateDTO.tipoPartido() == TipoPartido.CERRADO) {
