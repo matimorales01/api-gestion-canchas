@@ -39,7 +39,8 @@ export function usePedirTokenRecuperacion() {
         throw new Error(`Error al solicitar recuperación: ${errorText}`);
       }
 
-      const result = await response.json();
+      const result = await response.text();
+      console.log(result);
       return result;
     },
   });
@@ -64,7 +65,7 @@ export function useCambiarContrasenia() {
         throw new Error(`Error al cambiar contraseña: ${errorText}`);
       }
 
-      return await response.json();
+      return await response.text();
     },
   });
 }
@@ -89,16 +90,17 @@ export function useSignup() {
         const errorText = await response.text();
         throw new Error(`Error al registrar usuario: ${errorText}`);
       }
-
-      const tokenData = await response.json();
-      setToken({ state: "LOGGED_IN", ...tokenData });
+      const text = await response.text();
+      console.log(text);
+     // const tokenData = await response.text();
+      setToken({ state: "LOGGED_IN", accessToken :text });
 
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ["currentUser"] });
         queryClient.refetchQueries({ queryKey: ["currentUser"] });
       }, 150);
 
-      return tokenData;
+      return text;
     },
   });
 }

@@ -39,9 +39,6 @@ export const RecuperarScreen = () => {
 					<formData.SubmitButton className={styles.submitButton}>
 					enviar
 					</formData.SubmitButton>
-					<button>
-					
-					</button>
 				</div>
 				</formData.FormContainer>
 			</formData.AppForm>
