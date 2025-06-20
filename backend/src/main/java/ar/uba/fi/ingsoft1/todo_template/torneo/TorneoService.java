@@ -29,7 +29,7 @@ public class TorneoService {
     }
 
     public void iniciarTorneo(String nombreTorneo) {
-        Torneo torneo = torneoRepo.findById(nombreTorneo)
+        Torneo torneo = torneoRepo.findByNombre(nombreTorneo)
             .orElseThrow(() -> new NotFoundException("Torneo con nombre: '" + nombreTorneo + "' no encontrado."));
 
         if (!torneo.getFechaInicio().isEqual(LocalDate.now())) {
@@ -44,7 +44,7 @@ public class TorneoService {
     }
 
     public void finalizarTorneo(String nombreTorneo) {
-        Torneo torneo = torneoRepo.findById(nombreTorneo)
+        Torneo torneo = torneoRepo.findByNombre(nombreTorneo)
             .orElseThrow(() -> new NotFoundException("Torneo con nombre: '" + nombreTorneo + "' no encontrado."));
 
         if (!torneo.getFechaFin().isEqual(LocalDate.now()) || torneo.getFechaFin().isBefore(LocalDate.now())) {
@@ -60,7 +60,7 @@ public class TorneoService {
 
     @Transactional
     public Torneo createTorneo(TorneoCreateDTO dto, String emailOrganizador) {
-        if (torneoRepo.existsById(dto.nombre())) {
+        if (torneoRepo.existsByNombre(dto.nombre())) {
             throw new TorneoAlreadyExistsException(dto.nombre());
         }
 
@@ -91,7 +91,7 @@ public class TorneoService {
 
     @Transactional
     public Torneo updateTorneo(String nombre, TorneoUpdateDTO dto, String emailOrganizador) {
-        Torneo torneo = torneoRepo.findById(nombre)
+        Torneo torneo = torneoRepo.findByNombre(nombre)
             .orElseThrow(() -> new NotFoundException("Torneo con nombre: '" + nombre + "' no encontrado."));
 
         if (!torneo.getOrganizador().getEmail().equals(emailOrganizador)) {

@@ -41,7 +41,7 @@ public class Torneo {
     private EstadoTorneo estado = EstadoTorneo.ABIERTO;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "organizador_id")
+    @JoinColumn(name = "organizador_id", referencedColumnName = "username")
     private User organizador;
 
     public Torneo() {

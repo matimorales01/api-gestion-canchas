@@ -17,7 +17,7 @@ public class Partido {
 
     @MapsId("canchaId")
     @ManyToOne(optional = false)
-    @JoinColumn(name = "cancha_id")
+    @JoinColumn(name = "cancha_id", referencedColumnName = "id")
     private Cancha cancha;
 
     @Column(nullable = false)
@@ -27,7 +27,7 @@ public class Partido {
     private String emailOrganizador;
 
     @ManyToOne
-    @JoinColumn(name="organizador_id", nullable = false)
+    @JoinColumn(name="organizador_id", nullable = false, referencedColumnName = "username")
     private User organizador;
 
     @Column(nullable = true)

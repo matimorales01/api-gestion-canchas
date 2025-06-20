@@ -31,7 +31,7 @@ public class Cancha {
     private String direccion;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "propietario_id")
+    @JoinColumn(name = "propietario_id", referencedColumnName = "username")
     private User propietario;
 
     @Column(nullable = false)

@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 public class ReservaId implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "cancha_id", nullable = false)
+    @JoinColumn(name = "cancha_id", nullable = false, referencedColumnName = "id")
     private Cancha cancha;
 
     @Column(nullable = false)

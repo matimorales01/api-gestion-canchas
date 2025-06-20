@@ -18,7 +18,7 @@ public class Equipo {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "captain_id", nullable = false)
+    @JoinColumn(name = "captain_id", nullable = false, referencedColumnName = "username")
     private User captain;
 
     @Column(nullable = true)
