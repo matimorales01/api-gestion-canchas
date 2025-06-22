@@ -1,10 +1,17 @@
+import { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { SignupSchema } from "@/models/Login";
 import { useSignup } from "@/services/UserServices";
 import styles from "../styles/SignupScreen.module.css";
 
-export const SignupScreen = () => {
+export default function SignupScreen() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const inviteToken = searchParams.get("invite");
+  const [pendingInvite, setPendingInvite] = useState<string | null>(inviteToken);
+
   const { mutate, error } = useSignup();
 
   const formData = useAppForm({
@@ -18,18 +25,31 @@ export const SignupScreen = () => {
       genre: "",
       zone: "",
       rol: "JUGADOR",
+      pendingInviteToken: pendingInvite ?? undefined,
     },
     validators: { onChange: SignupSchema },
     onSubmit: async ({ value }) => {
-      mutate(value);
+      mutate(value, {
+        onSuccess: () => {
+          navigate("/");
+        },
+      });
     },
   });
+
+  useEffect(() => {
+    if (inviteToken) setPendingInvite(inviteToken);
+  }, [inviteToken]);
 
   return (
       <CommonLayout>
         <div className={styles.signupBox}>
           <h1 className={styles.title}>Crear cuenta</h1>
-          <p className={styles.subtitle}>Completá los datos para registrarte.</p>
+          <p className={styles.subtitle}>
+            {pendingInvite
+                ? "Completá los datos para registrarte y te inscribiremos automáticamente al partido."
+                : "Completá los datos para registrarte."}
+          </p>
           <formData.AppForm>
             <formData.FormContainer extraError={error}>
               <div className={styles.fieldsGrid}>
@@ -77,14 +97,15 @@ export const SignupScreen = () => {
               <div className={styles.inputGroup}>
                 <formData.AppField name="rol">
                   {(field) => (
-                    <field.SelectField label="Rol">
-                      <option value="JUGADOR">Jugador</option>
-                      <option value="ORGANIZADOR">Organizador</option>
-                      <option value="ADMINISTRADOR">Administrador</option>
-                    </field.SelectField>
+                      <field.SelectField label="Rol">
+                        <option value="JUGADOR">Jugador</option>
+                        <option value="ORGANIZADOR">Organizador</option>
+                        <option value="ADMINISTRADOR">Administrador</option>
+                      </field.SelectField>
                   )}
                 </formData.AppField>
               </div>
+              <input type="hidden" name="pendingInviteToken" value={pendingInvite ?? ""} />
               <div className={styles.buttonRow}>
                 <formData.SubmitButton className={styles.submitButton}>
                   Registrarme
@@ -95,6 +116,4 @@ export const SignupScreen = () => {
         </div>
       </CommonLayout>
   );
-};
-
-export default SignupScreen;
+}

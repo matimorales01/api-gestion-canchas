@@ -243,7 +243,6 @@ export const CanchaScreen: React.FC = () => {
                       )}
                     </formData.AppField>
                   </div>
-                  {/* ToggleSwitch con className */}
                   <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
                     <formData.AppField name="iluminacion">
                       {(field) => (

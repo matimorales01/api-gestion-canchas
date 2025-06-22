@@ -176,7 +176,6 @@
     font-weight: 600;
 }
 
-/* Modal básico */
 .modalOverlay {
     position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
     background: rgba(18,24,40,0.16);

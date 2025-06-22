@@ -91,10 +91,16 @@ const LoggedInLinks = () => {
             )}
 
             {(role === "JUGADOR" || role === "ORGANIZADOR") && (
-                <li>
-                    <Link href="/crear-reserva">Crear reserva</Link>
-                </li>
+                <>
+                    <li>
+                        <Link href="/crear-reserva">Crear reserva</Link>
+                    </li>
+                    <li>
+                        <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
+                    </li>
+                </>
             )}
+
 
             {(role === "JUGADOR") && (
                 <>
@@ -112,9 +118,7 @@ const LoggedInLinks = () => {
                     <li>
                         <Link href="/crear-cancha">Mis canchas</Link>
                     </li>
-                    <li>
-                        <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
-                    </li>
+
                     <li>
                         <Link href="/administrar-reservas">Administrar reserva</Link>
                     </li>

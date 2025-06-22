@@ -1,7 +1,6 @@
 package ar.uba.fi.ingsoft1.todo_template.user.dtos;
 
 import jakarta.validation.constraints.NotBlank;
-
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -17,9 +16,22 @@ public record UserCreateDTO(
         Optional<String> gender,
         Optional<Integer> age,
         Optional<String> zone,
-        @NotBlank String rol
+        @NotBlank String rol,
+        Optional<String> pendingInviteToken
 ) implements UserCredentials {
     public User asUser(Function<String, String> encryptPassword) {
-        return new User(username, encryptPassword.apply(password), email, firstName, lastName, gender.orElse(null), age.orElse(null), zone.orElse(null), rol);
+        User user = new User(
+                username,
+                encryptPassword.apply(password),
+                email,
+                firstName,
+                lastName,
+                gender.orElse(null),
+                age.orElse(null),
+                zone.orElse(null),
+                rol
+        );
+        pendingInviteToken.ifPresent(user::setPendingInviteToken);
+        return user;
     }
 }

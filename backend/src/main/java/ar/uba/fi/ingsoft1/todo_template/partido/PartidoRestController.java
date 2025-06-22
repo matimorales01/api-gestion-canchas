@@ -129,5 +129,41 @@ public class PartidoRestController {
         ));
     }
 
+    @Operation(summary = "Generar invitación para un partido")
+    @PostMapping("/abierto/{canchaId}/{fechaPartido}/{horaPartido}/invitar")
+    public ResponseEntity<?> invitarAAbierto(
+            @PathVariable Long canchaId,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaPartido,
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime horaPartido,
+            @RequestBody(required = false) Map<String, String> body
+    ) {
+        String email = body != null ? body.get("email") : null;
+        String token = partidoService.generarInvitacion(canchaId, fechaPartido, horaPartido, email);
+        String url = "https://localhost:5173/signup?invite=" + token;
+        return ResponseEntity.ok(Map.of("inviteToken", token, "url", url));
+    }
+
+    @Operation(summary = "Validar invitación")
+    @GetMapping("/invitar/{token}")
+    public ResponseEntity<?> validarInvitacion(@PathVariable String token) {
+        boolean valida = partidoService.validarInvitacion(token);
+        return ResponseEntity.ok(Map.of("valida", valida));
+    }
+
+    @Operation(summary = "Aceptar invitación y asociar usuario al partido")
+    @PostMapping("/invitar/{token}/aceptar")
+    public ResponseEntity<?> aceptarInvitacion(
+            @PathVariable String token,
+            Authentication authentication
+    ) {
+        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+        Long userId = userDetails.id().longValue();
+
+        partidoService.aceptarInvitacion(token, userId);
+        return ResponseEntity.ok(Map.of("mensaje", "Inscripción por invitación exitosa"));
+    }
+
+
+
 
 }

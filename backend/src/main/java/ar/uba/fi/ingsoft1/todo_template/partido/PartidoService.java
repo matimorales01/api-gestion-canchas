@@ -4,7 +4,6 @@ import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.canchas.CanchaRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
-
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaId;
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
@@ -14,7 +13,7 @@ import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 
 import jakarta.transaction.Transactional;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,9 @@ public class PartidoService {
     private final CanchaRepository  canchaRepository;
     private final PartidoFactory    partidoFactory;
     private final ReservaService    reservaService;
+    private final InvitacionService invitacionService;
 
+    @Autowired
     public PartidoService(
             PartidoRepository partidoRepository,
             EmailService emailService,
@@ -41,7 +42,8 @@ public class PartidoService {
             ReservaRepository reservaRepository,
             CanchaRepository canchaRepository,
             PartidoFactory partidoFactory,
-            ReservaService reservaService
+            ReservaService reservaService,
+            InvitacionService invitacionService
     ) {
         this.partidoRepository = partidoRepository;
         this.emailService      = emailService;
@@ -50,8 +52,8 @@ public class PartidoService {
         this.canchaRepository  = canchaRepository;
         this.partidoFactory    = partidoFactory;
         this.reservaService    = reservaService;
+        this.invitacionService = invitacionService;
     }
-
 
     private User autentificarUser() {
         JwtUserDetails infoUser = (JwtUserDetails) SecurityContextHolder
@@ -82,7 +84,6 @@ public class PartidoService {
         );
     }
 
-
     @Transactional
     public Partido crearPartido(PartidoCreateDTO dto) {
         User organizador = autentificarUser();
@@ -108,7 +109,6 @@ public class PartidoService {
         envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardado);
         return partidoGuardado;
     }
-
 
     public List<Partido> obtenerTodosLosPartidos() {
         return partidoRepository.findAll();
@@ -151,7 +151,6 @@ public class PartidoService {
                 .findByTipoPartidoAndOrganizadorId(TipoPartido.CERRADO, userId);
     }
 
-
     public Optional<Partido> obtenerPartidoPorIdpartido(PartidoId idpartido) {
         return partidoRepository.findById(idpartido);
     }
@@ -159,7 +158,6 @@ public class PartidoService {
     public void eliminarPartido(PartidoId idpartido) {
         partidoRepository.deleteById(idpartido);
     }
-
 
     @Transactional
     public void inscribirAAbierto(PartidoId partidoId, Long userId) {
@@ -218,5 +216,19 @@ public class PartidoService {
                 partido.getFechaPartido().toString(),
                 partido.getHoraPartido().toString()
         );
+    }
+
+
+    public String generarInvitacion(Long canchaId, LocalDate fecha, LocalTime hora, String email) {
+        PartidoId partidoId = new PartidoId(canchaId, fecha, hora);
+        return invitacionService.generarInvitacion(partidoId, email);
+    }
+
+    public boolean validarInvitacion(String token) {
+        return invitacionService.validarInvitacion(token);
+    }
+
+    public void aceptarInvitacion(String token, Long userId) {
+        invitacionService.aceptarInvitacion(token, userId);
     }
 }

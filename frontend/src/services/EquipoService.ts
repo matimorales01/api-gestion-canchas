@@ -38,7 +38,6 @@ export function useCrearEquipo(options?: {
     });
 }
 
-// --- HOOK PARA OBTENER MIS EQUIPOS ---
 export function useGetMisEquipos() {
     const [tokenState] = useToken();
 

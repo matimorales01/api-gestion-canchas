@@ -95,9 +95,8 @@ label {
   transition: background-color 0.3s ease;
 }
 .recuperarContainer {
-  color: #333333; /* gris oscuro, texto visible sobre fondo claro */
-  background-color: #f9f9f9; /* fondo claro */
-  /* otros estilos */
+  color: #333333;
+  background-color: #f9f9f9;
 }
 
 .recoverButton {

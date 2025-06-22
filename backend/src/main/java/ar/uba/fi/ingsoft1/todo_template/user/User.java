@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 import java.util.Collection;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class User implements UserDetails, UserCredentials {
     @Column(nullable = false)
     private String password;
 
-    @Column(unique= true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -51,6 +50,9 @@ public class User implements UserDetails, UserCredentials {
     private String role;
 
 
+    @Column(nullable = true)
+    private String pendingInviteToken;
+
     public User() {}
 
     public User(String username, String password, String email, String firstName, String lastName, String gender, Integer age, String zone, String role) {
@@ -64,9 +66,16 @@ public class User implements UserDetails, UserCredentials {
         this.zone = zone;
         this.state = false;
         this.role = role;
+        this.pendingInviteToken = null;
     }
-    
 
+    public String getPendingInviteToken() {
+        return pendingInviteToken;
+    }
+
+    public void setPendingInviteToken(String pendingInviteToken) {
+        this.pendingInviteToken = pendingInviteToken;
+    }
 
     @Override
     public String email() {

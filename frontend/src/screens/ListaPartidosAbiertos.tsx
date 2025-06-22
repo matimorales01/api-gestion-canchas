@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import {
     usePartidosAbiertos,
     useInscribirPartido,
     useDesinscribirPartido,
 } from "@/services/PartidoService";
+import { useToken } from "@/services/TokenContext";
 import styles from "../styles/PartidosAbiertos.module.css";
 
 interface Jugador {
@@ -43,6 +45,37 @@ function formatearFecha(fechaIso: string): string {
     return `${dd}/${mm}/${yyyy}`;
 }
 
+const BASE_API_URL = import.meta.env.VITE_BASE_API_URL || "http://localhost:30002";
+
+export async function generarInvitacion({
+                                            canchaId,
+                                            fechaPartido,
+                                            horaPartido,
+                                            email,
+                                            accessToken,
+                                        }: {
+    canchaId: number;
+    fechaPartido: string;
+    horaPartido: string;
+    email?: string;
+    accessToken: string;
+}) {
+    const url = `${BASE_API_URL}/partidos/abierto/${canchaId}/${fechaPartido}/${horaPartido}/invitar`;
+    const options: RequestInit = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`,
+        },
+        body: email ? JSON.stringify({ email }) : undefined,
+    };
+    const resp = await fetch(url, options);
+    if (!resp.ok) {
+        throw new Error("Error generando la invitación");
+    }
+    return resp.json();
+}
+
 const PartidosAbiertos = () => {
     const { data: partidos = [], isLoading, isError } = usePartidosAbiertos() as {
         data: PartidoAbierto[],
@@ -53,7 +86,6 @@ const PartidosAbiertos = () => {
     const desinscribir = useDesinscribirPartido();
 
     const [partidosState, setPartidosState] = useState<PartidoAbierto[]>(partidos);
-
     const [mensaje, setMensaje] = useState<string | null>(null);
 
     const [showModal, setShowModal] = useState(false);
@@ -62,6 +94,19 @@ const PartidosAbiertos = () => {
 
     const [loadingInscribirId, setLoadingInscribirId] = useState<string | null>(null);
     const [loadingDesinscribirId, setLoadingDesinscribirId] = useState<string | null>(null);
+
+    const [loadingInviteId, setLoadingInviteId] = useState<string | null>(null);
+
+    const [tokenState] = useToken();
+    const accessToken = tokenState?.accessToken;
+
+    const location = useLocation();
+    useEffect(() => {
+        if (location.state && location.state.showInviteMsg) {
+            setMensaje("¡Te inscribiste exitosamente al partido al que fuiste invitado!");
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state]);
 
     useEffect(() => {
         setPartidosState(partidos);
@@ -151,6 +196,37 @@ const PartidosAbiertos = () => {
             `${partido.canchaNombre} - ${formatearFecha(partido.fechaPartido)} ${partido.horaPartido}`
         );
         setShowModal(true);
+    };
+
+    const handleInvitarAmigos = async (partido: PartidoAbierto) => {
+        const key = partido.canchaId + partido.fechaPartido + partido.horaPartido;
+        setLoadingInviteId(key);
+        try {
+            if (!accessToken) {
+                setMensaje("No hay token de autenticación.");
+                setLoadingInviteId(null);
+                return;
+            }
+            const res = await generarInvitacion({
+                canchaId: partido.canchaId,
+                fechaPartido: partido.fechaPartido,
+                horaPartido: partido.horaPartido,
+                accessToken,
+            });
+            if (res && res.url) {
+                await navigator.clipboard.writeText(res.url);
+                setMensaje(
+                    `¡Link de invitación copiado al portapapeles!\n${res.url}`
+                );
+            } else {
+                setMensaje("No se pudo generar el link de invitación.");
+            }
+        } catch (e: any) {
+            setMensaje(
+                "No se pudo generar la invitación. " + (e?.message ?? "")
+            );
+        }
+        setLoadingInviteId(null);
     };
 
     return (
@@ -253,7 +329,6 @@ const PartidosAbiertos = () => {
                                         {partido.emailOrganizador}
                                     </span>
                                 </div>
-
                                 <div className={styles.infoRow}>
                                     <button
                                         className={styles.btnSecundario}
@@ -262,7 +337,17 @@ const PartidosAbiertos = () => {
                                         Ver jugadores inscriptos
                                     </button>
                                 </div>
-
+                                {partido.inscripto && (
+                                    <div className={styles.infoRow}>
+                                        <button
+                                            className={styles.btnGreen}
+                                            disabled={loadingInviteId === key}
+                                            onClick={() => handleInvitarAmigos(partido)}
+                                        >
+                                            {loadingInviteId === key ? "Generando link..." : "Invitar amigos"}
+                                        </button>
+                                    </div>
+                                )}
                                 <div className={styles.acciones}>{accion}</div>
                             </div>
                         );
