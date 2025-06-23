@@ -86,6 +86,21 @@ export const Navigation = () => {
           <Route path="/">
             <MainScreen />
           </Route>
+          <Route path="/crear-equipo">
+            <CrearEquipo />
+          </Route>
+          <Route path="/mis-equipos">
+            <MisEquipos />
+          </Route>
+          <Route path="/admin/equipos/:nombreEquipo">
+            <EditarEquipoScreen />
+          </Route>
+          <Route path="/listar-torneos">
+            <UserListaTorneo />
+          </Route>
+          <Route path="/listar-partidos-abiertos">
+            <ListaPartidosAbiertos />
+          </Route>
           <Route path="/crear-reserva">
             <ReservasScreen />
           </Route>
@@ -119,6 +134,12 @@ export const Navigation = () => {
           </Route>
           <Route path="/crear-equipo">
             <CrearEquipo />
+          </Route>
+          <Route path="/mis-equipos">
+            <MisEquipos />
+          </Route>
+          <Route path="/admin/equipos/:nombreEquipo">
+            <EditarEquipoScreen />
           </Route>
           <Route path="/listar-torneos">
             <UserListaTorneo />
