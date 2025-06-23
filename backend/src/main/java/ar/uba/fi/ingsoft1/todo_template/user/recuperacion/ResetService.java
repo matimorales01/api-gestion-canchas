@@ -2,6 +2,7 @@ package ar.uba.fi.ingsoft1.todo_template.user.recuperacion;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +42,7 @@ public class ResetService {
 
         String resetLink = "http://localhost:5173/change-password/" + token;
 
-        emailService.sendVerificationEmail(
+        emailService.sendResetPasswordEmail(
                 user.getEmail(),
                 "Recuperación de contraseña",
                 resetLink
@@ -50,7 +51,7 @@ public class ResetService {
         return "Enlace de recuperación enviado al correo electrónico: " + user.getEmail();
     }
 
-    public String changePassword(String token, ChangePasswordDTO changePasswordDTO) {
+    public Map<String, String> changePassword(String token, ChangePasswordDTO changePasswordDTO) {
         ResetToken resetToken = resetRepository.findById(token)
                 .orElseThrow(() -> new RuntimeException("Token de recuperación no encontrado"));
 
@@ -64,6 +65,7 @@ public class ResetService {
         userRepository.save(user);
         resetRepository.delete(resetToken);
 
-        return "Contraseña cambiada exitosamente";
+        return Map.of("message", "Contraseña cambiada exitosamente");
     }
+
 }

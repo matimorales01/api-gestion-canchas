@@ -20,8 +20,7 @@ export interface Partido {
 
 export interface Jugador {
   id: number;
-  firstName: string;
-  lastName: string;
+  nombre: string;
   email: string;
 }
 

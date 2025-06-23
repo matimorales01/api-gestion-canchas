@@ -162,3 +162,33 @@ export function useDesinscribirPartido() {
         },
     });
 }
+
+export function useGenerarInvitacion() {
+    return useMutation({
+        mutationFn: async ({
+                               canchaId,
+                               fechaPartido,
+                               horaPartido,
+                               accessToken,
+                           }: {
+            canchaId: number;
+            fechaPartido: string;
+            horaPartido: string;
+            accessToken: string;
+        }) => {
+            const url = `${BASE_API_URL}/partidos/abierto/${canchaId}/${fechaPartido}/${horaPartido}/invitar`;
+            const options: RequestInit = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${accessToken}`,
+                },
+            };
+            const resp = await fetch(url, options);
+            if (!resp.ok) {
+                throw new Error("Error generando la invitación");
+            }
+            return resp.json();
+        }
+    });
+}

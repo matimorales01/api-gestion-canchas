@@ -1,9 +1,8 @@
 
 import "./Estadisticas.css";
 
-import { ScatterChart, ResponsiveContainer, ComposedChart, Scatter, PieChart, Pie, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, CartesianGrid, Legend } from "recharts";
+import { ScatterChart, ResponsiveContainer, Scatter, PieChart, Pie, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, CartesianGrid, Legend } from "recharts";
 
-// Función para calcular color según valor
 const getColor = (value) => {
   if (value > 7) return "#00429d";
   if (value > 4) return "#2a72d9";
@@ -228,58 +227,3 @@ export const MiComposedChart = ({  canchas, selectedId, handleRowClick }) => {
     };
 
 
-export const CrearPartidoAbiertoForm = ({ onBack }) => {
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Aquí pondrías la lógica para crear el partido abierto
-        alert("Partido Abierto creado!");
-    };
-
-    return (
-        <div>
-        <h2>Crear Partido Abierto</h2>
-        <form onSubmit={handleSubmit}>
-            <div>
-            <label>Nombre del Partido:</label>
-            <input type="text" name="nombre" required />
-            </div>
-            <div>
-            <label>Descripción:</label>
-            <textarea name="descripcion" />
-            </div>
-            <button type="submit">Crear Partido Abierto</button>
-            <button type="button" onClick={onBack} style={{ marginLeft: "10px" }}>
-            Volver
-            </button>
-        </form>
-        </div>
-    );
-    }
-
-    export const CrearPartidoCerradoForm = ({ onBack }) => {
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            // Aquí pondrías la lógica para crear el partido cerrado
-            alert("Partido Cerrado creado!");
-        };
-
-        return (
-            <div>
-            <h2>Crear Partido Cerrado</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                <label>Nombre del Partido:</label>
-                <input type="text" name="nombre" required />
-                </div>
-                <div>
-                <label>Descripción:</label>
-                <textarea name="descripcion" />
-                </div>
-                <button type="submit">Crear Partido Cerrado</button>
-                <button type="button" onClick={onBack} style={{ marginLeft: "10px" }}>
-                Volver
-                </button>
-            </form>
-            </div>
-        );
-    }

@@ -4,7 +4,7 @@ import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.canchas.CanchaRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
-
+import ar.uba.fi.ingsoft1.todo_template.invitacion.InvitacionService;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaId;
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
@@ -12,16 +12,19 @@ import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaService;
 import ar.uba.fi.ingsoft1.todo_template.user.verificacion.EmailService;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
+import java.util.ArrayList;
+
 
 import jakarta.transaction.Transactional;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PartidoService {
@@ -33,7 +36,9 @@ public class PartidoService {
     private final CanchaRepository  canchaRepository;
     private final PartidoFactory    partidoFactory;
     private final ReservaService    reservaService;
+    private final InvitacionService invitacionService;
 
+    @Autowired
     public PartidoService(
             PartidoRepository partidoRepository,
             EmailService emailService,
@@ -41,7 +46,8 @@ public class PartidoService {
             ReservaRepository reservaRepository,
             CanchaRepository canchaRepository,
             PartidoFactory partidoFactory,
-            ReservaService reservaService
+            ReservaService reservaService,
+            InvitacionService invitacionService
     ) {
         this.partidoRepository = partidoRepository;
         this.emailService      = emailService;
@@ -50,8 +56,8 @@ public class PartidoService {
         this.canchaRepository  = canchaRepository;
         this.partidoFactory    = partidoFactory;
         this.reservaService    = reservaService;
+        this.invitacionService = invitacionService;
     }
-
 
     private User autentificarUser() {
         JwtUserDetails infoUser = (JwtUserDetails) SecurityContextHolder
@@ -59,7 +65,7 @@ public class PartidoService {
         User organizador = userRepository.findByEmail(infoUser.email())
                 .orElseThrow(() -> new NotFoundException("El email no está registrado"));
 
-        if (!organizador.getState())
+        if (!organizador.isVerified())
             throw new IllegalStateException("Antes de crear un partido debe estar registrado");
         return organizador;
     }
@@ -82,7 +88,6 @@ public class PartidoService {
         );
     }
 
-
     @Transactional
     public Partido crearPartido(PartidoCreateDTO dto) {
         User organizador = autentificarUser();
@@ -94,6 +99,8 @@ public class PartidoService {
                 .orElseThrow(() -> new NotFoundException("Cancha no encontrada"));
 
         Partido partido = partidoFactory.crearPartido(dto, cancha, organizador);
+
+        partido.inscribirJugador(organizador);
 
         Partido partidoGuardado = partidoRepository.save(partido);
 
@@ -107,11 +114,6 @@ public class PartidoService {
 
         envioDeEmailPorCreacion(organizador.getEmail(), partidoGuardado);
         return partidoGuardado;
-    }
-
-
-    public List<Partido> obtenerTodosLosPartidos() {
-        return partidoRepository.findAll();
     }
 
     public List<Partido> obtenerPartidosAbiertos() {
@@ -139,25 +141,25 @@ public class PartidoService {
 
     @Transactional
     public List<Partido> historialPartidosAbiertosPorUsuario(String userId) {
-        List<Partido> partidos = partidoRepository
+        List<Partido> comoOrganizador = partidoRepository
                 .findByTipoPartidoAndOrganizadorUsername(TipoPartido.ABIERTO, userId);
-        partidos.forEach(p -> p.getJugadores().size());
-        return partidos;
+
+        List<Partido> comoJugador = partidoRepository
+                .findByTipoPartidoAndJugadores_Username(TipoPartido.ABIERTO, userId);
+
+        Set<Partido> todos = new HashSet<>(comoOrganizador);
+        todos.addAll(comoJugador);
+
+        todos.forEach(p -> p.getJugadores().size());
+
+        return new ArrayList<>(todos);
     }
+
 
     @Transactional
     public List<Partido> historialPartidosCerradosPorUsuario(String userId) {
         return partidoRepository
                 .findByTipoPartidoAndOrganizadorUsername(TipoPartido.CERRADO, userId);
-    }
-
-
-    public Optional<Partido> obtenerPartidoPorIdpartido(PartidoId idpartido) {
-        return partidoRepository.findById(idpartido);
-    }
-
-    public void eliminarPartido(PartidoId idpartido) {
-        partidoRepository.deleteById(idpartido);
     }
 
 
@@ -168,6 +170,13 @@ public class PartidoService {
 
         if (partido.getTipoPartido() != TipoPartido.ABIERTO)
             throw new IllegalStateException("El partido no es de tipo abierto.");
+
+        LocalDate hoy   = LocalDate.now();
+        LocalTime ahora = LocalTime.now();
+        boolean yaEmpezo = partido.getFechaPartido().isBefore(hoy) ||
+                (partido.getFechaPartido().isEqual(hoy) && partido.getHoraPartido().isBefore(ahora));
+        if (yaEmpezo)
+            throw new IllegalStateException("No se puede inscribir, el partido ya comenzó.");
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
@@ -219,4 +228,12 @@ public class PartidoService {
                 partido.getHoraPartido().toString()
         );
     }
+
+
+    public String generarInvitacion(Long canchaId, LocalDate fecha, LocalTime hora, String email) {
+        PartidoId partidoId = new PartidoId(canchaId, fecha, hora);
+        return invitacionService.generarInvitacion(partidoId, email);
+    }
+
+
 }

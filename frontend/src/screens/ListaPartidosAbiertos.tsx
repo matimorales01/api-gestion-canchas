@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import {
     usePartidosAbiertos,
     useInscribirPartido,
     useDesinscribirPartido,
+    useGenerarInvitacion
 } from "@/services/PartidoService";
+import { useToken } from "@/services/TokenContext";
 import styles from "../styles/PartidosAbiertos.module.css";
 
 interface Jugador {
     id: string | number;
-    firstName: string;
-    lastName: string;
+    nombre: string;
     email: string;
 }
 
@@ -51,9 +53,9 @@ const PartidosAbiertos = () => {
     };
     const inscribir = useInscribirPartido();
     const desinscribir = useDesinscribirPartido();
+    const generarInvitacion = useGenerarInvitacion();
 
     const [partidosState, setPartidosState] = useState<PartidoAbierto[]>(partidos);
-
     const [mensaje, setMensaje] = useState<string | null>(null);
 
     const [showModal, setShowModal] = useState(false);
@@ -62,6 +64,22 @@ const PartidosAbiertos = () => {
 
     const [loadingInscribirId, setLoadingInscribirId] = useState<string | null>(null);
     const [loadingDesinscribirId, setLoadingDesinscribirId] = useState<string | null>(null);
+    const [loadingInviteId, setLoadingInviteId] = useState<string | null>(null);
+
+    const [tokenState] = useToken();
+    const accessToken = tokenState.state === "LOGGED_IN" ? tokenState.accessToken : undefined;
+
+    const location = useLocation();
+    const showInviteMsg = Boolean(
+        (location.state as { showInviteMsg?: boolean } | null)?.showInviteMsg
+    );
+
+    useEffect(() => {
+        if (showInviteMsg) {
+            setMensaje("¡Te inscribiste exitosamente al partido al que fuiste invitado!");
+            window.history.replaceState({}, document.title);
+        }
+    }, [showInviteMsg]);
 
     useEffect(() => {
         setPartidosState(partidos);
@@ -151,6 +169,36 @@ const PartidosAbiertos = () => {
             `${partido.canchaNombre} - ${formatearFecha(partido.fechaPartido)} ${partido.horaPartido}`
         );
         setShowModal(true);
+    };
+
+    const handleInvitarAmigos = async (partido: PartidoAbierto) => {
+        const key = partido.canchaId + partido.fechaPartido + partido.horaPartido;
+        setLoadingInviteId(key);
+        if (!accessToken) {
+            setMensaje("No hay token de autenticación.");
+            setLoadingInviteId(null);
+            return;
+        }
+        try {
+            const res = await generarInvitacion.mutateAsync({
+                canchaId: partido.canchaId,
+                fechaPartido: partido.fechaPartido,
+                horaPartido: partido.horaPartido,
+                accessToken,
+            });
+            if (res && res.url) {
+                await navigator.clipboard.writeText(res.url);
+                setMensaje(
+                    `¡Link de invitación copiado al portapapeles!\n${res.url}`
+                );
+            } else {
+                setMensaje("No se pudo generar el link de invitación.");
+            }
+        } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : String(e);
+            setMensaje("No se pudo generar la invitación. " + msg);
+        }
+        setLoadingInviteId(null);
     };
 
     return (
@@ -253,7 +301,6 @@ const PartidosAbiertos = () => {
                                         {partido.emailOrganizador}
                                     </span>
                                 </div>
-
                                 <div className={styles.infoRow}>
                                     <button
                                         className={styles.btnSecundario}
@@ -262,7 +309,17 @@ const PartidosAbiertos = () => {
                                         Ver jugadores inscriptos
                                     </button>
                                 </div>
-
+                                {partido.inscripto && (
+                                    <div className={styles.infoRow}>
+                                        <button
+                                            className={styles.btnGreen}
+                                            disabled={loadingInviteId === key}
+                                            onClick={() => handleInvitarAmigos(partido)}
+                                        >
+                                            {loadingInviteId === key ? "Generando link..." : "Invitar amigos"}
+                                        </button>
+                                    </div>
+                                )}
                                 <div className={styles.acciones}>{accion}</div>
                             </div>
                         );
@@ -282,7 +339,7 @@ const PartidosAbiertos = () => {
                                 ) : (
                                     jugadoresActual.map((j) => (
                                         <li key={j.id}>
-                                            {j.firstName} {j.lastName}{" "}
+                                            {j.nombre}{" "}
                                             <span className={styles.jugadorEmail}>
                                                 ({j.email})
                                             </span>

@@ -92,7 +92,6 @@ export function useSignup() {
       }
       const text = await response.json();
       console.log(text);
-     // const tokenData = await response.text();
       setToken({ state: "LOGGED_IN", accessToken :text });
 
       setTimeout(() => {

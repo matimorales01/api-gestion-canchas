@@ -5,17 +5,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
-
-
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.UserCreateDTO;
 
 import java.util.Map;
@@ -31,14 +24,14 @@ public class UserRestController {
     }
 
     @PostMapping(produces = "application/json")
-    @Operation(summary = "Create a new user")
-    public ResponseEntity<String> signUp(
-            @Valid @NonNull @RequestBody UserCreateDTO data
-    ) throws MethodArgumentNotValidException {
-        userService.createUser(data);
+    @Operation(summary = "Create a new user (soporta token de invitación opcional)")
+    public ResponseEntity<Map<String, String>> signUp(
+            @Valid @RequestBody UserCreateDTO data,
+            @RequestParam(name = "invite", required = false) String invite
+    ) {
+        userService.createUser(data, invite);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Message", "Usuario creado exitosamente")
-                .body("Usuario creado exitosamente");
+                .body(Map.of("message", "Usuario creado exitosamente"));
     }
 
 

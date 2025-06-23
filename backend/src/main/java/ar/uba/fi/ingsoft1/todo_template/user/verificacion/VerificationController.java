@@ -1,6 +1,5 @@
 package ar.uba.fi.ingsoft1.todo_template.user.verificacion;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,11 +11,14 @@ import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
 @RestController
 public class VerificationController {
 
-    @Autowired
-    private VerificationTokenRepository tokenRepo;
+    private final VerificationTokenRepository tokenRepo;
 
-    @Autowired
-    private UserRepository userRepo;
+    private final UserRepository userRepo;
+
+    public VerificationController(VerificationTokenRepository tokenRepo, UserRepository userRepo) {
+        this.tokenRepo = tokenRepo;
+        this.userRepo = userRepo;
+    }
 
     @GetMapping("/verify")
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
@@ -31,7 +33,7 @@ public class VerificationController {
         }
 
         User user = vt.getUser();
-        user.setState(true);
+        user.setVerified(true);
         userRepo.save(user);
         tokenRepo.delete(vt);
 

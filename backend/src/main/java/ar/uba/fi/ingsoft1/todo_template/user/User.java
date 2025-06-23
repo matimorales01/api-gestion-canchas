@@ -3,12 +3,9 @@ package ar.uba.fi.ingsoft1.todo_template.user;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-
 import java.util.Collection;
 import java.util.List;
 
@@ -22,7 +19,7 @@ public class User implements UserDetails, UserCredentials {
     @Column(nullable = false)
     private String password;
 
-    @Column(unique= true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -31,21 +28,23 @@ public class User implements UserDetails, UserCredentials {
     @Column(nullable = false)
     private String lastName;
 
-    @Column(nullable = true)
+    @Column()
     private String gender;
 
-    @Column(nullable = true)
+    @Column()
     private Integer age;
 
-    @Column(nullable = true)
+    @Column()
     private String zone;
 
     @Column(nullable = false)
-    private boolean state;
+    private boolean verified;
 
     @Column(nullable = false)
     private String role;
 
+    @Column()
+    private String pendingInviteToken;
 
     public User() {}
 
@@ -58,11 +57,18 @@ public class User implements UserDetails, UserCredentials {
         this.gender = gender;
         this.age = age;
         this.zone = zone;
-        this.state = false;
+        this.verified = false;
         this.role = role;
+        this.pendingInviteToken = null;
     }
-    
 
+    public String getPendingInviteToken() {
+        return pendingInviteToken;
+    }
+
+    public void setPendingInviteToken(String pendingInviteToken) {
+        this.pendingInviteToken = pendingInviteToken;
+    }
 
     @Override
     public String email() {
@@ -96,12 +102,12 @@ public class User implements UserDetails, UserCredentials {
         return role;
     }
 
-    public void setState(boolean state) {
-        this.state = state;
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 
-    public boolean getState() {
-        return state;
+    public boolean isVerified() {
+        return verified;
     }
 
     public String getNombre() {

@@ -19,9 +19,7 @@ public class StateReserva {
     @Column(nullable = true)
     private String emailOrganizador = null;
 
-    public StateReserva() {
-        // Constructor por defecto para JPA
-    }
+    public StateReserva() {}
     
     public StateReserva(TipoPartido tipo, String email) {
         this.state = "OCUPADA";

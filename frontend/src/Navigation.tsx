@@ -2,7 +2,7 @@ import { Redirect, Route, Switch } from "wouter";
 
 import { LoginScreen } from "@/screens/LoginScreen";
 import { MainScreen } from "@/screens/MainScreen";
-import { SignupScreen } from "@/screens/SignupScreen";
+import  SignupScreen  from "@/screens/SignupScreen";
 import { useToken } from "@/services/TokenContext";
 import { getUserRole } from "@/services/getUserRole";
 import CanchasScreen from "@/screens/CrearCancha";
@@ -120,6 +120,10 @@ export const Navigation = () => {
           </Route>
             <Route path="/ver-historial">
                 <HistorialScreen />
+            </Route>
+
+            <Route path="/mis-torneos">
+                <MisTorneosScreen />
             </Route>
           <Route>
             <Redirect href="/" />

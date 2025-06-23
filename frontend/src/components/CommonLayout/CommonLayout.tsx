@@ -86,6 +86,9 @@ const LoggedInLinks = () => {
             <li>
                 <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
             </li>
+            <li>
+                <Link href="/ver-historial">Mis partidos</Link>
+            </li>
 
             {(role === "ORGANIZADOR" || role === "ADMINISTRADOR") && (
                 <>

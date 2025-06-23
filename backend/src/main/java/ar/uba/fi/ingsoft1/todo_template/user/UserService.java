@@ -3,8 +3,10 @@ package ar.uba.fi.ingsoft1.todo_template.user;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.UserAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotVerifiedException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.EmailAlreadyExistsException;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.InvitacionInvalidaException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtService;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.invitacion.InvitacionService;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.RefreshDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.TokenDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.UserCreateDTO;
@@ -36,14 +38,16 @@ public class UserService implements UserDetailsService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final RefreshTokenService refreshTokenService;
     private final EmailService emailService;
+    private final InvitacionService invitacionService;
 
-    UserService(
+    public UserService(
             JwtService jwtService,
             PasswordEncoder passwordEncoder,
             UserRepository userRepository,
             VerificationTokenRepository verificationTokenRepository,
             RefreshTokenService refreshTokenService,
-            EmailService emailService
+            EmailService emailService,
+            InvitacionService invitacionService
     ) {
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
@@ -51,6 +55,7 @@ public class UserService implements UserDetailsService {
         this.verificationTokenRepository = verificationTokenRepository;
         this.refreshTokenService = refreshTokenService;
         this.emailService = emailService;
+        this.invitacionService = invitacionService;
     }
 
     @Override
@@ -63,13 +68,16 @@ public class UserService implements UserDetailsService {
                 });
     }
 
-    void createUser(UserCreateDTO data) throws UserAlreadyExistsException, EmailAlreadyExistsException {
+    public void createUser(UserCreateDTO data, String pendingInviteToken) throws UserAlreadyExistsException, EmailAlreadyExistsException {
         if (userRepository.findByUsername(data.username()).isPresent()) {
             throw new UserAlreadyExistsException(data.username());
         } else if (userRepository.findByEmail(data.email()).isPresent()) {
             throw new EmailAlreadyExistsException(data.email());
         } else {
             var user = data.asUser(passwordEncoder::encode);
+            if (pendingInviteToken != null && !pendingInviteToken.isBlank()) {
+                user.setPendingInviteToken(pendingInviteToken);
+            }
             userRepository.save(user);
 
             String token = UUID.randomUUID().toString();
@@ -90,44 +98,54 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    Optional<TokenDTO> loginUser(UserCredentials data) throws UserNotVerifiedException {
+    public Optional<TokenDTO> loginUser(UserCredentials data) throws UserNotVerifiedException {
         Optional<User> maybeUser = userRepository.findByEmail(data.email());
 
-        if (!maybeUser.isEmpty() && !maybeUser.get().getState()) {
-            throw new UserNotVerifiedException();
-        }
+        boolean wasInvited = false;
 
-        return maybeUser
-                .filter(user -> passwordEncoder.matches(data.password(), user.getPassword()))
-                .map(this::generateTokens);
+        if (maybeUser.isPresent()) {
+            User user = maybeUser.get();
+            if (!user.isVerified()) {
+                throw new UserNotVerifiedException();
+            }
+
+            if (user.getPendingInviteToken() != null && !user.getPendingInviteToken().isBlank()) {
+                try {
+                    invitacionService.aceptarInvitacion(user.getPendingInviteToken(), user.getUsername());
+                    user.setPendingInviteToken(null);
+                    userRepository.save(user);
+                    wasInvited = true;
+                } catch (Exception ex) {
+                    throw new InvitacionInvalidaException();
+                }
+            }
+
+            if (passwordEncoder.matches(data.password(), user.getPassword())) {
+                return Optional.of(generateTokens(user, wasInvited));
+            }
+        }
+        return Optional.empty();
     }
 
-    Optional<TokenDTO> refresh(RefreshDTO data) {
+    public Optional<TokenDTO> refresh(RefreshDTO data) {
         return refreshTokenService.findByValue(data.refreshToken())
                 .map(RefreshToken::user)
-                .map(this::generateTokens);
+                .map(user -> generateTokens(user, false));
     }
 
-    private TokenDTO generateTokens(User user) {
+    private TokenDTO generateTokens(User user, boolean wasInvitedAndInscribed) {
         String accessToken = jwtService.createToken(new JwtUserDetails(
                 user.getUsername(),
                 user.getEmail(),
                 user.getRole()
         ));
         RefreshToken refreshToken = refreshTokenService.createFor(user);
-        return new TokenDTO(accessToken, refreshToken.value(), user.getRole());
+        return new TokenDTO(accessToken, refreshToken.value(), user.getRole(), wasInvitedAndInscribed);
     }
 
-
-    public String obtenerEmailPorId(String username){
-        return userRepository.findById(username)
-                .orElseThrow(()->new RuntimeException("Usuario no encontrado"))
-                .getEmail();
-    }
 
     public User obtenerUsuarioPorId(String username){
         return userRepository.findById(username)
-                .orElseThrow(()-> new RuntimeException("Usuario no encontrado con id: "+ username));
-                
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + username));
     }
 }

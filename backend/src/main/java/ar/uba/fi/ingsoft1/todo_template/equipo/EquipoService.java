@@ -62,4 +62,6 @@ public class EquipoService {
     
         return equipos.stream().map(Equipo::asEquipoDTO).toList();
     }
+
+
 }
