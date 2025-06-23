@@ -1,6 +1,5 @@
 package ar.uba.fi.ingsoft1.todo_template.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,11 +20,11 @@ import java.util.List;
 @EnableWebSecurity(debug = false)
 public class SecurityConfig {
 
-    public static final String[] PUBLIC_ENDPOINTS = {"/users", "/sessions"};
+    public static final String[] PUBLIC_ENDPOINTS = {"/users", "/sessions", "/verify", "/change-password", "/change-password/**"};
 
     private final JwtAuthFilter authFilter;
 
-    @Autowired
+
     SecurityConfig(JwtAuthFilter authFilter) {
         this.authFilter = authFilter;
     }

@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,6 @@ public class JwtService {
     private final String secret;
     private final Long expiration;
 
-    @Autowired
     JwtService(
             @Value("${jwt.access.secret}") String secret,
             @Value("${jwt.access.expiration}") Long expiration
@@ -32,6 +30,7 @@ public class JwtService {
                 .subject(claims.username())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
+                .claim("email", claims.email())
                 .claim("role", claims.role())
                 .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
@@ -47,11 +46,13 @@ public class JwtService {
             if (claims.containsKey("sub")
                     && claims.containsKey("role")
                     && claims.get("role") instanceof String role
+                    && claims.containsKey("email")
+                    && claims.get("email") instanceof String email
             ) {
-                return Optional.of(new JwtUserDetails(claims.getSubject(), role));
+                return Optional.of(new JwtUserDetails(claims.getSubject(), email, role));
             }
         } catch (Exception e) {
-            // Some exception happened during jwt parse
+            
         }
         return Optional.empty();
     }
