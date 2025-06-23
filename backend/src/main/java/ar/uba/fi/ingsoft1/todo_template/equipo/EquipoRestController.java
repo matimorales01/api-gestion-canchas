@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,9 +40,10 @@ public class EquipoRestController {
             .body(equipoCreado);
     }
 
-    @PatchMapping(produces = "application/json")
+    @PatchMapping(value = "/{teamName}", produces = "application/json")
     @Operation(summary = "Actualizar un equipo existente unicamente por el dueño")
     public ResponseEntity<EquipoDTO> actualizarEquipo(
+            @PathVariable String teamName,
             @Valid @NonNull @RequestBody EquipoUpdateDTO equipoDTO
     ) {
         return ResponseEntity.ok(equipoService.actualizarEquipo(equipoDTO));

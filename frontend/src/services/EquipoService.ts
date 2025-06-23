@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BASE_API_URL } from "@/config/app-query-client";
 import { useToken } from "@/services/TokenContext";
 import { EquipoRequest, EquipoResponse } from "@/models/Equipo";
@@ -62,4 +62,42 @@ export function useGetMisEquipos() {
         },
         enabled: tokenState.state === "LOGGED_IN",
     });
+}
+
+export function useEditEquipo (options?: {
+  onSuccess?: (data: EquipoRequest) => void;
+  onError?: (error: unknown) => void;
+}) {
+  const [tokenState] = useToken();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ nombre, data }: { nombre: string, data: Partial<EquipoRequest> }) => {
+      if (tokenState.state !== "LOGGED_IN") {
+        throw new Error("No estás logueado. No se puede editar el equipo.");
+      }
+
+      const response = await fetch(`${BASE_API_URL}/equipos/${nombre}`, {
+        method: "PATCH",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${tokenState.accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al editar al equipo: ${errorText}`);
+      }
+
+      return (await response.json()) as EquipoRequest;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["misEquipos"] });
+      if (options?.onSuccess) options.onSuccess(data);
+    },
+    onError: options?.onError,
+  });
 }
