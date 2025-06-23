@@ -38,7 +38,7 @@ public class PartidoRestController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .header("Location", "/partidos/" + partido.getIdPartido())
-                .body(PartidoAbiertoResponseDTO.fromEntity(partido, partido.getOrganizador().getId()));
+                .body(PartidoAbiertoResponseDTO.fromEntity(partido, partido.getOrganizador().getUsername()));
     }
 
     @Operation(summary = "Crear un partido cerrado")
@@ -56,7 +56,7 @@ public class PartidoRestController {
     @GetMapping("/abiertos")
     public ResponseEntity<List<PartidoAbiertoResponseDTO>> listarPartidosAbiertos(Authentication authentication) {
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-        Long usuarioLogueadoId = userDetails.id().longValue();
+        String usuarioLogueadoId = userDetails.username();
         List<PartidoAbiertoResponseDTO> lista = partidoService.obtenerPartidosAbiertosIncluyendoInscripcion(usuarioLogueadoId);
         return ResponseEntity.ok(lista);
     }
@@ -82,7 +82,7 @@ public class PartidoRestController {
         Authentication authentication) {
 
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.id().longValue();
+        String userId = userDetails.username();
 
         PartidoId partidoId = new PartidoId(canchaId, fechaPartido, horaPartido);
         partidoService.inscribirAAbierto(partidoId, userId);
@@ -98,7 +98,7 @@ public class PartidoRestController {
         Authentication authentication) {
 
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.id().longValue();
+        String userId = userDetails.username();
 
         PartidoId partidoId = new PartidoId(canchaId, fechaPartido, horaPartido);
         partidoService.desinscribirDeAbierto(partidoId, userId);
@@ -109,7 +109,7 @@ public class PartidoRestController {
     @GetMapping("/mis-partidos")
     public ResponseEntity<Map<String, List<?>>> miHistorial(Authentication authentication) {
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-        Long usuarioLogueadoId = userDetails.id().longValue();
+        String usuarioLogueadoId = userDetails.username();
 
         List<PartidoAbiertoResponseDTO> partidosAbiertos =
                 partidoService.historialPartidosAbiertosPorUsuario(usuarioLogueadoId)
@@ -139,29 +139,10 @@ public class PartidoRestController {
     ) {
         String email = body != null ? body.get("email") : null;
         String token = partidoService.generarInvitacion(canchaId, fechaPartido, horaPartido, email);
-        String url = "https://localhost:5173/signup?invite=" + token;
+        String url = "http://localhost:5173/signup?invite=" + token;
         return ResponseEntity.ok(Map.of("inviteToken", token, "url", url));
     }
 
-    @Operation(summary = "Validar invitación")
-    @GetMapping("/invitar/{token}")
-    public ResponseEntity<?> validarInvitacion(@PathVariable String token) {
-        boolean valida = partidoService.validarInvitacion(token);
-        return ResponseEntity.ok(Map.of("valida", valida));
-    }
-
-    @Operation(summary = "Aceptar invitación y asociar usuario al partido")
-    @PostMapping("/invitar/{token}/aceptar")
-    public ResponseEntity<?> aceptarInvitacion(
-            @PathVariable String token,
-            Authentication authentication
-    ) {
-        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.id().longValue();
-
-        partidoService.aceptarInvitacion(token, userId);
-        return ResponseEntity.ok(Map.of("mensaje", "Inscripción por invitación exitosa"));
-    }
 
 
 

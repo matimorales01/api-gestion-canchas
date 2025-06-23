@@ -2,7 +2,6 @@ package ar.uba.fi.ingsoft1.todo_template.user.verificacion;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -10,13 +9,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
     private final String fromEmail;
 
-    public EmailService(@Value("${spring.mail.username}") String fromEmail) {
+    public EmailService(@Value("${spring.mail.username}") String fromEmail, JavaMailSender mailSender) {
         this.fromEmail = fromEmail;
+        this.mailSender = mailSender;
     }
 
     public void sendVerificationEmail(String toEmail, String subject, String verificationLink) {
@@ -42,28 +41,6 @@ public class EmailService {
         }
     }
 
-    public void sendResetPasswordEmail(String toEmail, String subject, String resetLink) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            helper.setFrom(fromEmail);
-            helper.setTo(toEmail);
-            helper.setSubject(subject);
-
-            String htmlContent = "<p>Hola,</p>"
-                    + "<p>Hemos recibido una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>"
-                    + "<p><a href=\"" + resetLink + "\">Restablecer mi contraseña</a></p>"
-                    + "<br><p>Este enlace expirará en 24 horas.</p>";
-
-            helper.setText(htmlContent, true);
-
-            mailSender.send(message);
-
-        } catch (MessagingException e) {
-            throw new RuntimeException("No se pudo enviar el correo de restablecimiento de contraseña", e);
-        }
-    }
 
     public void sendCreationPartido(String toEmail, String cancha, String fecha, String hora,String tipoPartido) {
         try {
@@ -134,4 +111,28 @@ public class EmailService {
             throw new RuntimeException("No se pudo enviar el correo de baja", e);
         }
     }
+
+    public void sendResetPasswordEmail(String toEmail, String subject, String resetLink) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+
+            String htmlContent = "<p>Hola,</p>"
+                    + "<p>Hemos recibido una solicitud para restablecer tu contraseña. Haz clic en el siguiente enlace para continuar:</p>"
+                    + "<p><a href=\"" + resetLink + "\">Restablecer mi contraseña</a></p>"
+                    + "<br><p>Este enlace expirará en 24 horas.</p>";
+
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            throw new RuntimeException("No se pudo enviar el correo de restablecimiento de contraseña", e);
+        }
+    }
+
 }

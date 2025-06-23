@@ -30,7 +30,6 @@ public class JwtService {
                 .subject(claims.username())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
-                .claim("id", claims.id())
                 .claim("email", claims.email())
                 .claim("role", claims.role())
                 .signWith(getSigningKey(), Jwts.SIG.HS256)
@@ -49,10 +48,8 @@ public class JwtService {
                     && claims.get("role") instanceof String role
                     && claims.containsKey("email")
                     && claims.get("email") instanceof String email
-                    && claims.containsKey("id")
             ) {
-                Integer id = claims.get("id", Integer.class);
-                return Optional.of(new JwtUserDetails(id, claims.getSubject(), email, role));
+                return Optional.of(new JwtUserDetails(claims.getSubject(), email, role));
             }
         } catch (Exception e) {
             

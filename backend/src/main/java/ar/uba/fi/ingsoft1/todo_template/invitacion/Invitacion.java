@@ -1,5 +1,6 @@
-package ar.uba.fi.ingsoft1.todo_template.partido;
+package ar.uba.fi.ingsoft1.todo_template.invitacion;
 
+import ar.uba.fi.ingsoft1.todo_template.partido.Partido;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 

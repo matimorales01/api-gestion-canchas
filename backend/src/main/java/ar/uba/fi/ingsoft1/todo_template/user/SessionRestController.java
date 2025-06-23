@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.NonNull;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotVerifiedException;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.RefreshDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.TokenDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.UserLoginDTO;
@@ -36,9 +33,8 @@ class SessionRestController {
     @Operation(summary = "Log in, creating a new session")
     @ResponseStatus(HttpStatus.CREATED)
     public TokenDTO login(
-            @Valid @NonNull @RequestBody UserLoginDTO data
-    ) throws MethodArgumentNotValidException, UserNotVerifiedException {
-
+            @Valid @RequestBody UserLoginDTO data
+    ) {
         return userService.loginUser(data)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
@@ -48,8 +44,8 @@ class SessionRestController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(responseCode = "401", description = "Invalid refresh token supplied", content = @Content)
     public TokenDTO refresh(
-            @Valid @NonNull @RequestBody RefreshDTO data
-    ) throws MethodArgumentNotValidException {
+            @Valid @RequestBody RefreshDTO data
+    ) {
         return userService
                 .refresh(data)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));

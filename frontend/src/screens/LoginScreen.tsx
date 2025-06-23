@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAppForm } from "@/config/use-app-form";
 import { LoginRequestSchema } from "@/models/Login";
 import { useLogin } from "@/services/UserServices";
@@ -8,7 +8,15 @@ import styles from "../styles/LoginScreen.module.css";
 
 export const LoginScreen = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showInviteMsg, setShowInviteMsg] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.showInviteMsg) {
+      setShowInviteMsg(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const { mutate, error } = useLogin();
 

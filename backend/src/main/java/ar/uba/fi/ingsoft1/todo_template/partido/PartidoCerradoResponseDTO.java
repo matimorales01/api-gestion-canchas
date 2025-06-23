@@ -11,7 +11,7 @@ public record PartidoCerradoResponseDTO(
         LocalTime horaPartido,
         String equipo1,
         String equipo2,
-        Long organizadorId,
+        String organizadorId,
         String emailOrganizador
 ) {
     public static PartidoCerradoResponseDTO fromEntity(Partido partido){
@@ -23,7 +23,7 @@ public record PartidoCerradoResponseDTO(
                 partido.getHoraPartido(),
                 partido.getEquipo1(),
                 partido.getEquipo2(),
-                partido.getOrganizador().getId(),
+                partido.getOrganizador().getUsername(),
                 partido.getOrganizador().getEmail()
         );
     }

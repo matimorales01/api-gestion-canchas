@@ -39,7 +39,7 @@ public class ReservaService {
         Cancha cancha = canchaRepo.findById(dto.canchaId())
             .orElseThrow(() -> new NotFoundException("Cancha con ID: '" + dto.canchaId() + "' no encontrada."));
         
-        List<Reserva> reservas = new ArrayList<Reserva>();
+        List<Reserva> reservas = new ArrayList<>();
         
         for (LocalDate fecha = dto.fechaInicial(); !fecha.isAfter(dto.fechaFinal()); fecha = fecha.plusDays(1)) {
             for (LocalTime hr = dto.horarioInicio(); !hr.isAfter(dto.horarioFin()); hr = hr.plusMinutes(dto.minutos())) {
@@ -54,7 +54,6 @@ public class ReservaService {
     }
 
     public ReservaDTO actualizarReserva(ReservaIdDTO dto) {
-        // Cambiar como se arma el ID de la cancha
         Cancha cancha = canchaRepo.findByNombre(dto.canchaName())
             .orElseThrow(() -> new NotFoundException("Cancha con nombre: '" + dto.canchaName() + "' no encontrada."));
     
@@ -76,22 +75,30 @@ public class ReservaService {
         User user = userRepo.findByEmail(userInfo.email())
             .orElseThrow(() -> new NotFoundException("Usuario con email: '" + userInfo.email() + "' no encontrado."));
             
-        List<Cancha> canchas = canchaRepo.findByPropietarioId(user.getId());
-        List<Reserva> reservas = new ArrayList<Reserva>();
+        List<Cancha> canchas = canchaRepo.findByPropietarioUsername(user.getUsername());
+        List<Reserva> reservas = new ArrayList<>();
         
-        canchas.forEach(cancha -> {
-            reservas.addAll(reservaRepo.findByCanchaId(cancha.getId()));
-        });
+        canchas.forEach(cancha -> reservas.addAll(reservaRepo.findByCanchaId(cancha.getId())));
 
         return reservas.stream().map(Reserva::toDTO).toList();
     }
 
     public List<ReservaDTO> obtenerDisponibles(LocalDate fecha, String zona) {
+        LocalDate hoy = LocalDate.now();
+        LocalTime ahora = LocalTime.now();
+
         return reservaRepo.findDisponibles(fecha, zona)
                 .stream()
+                .filter(reserva -> {
+                    if (fecha.isEqual(hoy)) {
+                        return !reserva.getHoraInicio().isBefore(ahora);
+                    }
+                    return fecha.isAfter(hoy);
+                })
                 .map(Reserva::toDTO)
                 .toList();
     }
+
 
     public void ocuparReserva(Cancha cancha, LocalDate fecha,
                               LocalTime inicio, LocalTime fin, Partido partido) {

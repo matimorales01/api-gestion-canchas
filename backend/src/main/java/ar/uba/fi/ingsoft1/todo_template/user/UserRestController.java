@@ -5,9 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
@@ -27,15 +25,15 @@ public class UserRestController {
 
     @PostMapping(produces = "application/json")
     @Operation(summary = "Create a new user (soporta token de invitación opcional)")
-    public ResponseEntity<String> signUp(
-            @Valid @NonNull @RequestBody UserCreateDTO data,
+    public ResponseEntity<Map<String, String>> signUp(
+            @Valid @RequestBody UserCreateDTO data,
             @RequestParam(name = "invite", required = false) String invite
-    ) throws MethodArgumentNotValidException {
+    ) {
         userService.createUser(data, invite);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header("Message", "Usuario creado exitosamente")
-                .body("Usuario creado exitosamente");
+                .body(Map.of("message", "Usuario creado exitosamente"));
     }
+
 
     @GetMapping("/me")
     @Operation(summary = "Get current logged-in user's name and email")
@@ -44,8 +42,7 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Long userId = Long.valueOf(jwtUser.id());
-        User user = userService.obtenerUsuarioPorId(userId);
+        User user = userService.obtenerUsuarioPorId(jwtUser.username());
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

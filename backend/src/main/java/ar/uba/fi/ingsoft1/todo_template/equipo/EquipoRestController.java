@@ -36,7 +36,6 @@ public class EquipoRestController {
     ) {
         EquipoDTO equipoCreado = equipoService.crearEquipo(equipoDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .header("Message", "Equipo creado exitosamente")
             .body(equipoCreado);
     }
 

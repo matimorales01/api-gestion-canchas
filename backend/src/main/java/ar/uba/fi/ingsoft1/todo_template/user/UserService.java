@@ -3,9 +3,10 @@ package ar.uba.fi.ingsoft1.todo_template.user;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.UserAlreadyExistsException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.UserNotVerifiedException;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.EmailAlreadyExistsException;
+import ar.uba.fi.ingsoft1.todo_template.common.exception.InvitacionInvalidaException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtService;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
-import ar.uba.fi.ingsoft1.todo_template.partido.InvitacionService;
+import ar.uba.fi.ingsoft1.todo_template.invitacion.InvitacionService;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.RefreshDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.TokenDTO;
 import ar.uba.fi.ingsoft1.todo_template.user.dtos.UserCreateDTO;
@@ -104,18 +105,18 @@ public class UserService implements UserDetailsService {
 
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
-            if (!user.getState()) {
+            if (!user.isVerified()) {
                 throw new UserNotVerifiedException();
             }
 
             if (user.getPendingInviteToken() != null && !user.getPendingInviteToken().isBlank()) {
                 try {
-                    invitacionService.aceptarInvitacion(user.getPendingInviteToken(), user.getId());
+                    invitacionService.aceptarInvitacion(user.getPendingInviteToken(), user.getUsername());
                     user.setPendingInviteToken(null);
                     userRepository.save(user);
                     wasInvited = true;
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    throw new InvitacionInvalidaException();
                 }
             }
 
@@ -134,7 +135,6 @@ public class UserService implements UserDetailsService {
 
     private TokenDTO generateTokens(User user, boolean wasInvitedAndInscribed) {
         String accessToken = jwtService.createToken(new JwtUserDetails(
-                user.getId().intValue(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getRole()
@@ -143,14 +143,9 @@ public class UserService implements UserDetailsService {
         return new TokenDTO(accessToken, refreshToken.value(), user.getRole(), wasInvitedAndInscribed);
     }
 
-    public String obtenerEmailPorId(Long idUser){
-        return userRepository.findById(idUser)
-                .orElseThrow(()->new RuntimeException("Usuario no encontrado"))
-                .getEmail();
-    }
 
-    public User obtenerUsuarioPorId(Long id){
-        return userRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Usuario no encontrado con id: "+ id));
+    public User obtenerUsuarioPorId(String username){
+        return userRepository.findById(username)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + username));
     }
 }

@@ -4,15 +4,23 @@ import { CommonLayout } from "@/components/CommonLayout/CommonLayout";
 import { useAppForm } from "@/config/use-app-form";
 import { SignupSchema } from "@/models/Login";
 import { useSignup } from "@/services/UserServices";
+import { useToken } from "@/services/TokenContext";
 import styles from "../styles/SignupScreen.module.css";
 
 export default function SignupScreen() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const inviteToken = searchParams.get("invite");
-  const [pendingInvite, setPendingInvite] = useState<string | null>(inviteToken);
+  const inviteToken = searchParams.get("invite") ?? "";
+  const [pendingInvite, setPendingInvite] = useState<string>(inviteToken);
 
   const { mutate, error } = useSignup();
+  const navigate = useNavigate();
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const [, setTokenState] = useToken();
+
+  useEffect(() => {
+    setPendingInvite(inviteToken);
+  }, [inviteToken]);
 
   const formData = useAppForm({
     defaultValues: {
@@ -22,25 +30,30 @@ export default function SignupScreen() {
       firstName: "",
       lastName: "",
       age: "",
-      genre: "",
+      gender: "",
       zone: "",
       rol: "JUGADOR",
-      pendingInviteToken: pendingInvite ?? undefined,
+      pendingInviteToken: pendingInvite,
     },
     validators: { onChange: SignupSchema },
     onSubmit: async ({ value }) => {
-      mutate(value, {
-        onSuccess: () => {
-          navigate("/");
-        },
-      });
+      mutate(
+          {
+            ...value,
+            pendingInviteToken: value.pendingInviteToken || undefined,
+          },
+          {
+            onSuccess: () => {
+              setTokenState({ state: "LOGGED_OUT" });
+              setSuccessMsg("¡Usuario creado con éxito! Verifique su email para activar la cuenta.");
+              setTimeout(() => {
+                navigate("/");
+              }, 2500);
+            },
+          }
+      );
     },
   });
-
-  useEffect(() => {
-    if (inviteToken) setPendingInvite(inviteToken);
-  }, [inviteToken]);
-
   return (
       <CommonLayout>
         <div className={styles.signupBox}>
@@ -50,6 +63,9 @@ export default function SignupScreen() {
                 ? "Completá los datos para registrarte y te inscribiremos automáticamente al partido."
                 : "Completá los datos para registrarte."}
           </p>
+          {successMsg && (
+              <div className={styles.successMsg}>{successMsg}</div>
+          )}
           <formData.AppForm>
             <formData.FormContainer extraError={error}>
               <div className={styles.fieldsGrid}>
@@ -79,7 +95,7 @@ export default function SignupScreen() {
                   </formData.AppField>
                 </div>
                 <div className={styles.inputGroup}>
-                  <formData.AppField name="genre">
+                  <formData.AppField name="gender">
                     {(field) => <field.TextField label="Género" />}
                   </formData.AppField>
                 </div>
@@ -105,7 +121,6 @@ export default function SignupScreen() {
                   )}
                 </formData.AppField>
               </div>
-              <input type="hidden" name="pendingInviteToken" value={pendingInvite ?? ""} />
               <div className={styles.buttonRow}>
                 <formData.SubmitButton className={styles.submitButton}>
                   Registrarme

@@ -18,7 +18,7 @@ public class Equipo {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "captain_id", nullable = false)
+    @JoinColumn(name = "captain_id", nullable = false, referencedColumnName = "username")
     private User captain;
 
     @Column(nullable = true)
@@ -49,7 +49,7 @@ public class Equipo {
     }
 
     public EquipoDTO asEquipoDTO() {
-        return new EquipoDTO(id, category, mainColors, secondaryColors, captain.getId());
+        return new EquipoDTO(id, category, mainColors, secondaryColors, captain.getUsername());
     }
 
     public void update(String id,

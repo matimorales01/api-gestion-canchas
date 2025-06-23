@@ -74,13 +74,24 @@ const LoggedInLinks = () => {
             <li>
                 <Link href="/under-construction">Main Page</Link>
             </li>
-
+            <li>
+                <Link href="/crear-equipo">Crear Equipo</Link>
+            </li>
+            <li>
+                <Link href="/listar-torneos">Torneos Disponibles</Link>
+            </li>
+            <li>
+                <Link href="/crear-reserva">Crear reserva</Link>
+            </li>
+            <li>
+                <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
+            </li>
+            <li>
+                <Link href="/ver-historial">Mis partidos</Link>
+            </li>
 
             {(role === "ORGANIZADOR" || role === "ADMINISTRADOR") && (
                 <>
-                    <li>
-                        <Link href="/ver-historial">Historial</Link>
-                    </li>
                     <li>
                         <Link href="/crear-torneo">Crear Torneo</Link>
                     </li>
@@ -90,31 +101,11 @@ const LoggedInLinks = () => {
                 </>
             )}
 
-            {(role === "JUGADOR" || role === "ORGANIZADOR") && (
-                <>
-                    <li>
-                        <Link href="/crear-reserva">Crear reserva</Link>
-                    </li>
-                    <li>
-                        <Link href="/listar-partidos-abiertos">Listar partidos abiertos</Link>
-                    </li>
-                </>
-            )}
-
-
-            {(role === "JUGADOR") && (
-                <>
-                <li>
-                    <Link href="/crear-equipo">Crear Equipo</Link>
-                </li>
-                <li>
-                    <Link href="/listar-torneos">Torneos Disponibles</Link>
-                </li>
-                </>
-            )}
-
             {role === "ADMINISTRADOR" && (
                 <>
+                    <li>
+                        <Link href="/ver-historial">Historial</Link>
+                    </li>
                     <li>
                         <Link href="/crear-cancha">Mis canchas</Link>
                     </li>

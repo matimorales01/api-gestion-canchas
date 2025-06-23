@@ -22,6 +22,23 @@ interface FormValues {
   duracionMinutos: number;
 }
 
+type FranjaForm = {
+  fechaInicial: string;
+  fechaFinal: string;
+  horarioInicio: string;
+  horarioFin: string;
+  minutos: number;
+};
+
+interface ModalAgregarFranjaProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (form: FranjaForm) => Promise<void>;
+  loading: boolean;
+  initialValues: FranjaForm;
+  canchaNombre: string;
+}
+
 function hasMessage(obj: unknown): obj is { message: string } {
   return (
       !!obj &&
@@ -46,6 +63,91 @@ function renderFieldErrors(errors: unknown) {
   return null;
 }
 
+function ModalAgregarFranja({
+                              open,
+                              onClose,
+                              onSubmit,
+                              loading,
+                              initialValues,
+                              canchaNombre,
+                            }: ModalAgregarFranjaProps) {
+  const [form, setForm] = React.useState<FranjaForm>(initialValues);
+
+  React.useEffect(() => {
+    setForm(initialValues);
+  }, [initialValues, open]);
+
+  if (!open) return null;
+
+  return (
+      <div className={styles.modalOverlay}>
+        <div className={styles.modalBox}>
+          <h2>Agregar franjas a "{canchaNombre}"</h2>
+          <div className={styles.franjasGrid}>
+            <input
+                type="date"
+                placeholder="Desde"
+                value={form.fechaInicial}
+                onChange={e => setForm(f => ({ ...f, fechaInicial: e.target.value }))}
+                className={styles.input}
+            />
+            <input
+                type="date"
+                placeholder="Hasta"
+                value={form.fechaFinal}
+                min={form.fechaInicial}
+                onChange={e => setForm(f => ({ ...f, fechaFinal: e.target.value }))}
+                className={styles.input}
+            />
+            <input
+                type="time"
+                placeholder="Hora inicio"
+                value={form.horarioInicio}
+                onChange={e => setForm(f => ({ ...f, horarioInicio: e.target.value }))}
+                className={styles.input}
+            />
+            <input
+                type="time"
+                placeholder="Hora fin"
+                value={form.horarioFin}
+                onChange={e => setForm(f => ({ ...f, horarioFin: e.target.value }))}
+                className={styles.input}
+            />
+            <input
+                type="number"
+                placeholder="Duración (minutos)"
+                min={15}
+                step={15}
+                value={form.minutos}
+                onChange={e => setForm(f => ({ ...f, minutos: Number(e.target.value) }))}
+                className={styles.input}
+            />
+          </div>
+          <div className={styles.buttonRow}>
+            <button
+                className={styles.submitButton}
+                onClick={async () => {
+                  await onSubmit(form);
+                  onClose();
+                }}
+                disabled={loading}
+            >
+              {loading ? "Guardando..." : "Agregar franjas"}
+            </button>
+            <button
+                className={styles.deleteButton}
+                onClick={onClose}
+                disabled={loading}
+                style={{ marginLeft: 12 }}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+  );
+}
+
 export const CanchaScreen: React.FC = () => {
   const [, navigate] = useLocation();
   const { data: canchas, isLoading, isError, refetch } = useCanchas();
@@ -66,6 +168,18 @@ export const CanchaScreen: React.FC = () => {
   const { mutateAsync, error } = useCrearCancha();
   const poblarFranjas = usePoblarFranjas();
   const [loadingFranjas, setLoadingFranjas] = React.useState(false);
+
+  const [modalFranja, setModalFranja] = React.useState<{ id: number, nombre: string } | null>(null);
+
+  const [formFranja, setFormFranja] = React.useState<FranjaForm>({
+    fechaInicial: "",
+    fechaFinal: "",
+    horarioInicio: "",
+    horarioFin: "",
+    minutos: 60,
+  });
+
+  const [loadingModalFranja, setLoadingModalFranja] = React.useState<boolean>(false);
 
   const formData = useAppForm({
     defaultValues: {
@@ -140,8 +254,43 @@ export const CanchaScreen: React.FC = () => {
     navigate(`/admin/canchas/${id}`);
   };
 
-  const handleAgregarFranja = (id: number) => {
-    navigate(`/admin/canchas/${id}/franjas`);
+  const handleAgregarFranja = (id: number, nombre: string) => {
+    setModalFranja({ id, nombre });
+    setFormFranja({
+      fechaInicial: "",
+      fechaFinal: "",
+      horarioInicio: "",
+      horarioFin: "",
+      minutos: 60,
+    });
+  };
+
+  const handleSubmitFranja = async (form: FranjaForm) => {
+    if (!modalFranja) return;
+    try {
+      setLoadingModalFranja(true);
+      await poblarFranjas.mutateAsync({
+        canchaId: modalFranja.id,
+        fechaInicial: form.fechaInicial,
+        fechaFinal: form.fechaFinal,
+        horarioInicio: form.horarioInicio,
+        horarioFin: form.horarioFin,
+        minutos: form.minutos,
+      });
+      setLoadingModalFranja(false);
+      alert("Franjas agregadas con éxito a " + modalFranja.nombre + "!");
+      setModalFranja(null);
+      if (refetch) await refetch();
+    } catch (e) {
+      setLoadingModalFranja(false);
+      if (hasMessage(e)) {
+        alert("Error: " + e.message);
+      } else {
+        alert("Error: " + String(e));
+      }
+      setModalFranja(null);
+    }
+
   };
 
   return (
@@ -178,7 +327,7 @@ export const CanchaScreen: React.FC = () => {
                         </button>
                         <button
                             className={`${styles.button} ${styles.agregarButton}`}
-                            onClick={() => handleAgregarFranja(cancha.id)}
+                            onClick={() => handleAgregarFranja(cancha.id, cancha.nombre)}
                         >
                           Agregar franja horaria
                         </button>
@@ -362,6 +511,14 @@ export const CanchaScreen: React.FC = () => {
               </formData.FormContainer>
             </formData.AppForm>
           </div>
+          <ModalAgregarFranja
+              open={!!modalFranja}
+              onClose={() => setModalFranja(null)}
+              onSubmit={handleSubmitFranja}
+              loading={loadingModalFranja}
+              initialValues={formFranja}
+              canchaNombre={modalFranja?.nombre || ""}
+          />
         </div>
       </CommonLayout>
   );

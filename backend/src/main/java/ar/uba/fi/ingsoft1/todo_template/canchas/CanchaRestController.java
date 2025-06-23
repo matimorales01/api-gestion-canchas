@@ -30,7 +30,7 @@ public class CanchaRestController {
     @GetMapping("/todas")
     public ResponseEntity<List<CanchaDTO>> getMisCanchas(Authentication authentication) {
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
-        Long userId = userDetails.id().longValue();
+        String userId = userDetails.username();
         return ResponseEntity.ok(canchaService.listarTodasLasCanchas(userId));
     }
 

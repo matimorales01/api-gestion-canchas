@@ -121,6 +121,10 @@ export const Navigation = () => {
             <Route path="/ver-historial">
                 <HistorialScreen />
             </Route>
+
+            <Route path="/mis-torneos">
+                <MisTorneosScreen />
+            </Route>
           <Route>
             <Redirect href="/" />
           </Route>

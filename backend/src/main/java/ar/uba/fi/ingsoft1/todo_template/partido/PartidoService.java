@@ -4,6 +4,7 @@ import ar.uba.fi.ingsoft1.todo_template.canchas.Cancha;
 import ar.uba.fi.ingsoft1.todo_template.canchas.CanchaRepository;
 import ar.uba.fi.ingsoft1.todo_template.common.exception.NotFoundException;
 import ar.uba.fi.ingsoft1.todo_template.config.security.JwtUserDetails;
+import ar.uba.fi.ingsoft1.todo_template.invitacion.InvitacionService;
 import ar.uba.fi.ingsoft1.todo_template.partido.dtos.PartidoCreateDTO;
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaId;
 import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaRepository;
@@ -11,6 +12,8 @@ import ar.uba.fi.ingsoft1.todo_template.reserva.ReservaService;
 import ar.uba.fi.ingsoft1.todo_template.user.verificacion.EmailService;
 import ar.uba.fi.ingsoft1.todo_template.user.User;
 import ar.uba.fi.ingsoft1.todo_template.user.UserRepository;
+import java.util.ArrayList;
+
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +22,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PartidoService {
@@ -61,7 +65,7 @@ public class PartidoService {
         User organizador = userRepository.findByEmail(infoUser.email())
                 .orElseThrow(() -> new NotFoundException("El email no está registrado"));
 
-        if (!organizador.getState())
+        if (!organizador.isVerified())
             throw new IllegalStateException("Antes de crear un partido debe estar registrado");
         return organizador;
     }
@@ -96,6 +100,8 @@ public class PartidoService {
 
         Partido partido = partidoFactory.crearPartido(dto, cancha, organizador);
 
+        partido.inscribirJugador(organizador);
+
         Partido partidoGuardado = partidoRepository.save(partido);
 
         reservaService.ocuparReserva(
@@ -110,10 +116,6 @@ public class PartidoService {
         return partidoGuardado;
     }
 
-    public List<Partido> obtenerTodosLosPartidos() {
-        return partidoRepository.findAll();
-    }
-
     public List<Partido> obtenerPartidosAbiertos() {
         return partidoRepository.findAll()
                 .stream()
@@ -122,7 +124,7 @@ public class PartidoService {
     }
 
     @Transactional
-    public List<PartidoAbiertoResponseDTO> obtenerPartidosAbiertosIncluyendoInscripcion(Long userId) {
+    public List<PartidoAbiertoResponseDTO> obtenerPartidosAbiertosIncluyendoInscripcion(String userId) {
         return obtenerPartidosAbiertos().stream()
                 .peek(pa -> pa.setEstadoPartido(pa.calcularEstadoPartido()))
                 .filter(pa -> pa.getEstadoPartido() != EstadoPartido.TERMINADO)
@@ -138,34 +140,43 @@ public class PartidoService {
     }
 
     @Transactional
-    public List<Partido> historialPartidosAbiertosPorUsuario(Long userId) {
-        List<Partido> partidos = partidoRepository
-                .findByTipoPartidoAndOrganizadorId(TipoPartido.ABIERTO, userId);
-        partidos.forEach(p -> p.getJugadores().size());
-        return partidos;
+    public List<Partido> historialPartidosAbiertosPorUsuario(String userId) {
+        List<Partido> comoOrganizador = partidoRepository
+                .findByTipoPartidoAndOrganizadorUsername(TipoPartido.ABIERTO, userId);
+
+        List<Partido> comoJugador = partidoRepository
+                .findByTipoPartidoAndJugadores_Username(TipoPartido.ABIERTO, userId);
+
+        Set<Partido> todos = new HashSet<>(comoOrganizador);
+        todos.addAll(comoJugador);
+
+        todos.forEach(p -> p.getJugadores().size());
+
+        return new ArrayList<>(todos);
     }
 
+
     @Transactional
-    public List<Partido> historialPartidosCerradosPorUsuario(Long userId) {
+    public List<Partido> historialPartidosCerradosPorUsuario(String userId) {
         return partidoRepository
-                .findByTipoPartidoAndOrganizadorId(TipoPartido.CERRADO, userId);
+                .findByTipoPartidoAndOrganizadorUsername(TipoPartido.CERRADO, userId);
     }
 
-    public Optional<Partido> obtenerPartidoPorIdpartido(PartidoId idpartido) {
-        return partidoRepository.findById(idpartido);
-    }
-
-    public void eliminarPartido(PartidoId idpartido) {
-        partidoRepository.deleteById(idpartido);
-    }
 
     @Transactional
-    public void inscribirAAbierto(PartidoId partidoId, Long userId) {
+    public void inscribirAAbierto(PartidoId partidoId, String userId) {
         Partido partido = partidoRepository.findById(partidoId)
                 .orElseThrow(() -> new NotFoundException("Partido abierto no encontrado"));
 
         if (partido.getTipoPartido() != TipoPartido.ABIERTO)
             throw new IllegalStateException("El partido no es de tipo abierto.");
+
+        LocalDate hoy   = LocalDate.now();
+        LocalTime ahora = LocalTime.now();
+        boolean yaEmpezo = partido.getFechaPartido().isBefore(hoy) ||
+                (partido.getFechaPartido().isEqual(hoy) && partido.getHoraPartido().isBefore(ahora));
+        if (yaEmpezo)
+            throw new IllegalStateException("No se puede inscribir, el partido ya comenzó.");
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
@@ -187,7 +198,7 @@ public class PartidoService {
     }
 
     @Transactional
-    public void desinscribirDeAbierto(PartidoId partidoId, Long userId) {
+    public void desinscribirDeAbierto(PartidoId partidoId, String userId) {
         Partido partido = partidoRepository.findById(partidoId)
                 .orElseThrow(() -> new NotFoundException("Partido abierto no encontrado"));
 
@@ -224,11 +235,5 @@ public class PartidoService {
         return invitacionService.generarInvitacion(partidoId, email);
     }
 
-    public boolean validarInvitacion(String token) {
-        return invitacionService.validarInvitacion(token);
-    }
 
-    public void aceptarInvitacion(String token, Long userId) {
-        invitacionService.aceptarInvitacion(token, userId);
-    }
 }
