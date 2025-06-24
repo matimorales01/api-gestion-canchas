@@ -1,7 +1,7 @@
 # Trabajo Práctico - Ingeniería de Software I
 
-Este proyecto es una **API REST** de gestión y reserva de canchas de fútbol , realizada como trabajo práctico para la materia Ingeniería de Software I (FIUBA).  
-El backend está implementado en **Java Spring Boot** con base de datos **PostgreSQL**, y el frontend en **React**.
+Este proyecto es una **API REST** de gestión y reserva de canchas de fútbol, realizada como trabajo práctico para la materia Ingeniería de Software I (FIUBA).  
+El backend está implementado en **Java Spring Boot** con base de datos **PostgreSQL**, y el frontend en **React con TypeScript**.
 
 Permite a los usuarios:
 - Registrarse y autenticarse, buscar canchas, reservar turnos y organizar partidos abiertos/cerrados.
